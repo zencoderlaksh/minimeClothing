@@ -1,2 +1,11 @@
 import logo from './logo.png'
-export {logo};
+import heroImage from './home.jpg'
+import top from './top.webp'
+import whitedress from './whitedress.webp'
+import sequen from './sequen.webp'
+import longsleeve from './longsleeve.webp'
+import cash from './cash.png'
+import gpay from './gpay.png'
+import rupay from './rupay.png'
+import upi from './upi.png'
+export {logo,heroImage,sequen,top,longsleeve,whitedress,cash,rupay,gpay,upi};
