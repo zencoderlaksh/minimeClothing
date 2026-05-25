@@ -13,6 +13,8 @@ import Search from '../pages/search/Search';
 import About from '../pages/about/About';
 import Terms from '../pages/policy/Terms';
 import PrivacyPolicy from '../pages/policy/PrivacyPolicy';
+import Account from '../pages/account/Account';
+import ProtectedRoute from './PrivateRoutes';
 const AppRoutes = () => {
   return (
     <Routes>
@@ -27,6 +29,14 @@ const AppRoutes = () => {
         <Route path="/new" element={<Collection />} />
         <Route path="/best-sellers" element={<Collection />} />
         <Route path="/trending" element={<Collection />} />
+        <Route
+  path="/account"
+  element={
+    <ProtectedRoute>
+      <Account />
+    </ProtectedRoute>
+  }
+/>
         <Route
          path="/collection/:category"
          element={<Collection />}
