@@ -4,11 +4,10 @@ import { ChevronDown } from "lucide-react";
 
 import products from "../../assets/data";
 import Card from "../../components/Card";
-import CategoryNav from "../../components/CategoryNav";
 
-import { heroImage } from "../../assets/images";
+// Importing your CategoryNav component
+import CategoryNav from "../../components/CategoryNav"; 
 
-// ─── Auto-build categoryMap from data (no manual updates needed) ───────────────
 const categoryMap = {};
 products.forEach((p) => {
   const slug = p.category
@@ -18,25 +17,22 @@ products.forEach((p) => {
   categoryMap[slug] = p.category;
 });
 
-// ─── Special route configs ─────────────────────────────────────────────────────
 const SPECIAL_ROUTES = {
   new: {
     label: "New Arrivals",
-    subtitle: "Fresh drops, just landed.",
     badgeFilter: "New",
   },
   "best-sellers": {
     label: "Best Sellers",
-    subtitle: "Loved by thousands of MiniMe women.",
     badgeFilter: "Bestseller",
   },
   trending: {
     label: "Trending Now",
-    subtitle: "What everyone's wearing right now.",
     badgeFilter: "Trending",
   },
 };
 
+// ─── Main Collection Component ────────────────────────────────────────────────
 const Collection = () => {
   const { category } = useParams();
   const location = useLocation();
@@ -51,19 +47,7 @@ const Collection = () => {
   const filterRef = useRef();
   const sortRef = useRef();
 
-  // Detect if we're on a special route
   const specialRoute = SPECIAL_ROUTES[category] || null;
-
-  // Hero title & subtitle
-  const heroTitle = specialRoute
-    ? specialRoute.label
-    : categoryMap[category]
-    ? categoryMap[category]
-    : "All Collections";
-
-  const heroSubtitle = specialRoute
-    ? specialRoute.subtitle
-    : "Timeless silhouettes crafted for modern femininity.";
 
   useEffect(() => {
     const closeMenus = (e) => {
@@ -79,17 +63,12 @@ const Collection = () => {
   const filteredProducts = useMemo(() => {
     let items = [...products];
 
-    // ── Special badge routes (/new, /best-sellers, /trending)
     if (specialRoute) {
       items = items.filter((p) => p.badge === specialRoute.badgeFilter);
-    }
-    // ── Category slug route (e.g. /collection/kurtis)
-    else if (category && categoryMap[category]) {
+    } else if (category && categoryMap[category]) {
       items = items.filter((p) => p.category === categoryMap[category]);
     }
-    // ── /collection with no category = show all
 
-    // ── Secondary filter dropdown
     if (filter === "bestsellers") {
       items = items.filter((p) => p.badge === "Bestseller");
     } else if (filter === "newarrivals") {
@@ -98,7 +77,6 @@ const Collection = () => {
       items = items.filter((p) => p.badge === "Trending");
     }
 
-    // ── Sort
     switch (sort) {
       case "priceLow":
         items.sort((a, b) => a.discountPrice - b.discountPrice);
@@ -123,9 +101,8 @@ const Collection = () => {
     }
 
     return items;
-  }, [category, filter, sort, location.pathname]);
+  }, [category, filter, sort, location.pathname, specialRoute]);
 
-  // Reset to page 1 on any change
   useEffect(() => {
     setCurrentPage(1);
   }, [category, filter, sort, location.pathname]);
@@ -142,7 +119,6 @@ const Collection = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  // Filter options — hide badge filters when on a special route
   const filterLabel = specialRoute
     ? { all: "All" }
     : {
@@ -164,43 +140,14 @@ const Collection = () => {
 
   return (
     <div className="bg-[#f8f6f2] min-h-screen">
-
-      {/* HERO */}
-      <section
-        className="relative h-[70vh] min-h-[500px] bg-cover bg-center flex items-center justify-center"
-        style={{ backgroundImage: `url(${heroImage})` }}
-      >
-        <div className="absolute inset-0 bg-black/30" />
-
-        <div className="relative text-center text-white px-6">
-          {specialRoute && (
-            <span className="inline-block mb-4 bg-white/20 backdrop-blur-sm border border-white/30 px-4 py-1 text-[11px] uppercase tracking-[0.3em] rounded-full">
-              {category === "new"
-                ? "✦ Just Dropped"
-                : category === "best-sellers"
-                ? "★ Community Favourites"
-                : "🔥 Trending"}
-            </span>
-          )}
-
-          {!specialRoute && (
-            <p className="uppercase tracking-[0.35em] text-sm mb-5">
-              Collection
-            </p>
-          )}
-
-          <h1 className="mt-2 text-5xl md:text-7xl font-light">{heroTitle}</h1>
-
-          <p className="mt-6 max-w-xl mx-auto text-white/80">{heroSubtitle}</p>
-        </div>
-      </section>
-
-      <CategoryNav />
+      
+      {/* IMPORTED CATEGORY NAV */}
+      <CategoryNav activeSlug={category} />
 
       {/* FILTER BAR */}
       <div className="max-w-7xl mx-auto px-4 py-10">
         <div className="flex items-center justify-between border-y border-[#ddd6ce] py-5">
-
+          
           {/* FILTER */}
           <div className="relative" ref={filterRef}>
             <button
@@ -221,7 +168,7 @@ const Collection = () => {
                       setFilterOpen(false);
                     }}
                     className={`
-                      block w-full text-left px-5 py-4 hover:bg-[#f8f6f2] text-sm
+                      block w-full text-left px-5 py-4 hover:bg-[#f8f6f2] text-sm cursor-pointer
                       ${filter === key ? "font-semibold text-black" : "text-gray-600"}
                     `}
                   >
@@ -257,7 +204,7 @@ const Collection = () => {
                       setSortOpen(false);
                     }}
                     className={`
-                      block w-full text-left px-5 py-4 hover:bg-[#f8f6f2] text-sm
+                      block w-full text-left px-5 py-4 hover:bg-[#f8f6f2] text-sm cursor-pointer
                       ${sort === key ? "font-semibold text-black" : "text-gray-600"}
                     `}
                   >
@@ -267,13 +214,11 @@ const Collection = () => {
               </div>
             )}
           </div>
-
         </div>
       </div>
 
       {/* PRODUCTS */}
       <section className="max-w-7xl mx-auto px-4 pb-24">
-
         {filteredProducts.length === 0 ? (
           <div className="text-center py-32">
             <p className="text-4xl mb-4">🧺</p>
@@ -313,9 +258,10 @@ const Collection = () => {
                 className={`
                   w-10 h-10 flex items-center justify-center
                   border text-sm tracking-widest transition cursor-pointer
-                  ${currentPage === page
-                    ? "bg-black text-white border-black"
-                    : "border-[#ddd6ce] hover:bg-black hover:text-white hover:border-black"
+                  ${
+                    currentPage === page
+                      ? "bg-black text-white border-black"
+                      : "border-[#ddd6ce] hover:bg-black hover:text-white hover:border-black"
                   }
                 `}
               >
@@ -338,7 +284,6 @@ const Collection = () => {
             </button>
           </div>
         )}
-
       </section>
     </div>
   );

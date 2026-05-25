@@ -9,8 +9,8 @@ import {
 } from "react-icons/hi2";
 import { BsHandbag } from "react-icons/bs";
 import { logo } from "../assets/images";
-import { useCart } from "../context/CartContext";
-import { useWishlist } from "../context/WishlistContext";
+import { useWishlistStore } from "../stores/useWishlistStore";
+import { useCartStore } from "../stores/useCartStore";
 
 const categorySlug = (name) =>
   name
@@ -22,8 +22,8 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [contactOpen, setContactOpen] = useState(false);
 
-  const { cart } = useCart();
-  const { wishlist } = useWishlist();
+  const { cart } = useCartStore();
+  const { wishlist } = useWishlistStore();
 
   const cartCount = cart.reduce((acc, item) => acc + item.quantity, 0);
   const wishlistCount = wishlist.length;
