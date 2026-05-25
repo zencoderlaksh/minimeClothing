@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Heart } from "lucide-react";
-import { useWishlist } from "../context/WishlistContext";
+import { useWishlistStore } from "../stores/useWishlistStore";
 
 const badgeConfig = {
   New: {
@@ -21,7 +21,7 @@ const badgeConfig = {
 };
 
 const Card = ({ product }) => {
-  const { addToWishlist, removeFromWishlist, isWishlisted } = useWishlist();
+  const { addToWishlist, removeFromWishlist, isWishlisted } = useWishlistStore();
 
   const wishlisted = isWishlisted(product.id);
 

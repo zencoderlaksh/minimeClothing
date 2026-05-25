@@ -2,74 +2,74 @@
 
 const imageSets = {
   tops: [
-    "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800",
-    "https://images.unsplash.com/photo-1483985988355-763728e1935b?w=800",
-    "https://images.unsplash.com/photo-1496747611176-843222e1e57c?w=800",
-    "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=800",
-    "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?w=800",
+    "https://images.pexels.com/photos/1536619/pexels-photo-1536619.jpeg?w=800&auto=compress",
+    "https://images.pexels.com/photos/2220316/pexels-photo-2220316.jpeg?w=800&auto=compress",
+    "https://images.pexels.com/photos/1021693/pexels-photo-1021693.jpeg?w=800&auto=compress",
+    "https://images.pexels.com/photos/4946601/pexels-photo-4946601.jpeg?w=800&auto=compress",
+    "https://images.pexels.com/photos/3622608/pexels-photo-3622608.jpeg?w=800&auto=compress",
   ],
   whiteDresses: [
-    "https://images.unsplash.com/photo-1512436991641-6745cdb1723f?w=800",
-    "https://images.unsplash.com/photo-1492707892479-7bc8d5a4ee93?w=800",
-    "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=800",
-    "https://images.unsplash.com/photo-1483985988355-763728e1935b?w=800",
-    "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=800",
+    "https://images.pexels.com/photos/1755428/pexels-photo-1755428.jpeg?w=800&auto=compress",
+    "https://images.pexels.com/photos/2803342/pexels-photo-2803342.jpeg?w=800&auto=compress",
+    "https://images.pexels.com/photos/1937336/pexels-photo-1937336.jpeg?w=800&auto=compress",
+    "https://images.pexels.com/photos/2114937/pexels-photo-2114937.jpeg?w=800&auto=compress",
+    "https://images.pexels.com/photos/3622614/pexels-photo-3622614.jpeg?w=800&auto=compress",
   ],
   sequinDresses: [
-    "https://images.unsplash.com/photo-1506629905607-32d6d5b1e4f2?w=800",
-    "https://images.unsplash.com/photo-1496747611176-843222e1e57c?w=800",
-    "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?w=800",
-    "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800",
-    "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=800",
+    "https://images.pexels.com/photos/2058852/pexels-photo-2058852.jpeg?w=800&auto=compress",
+    "https://images.pexels.com/photos/2866119/pexels-photo-2866119.jpeg?w=800&auto=compress",
+    "https://images.pexels.com/photos/3622622/pexels-photo-3622622.jpeg?w=800&auto=compress",
+    "https://images.pexels.com/photos/1036622/pexels-photo-1036622.jpeg?w=800&auto=compress",
+    "https://images.pexels.com/photos/2220316/pexels-photo-2220316.jpeg?w=800&auto=compress",
   ],
   longSleeveDresses: [
-    "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=800",
-    "https://images.unsplash.com/photo-1512436991641-6745cdb1723f?w=800",
-    "https://images.unsplash.com/photo-1492707892479-7bc8d5a4ee93?w=800",
-    "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=800",
-    "https://images.unsplash.com/photo-1483985988355-763728e1935b?w=800",
+    "https://images.pexels.com/photos/2235071/pexels-photo-2235071.jpeg?w=800&auto=compress",
+    "https://images.pexels.com/photos/3622608/pexels-photo-3622608.jpeg?w=800&auto=compress",
+    "https://images.pexels.com/photos/1021693/pexels-photo-1021693.jpeg?w=800&auto=compress",
+    "https://images.pexels.com/photos/1536619/pexels-photo-1536619.jpeg?w=800&auto=compress",
+    "https://images.pexels.com/photos/2114937/pexels-photo-2114937.jpeg?w=800&auto=compress",
   ],
   kurtis: [
-    "https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?w=800",
-    "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=800",
-    "https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?w=800",
-    "https://images.unsplash.com/photo-1585487000160-6ebcfceb0d03?w=800",
-    "https://images.unsplash.com/photo-1614252235316-8c857d38b5f4?w=800",
+    "https://images.pexels.com/photos/3973548/pexels-photo-3973548.jpeg?w=800&auto=compress",
+    "https://images.pexels.com/photos/5698851/pexels-photo-5698851.jpeg?w=800&auto=compress",
+    "https://images.pexels.com/photos/8839889/pexels-photo-8839889.jpeg?w=800&auto=compress",
+    "https://images.pexels.com/photos/6567607/pexels-photo-6567607.jpeg?w=800&auto=compress",
+    "https://images.pexels.com/photos/7319455/pexels-photo-7319455.jpeg?w=800&auto=compress",
   ],
   coordSets: [
-    "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=800",
-    "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?w=800",
-    "https://images.unsplash.com/photo-1496747611176-843222e1e57c?w=800",
-    "https://images.unsplash.com/photo-1483985988355-763728e1935b?w=800",
-    "https://images.unsplash.com/photo-1512436991641-6745cdb1723f?w=800",
+    "https://images.pexels.com/photos/5303087/pexels-photo-5303087.jpeg?w=800&auto=compress",
+    "https://images.pexels.com/photos/5330866/pexels-photo-5330866.jpeg?w=800&auto=compress",
+    "https://images.pexels.com/photos/4955349/pexels-photo-4955349.jpeg?w=800&auto=compress",
+    "https://images.pexels.com/photos/5704849/pexels-photo-5704849.jpeg?w=800&auto=compress",
+    "https://images.pexels.com/photos/4946601/pexels-photo-4946601.jpeg?w=800&auto=compress",
   ],
   palazzos: [
-    "https://images.unsplash.com/photo-1551803091-e20673f15770?w=800",
-    "https://images.unsplash.com/photo-1509631179647-0177331693ae?w=800",
-    "https://images.unsplash.com/photo-1583497491-a4e11843e30c?w=800",
-    "https://images.unsplash.com/photo-1578632767115-351597cf2477?w=800",
-    "https://images.unsplash.com/photo-1566479179817-f8b20fa2f23d?w=800",
+    "https://images.pexels.com/photos/5935748/pexels-photo-5935748.jpeg?w=800&auto=compress",
+    "https://images.pexels.com/photos/3622611/pexels-photo-3622611.jpeg?w=800&auto=compress",
+    "https://images.pexels.com/photos/2220316/pexels-photo-2220316.jpeg?w=800&auto=compress",
+    "https://images.pexels.com/photos/1536619/pexels-photo-1536619.jpeg?w=800&auto=compress",
+    "https://images.pexels.com/photos/5704849/pexels-photo-5704849.jpeg?w=800&auto=compress",
   ],
   jumpsuits: [
-    "https://images.unsplash.com/photo-1566479179817-f8b20fa2f23d?w=800",
-    "https://images.unsplash.com/photo-1509631179647-0177331693ae?w=800",
-    "https://images.unsplash.com/photo-1551803091-e20673f15770?w=800",
-    "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=800",
-    "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?w=800",
+    "https://images.pexels.com/photos/2696064/pexels-photo-2696064.jpeg?w=800&auto=compress",
+    "https://images.pexels.com/photos/3622622/pexels-photo-3622622.jpeg?w=800&auto=compress",
+    "https://images.pexels.com/photos/1021693/pexels-photo-1021693.jpeg?w=800&auto=compress",
+    "https://images.pexels.com/photos/4946601/pexels-photo-4946601.jpeg?w=800&auto=compress",
+    "https://images.pexels.com/photos/5303087/pexels-photo-5303087.jpeg?w=800&auto=compress",
   ],
   indianFusion: [
-    "https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?w=800",
-    "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=800",
-    "https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?w=800",
-    "https://images.unsplash.com/photo-1614252235316-8c857d38b5f4?w=800",
-    "https://images.unsplash.com/photo-1585487000160-6ebcfceb0d03?w=800",
+    "https://images.pexels.com/photos/8839889/pexels-photo-8839889.jpeg?w=800&auto=compress",
+    "https://images.pexels.com/photos/7319455/pexels-photo-7319455.jpeg?w=800&auto=compress",
+    "https://images.pexels.com/photos/5698851/pexels-photo-5698851.jpeg?w=800&auto=compress",
+    "https://images.pexels.com/photos/6567607/pexels-photo-6567607.jpeg?w=800&auto=compress",
+    "https://images.pexels.com/photos/3973548/pexels-photo-3973548.jpeg?w=800&auto=compress",
   ],
   loungewear: [
-    "https://images.unsplash.com/photo-1578632767115-351597cf2477?w=800",
-    "https://images.unsplash.com/photo-1583497491-a4e11843e30c?w=800",
-    "https://images.unsplash.com/photo-1492707892479-7bc8d5a4ee93?w=800",
-    "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=800",
-    "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=800",
+    "https://images.pexels.com/photos/3621235/pexels-photo-3621235.jpeg?w=800&auto=compress",
+    "https://images.pexels.com/photos/4046316/pexels-photo-4046316.jpeg?w=800&auto=compress",
+    "https://images.pexels.com/photos/3622614/pexels-photo-3622614.jpeg?w=800&auto=compress",
+    "https://images.pexels.com/photos/3622608/pexels-photo-3622608.jpeg?w=800&auto=compress",
+    "https://images.pexels.com/photos/2114937/pexels-photo-2114937.jpeg?w=800&auto=compress",
   ],
 };
 
@@ -81,7 +81,15 @@ const categories = [
     titlePrefix: ["Elegant", "Casual", "Classic", "Premium", "Modern", "Ribbed", "Cotton", "Oversized", "Slim Fit", "Designer"],
     subtypes: ["Crop Top", "Tank Top", "Peplum Top", "Off-Shoulder Top", "Halter Top"],
     sizes: ["XS", "S", "M", "L", "XL", "XXL"],
-    colors: ["White", "Black", "Beige", "Pink", "Blue", "Lavender", "Olive"],
+    colors: [
+      { name: "White", hex: "#FFFFFF" },
+      { name: "Black", hex: "#1A1A1A" },
+      { name: "Beige", hex: "#D4B896" },
+      { name: "Pink", hex: "#F4A7B9" },
+      { name: "Blue", hex: "#6CA0DC" },
+      { name: "Lavender", hex: "#C9B1D9" },
+      { name: "Olive", hex: "#7A8450" },
+    ],
     description: "Crafted from premium-quality fabric for exceptional comfort and style. Designed with modern tailoring and elegant detailing, this piece is perfect for casual outings, workwear, and everyday wear. Soft, breathable, durable, and easy to pair with your favorite jeans, skirts, or palazzos.",
   },
   {
@@ -91,7 +99,12 @@ const categories = [
     titlePrefix: ["Grace", "Ivory", "Lace", "Summer", "Elegant", "Vintage", "Princess", "Luxury", "Classic", "Floral"],
     subtypes: ["Maxi Dress", "Mini Dress", "Midi Dress", "Wrap Dress", "Shirt Dress"],
     sizes: ["XS", "S", "M", "L", "XL"],
-    colors: ["White", "Off-White", "Ivory", "Cream"],
+    colors: [
+      { name: "White", hex: "#FFFFFF" },
+      { name: "Off-White", hex: "#F5F0E8" },
+      { name: "Ivory", hex: "#FFFFF0" },
+      { name: "Cream", hex: "#FFFDD0" },
+    ],
     description: "Timeless white dresses crafted from breathable, premium fabric. Whether it's a beach getaway, a brunch date, or a summer soirée, these dresses bring effortless elegance to every occasion. Complete with delicate detailing and a flattering silhouette.",
   },
   {
@@ -101,7 +114,13 @@ const categories = [
     titlePrefix: ["Sparkle", "Glam", "Shimmer", "Luxury", "Night", "Party", "Diamond", "Golden", "Silver", "Premium"],
     subtypes: ["Mini Sequin Dress", "Bodycon Dress", "Slip Dress", "Maxi Sequin Dress", "Wrap Sequin Dress"],
     sizes: ["XS", "S", "M", "L", "XL"],
-    colors: ["Gold", "Silver", "Black", "Rose Gold", "Champagne"],
+    colors: [
+      { name: "Gold", hex: "#D4AF37" },
+      { name: "Silver", hex: "#C0C0C0" },
+      { name: "Black", hex: "#1A1A1A" },
+      { name: "Rose Gold", hex: "#B76E79" },
+      { name: "Champagne", hex: "#F7E7CE" },
+    ],
     description: "Shine bright at every party, wedding, or festive celebration with our glamorous sequin dresses. Designed to dazzle from every angle with rich embellishments and a figure-flattering cut. Perfect for cocktail nights, receptions, and special events.",
   },
   {
@@ -111,7 +130,14 @@ const categories = [
     titlePrefix: ["Autumn", "Winter", "Elegant", "Classic", "Premium", "Velvet", "Modern", "Grace", "Luxury", "Designer"],
     subtypes: ["Bodycon Dress", "Shift Dress", "Wrap Dress", "Shirt Dress", "Knit Dress"],
     sizes: ["XS", "S", "M", "L", "XL", "XXL"],
-    colors: ["Black", "Navy", "Burgundy", "Forest Green", "Camel", "Grey"],
+    colors: [
+      { name: "Black", hex: "#1A1A1A" },
+      { name: "Navy", hex: "#1B2A4A" },
+      { name: "Burgundy", hex: "#800020" },
+      { name: "Forest Green", hex: "#2D5A27" },
+      { name: "Camel", hex: "#C19A6B" },
+      { name: "Grey", hex: "#9E9E9E" },
+    ],
     description: "Stay warm without compromising on style with our long sleeve dress collection. Tailored from cozy, high-quality fabrics perfect for cooler months, these dresses transition seamlessly from office to evening events.",
   },
   {
@@ -121,7 +147,16 @@ const categories = [
     titlePrefix: ["Anarkali", "Straight", "A-Line", "Flared", "Printed", "Embroidered", "Chikankari", "Bandhani", "Block Print", "Lucknowi"],
     subtypes: ["Short Kurti", "Long Kurti", "Tunic Kurti", "Asymmetric Kurti", "High-Low Kurti"],
     sizes: ["XS", "S", "M", "L", "XL", "XXL", "3XL"],
-    colors: ["Peach", "Mustard", "Teal", "Rust", "Maroon", "Mint Green", "Sky Blue", "White"],
+    colors: [
+      { name: "Peach", hex: "#FFCBA4" },
+      { name: "Mustard", hex: "#E1AD01" },
+      { name: "Teal", hex: "#008080" },
+      { name: "Rust", hex: "#B7410E" },
+      { name: "Maroon", hex: "#800000" },
+      { name: "Mint Green", hex: "#98FF98" },
+      { name: "Sky Blue", hex: "#87CEEB" },
+      { name: "White", hex: "#FFFFFF" },
+    ],
     description: "Celebrate your Indian roots with our stunning kurti collection — from hand-crafted chikankari to vibrant block prints and intricate embroidery. Perfect for casual days, festive gatherings, or office wear. Pair with palazzos, leggings, or jeans for a complete look.",
   },
   {
@@ -131,7 +166,15 @@ const categories = [
     titlePrefix: ["Linen", "Cotton", "Printed", "Solid", "Tie-Dye", "Stripe", "Floral", "Boho", "Minimal", "Pastel"],
     subtypes: ["Top & Trouser Set", "Top & Skirt Set", "Blazer Co-ord", "Crop & Palazzo Set", "Shirt & Shorts Set"],
     sizes: ["XS", "S", "M", "L", "XL", "XXL"],
-    colors: ["Sage Green", "Dusty Pink", "Lavender", "Beige", "White", "Sky Blue", "Terracotta"],
+    colors: [
+      { name: "Sage Green", hex: "#8FAF8B" },
+      { name: "Dusty Pink", hex: "#DCB5A3" },
+      { name: "Lavender", hex: "#C9B1D9" },
+      { name: "Beige", hex: "#D4B896" },
+      { name: "White", hex: "#FFFFFF" },
+      { name: "Sky Blue", hex: "#87CEEB" },
+      { name: "Terracotta", hex: "#C16B4A" },
+    ],
     description: "Effortlessly put-together looks with our curated coord sets. Mix or match the top and bottom, or wear them together as a coordinated set for an instant style upgrade. Perfect for brunch, travel, casual outings, or relaxed office days.",
   },
   {
@@ -141,7 +184,16 @@ const categories = [
     titlePrefix: ["Printed", "Solid", "Flared", "Georgette", "Crepe", "Silk", "Cotton", "Rayon", "Embroidered", "Bohemian"],
     subtypes: ["Wide Leg Palazzo", "Printed Palazzo", "Solid Palazzo", "Sharara Style", "Dhoti Palazzo"],
     sizes: ["S", "M", "L", "XL", "XXL", "3XL"],
-    colors: ["Black", "White", "Peach", "Navy", "Maroon", "Mustard", "Teal", "Olive"],
+    colors: [
+      { name: "Black", hex: "#1A1A1A" },
+      { name: "White", hex: "#FFFFFF" },
+      { name: "Peach", hex: "#FFCBA4" },
+      { name: "Navy", hex: "#1B2A4A" },
+      { name: "Maroon", hex: "#800000" },
+      { name: "Mustard", hex: "#E1AD01" },
+      { name: "Teal", hex: "#008080" },
+      { name: "Olive", hex: "#7A8450" },
+    ],
     description: "Breezy, beautiful, and ultra-comfortable — our palazzo collection is designed for the woman who values style and ease in equal measure. Pair with a kurti, crop top, or fitted blouse. Available in a wide range of prints, fabrics, and colors.",
   },
   {
@@ -151,7 +203,15 @@ const categories = [
     titlePrefix: ["Belted", "Wide Leg", "Utility", "Floral", "Linen", "Denim", "Printed", "Minimal", "Boho", "Tailored"],
     subtypes: ["Wide Leg Jumpsuit", "Skinny Jumpsuit", "Halter Neck Jumpsuit", "Sleeveless Jumpsuit", "Off-Shoulder Jumpsuit"],
     sizes: ["XS", "S", "M", "L", "XL"],
-    colors: ["Olive", "Black", "Beige", "Denim Blue", "White", "Terracotta", "Blush"],
+    colors: [
+      { name: "Olive", hex: "#7A8450" },
+      { name: "Black", hex: "#1A1A1A" },
+      { name: "Beige", hex: "#D4B896" },
+      { name: "Denim Blue", hex: "#5B7FA6" },
+      { name: "White", hex: "#FFFFFF" },
+      { name: "Terracotta", hex: "#C16B4A" },
+      { name: "Blush", hex: "#F5C5C5" },
+    ],
     description: "One piece, complete look. Our jumpsuits are designed to be effortlessly chic for everything from weekend brunches to evening outings. Featuring flattering silhouettes, quality fabrics, and thoughtful detailing that makes dressing up feel effortless.",
   },
   {
@@ -161,7 +221,15 @@ const categories = [
     titlePrefix: ["Mirror Work", "Gotta Patti", "Zari", "Phulkari", "Kutch", "Ikat", "Kalamkari", "Ajrakh", "Chanderi", "Organza"],
     subtypes: ["Fusion Kurta Set", "Dhoti Dress", "Jacket Kurti", "Cape Set", "Sharara Set"],
     sizes: ["XS", "S", "M", "L", "XL", "XXL"],
-    colors: ["Magenta", "Cobalt Blue", "Emerald", "Saffron", "Ruby Red", "Ivory", "Fuchsia"],
+    colors: [
+      { name: "Magenta", hex: "#FF00A6" },
+      { name: "Cobalt Blue", hex: "#0047AB" },
+      { name: "Emerald", hex: "#50C878" },
+      { name: "Saffron", hex: "#F4A020" },
+      { name: "Ruby Red", hex: "#9B111E" },
+      { name: "Ivory", hex: "#FFFFF0" },
+      { name: "Fuchsia", hex: "#FF1DCE" },
+    ],
     description: "Where tradition meets contemporary style. Our Indian Fusion collection blends classic Indian craftsmanship — mirror work, zari embroidery, phulkari — with modern silhouettes. Perfect for festivals, weddings, mehendi ceremonies, and cultural events.",
   },
   {
@@ -171,7 +239,15 @@ const categories = [
     titlePrefix: ["Cozy", "Cloud", "Soft", "Relaxed", "Weekend", "Lazy Day", "Pastel", "Fluffy", "Minimal", "Hygge"],
     subtypes: ["Pyjama Set", "Lounge Pants", "Oversized Tee", "Robe", "Hoodie Set"],
     sizes: ["XS", "S", "M", "L", "XL", "XXL"],
-    colors: ["Lilac", "Baby Pink", "Powder Blue", "Cream", "Mint", "Charcoal", "Blush"],
+    colors: [
+      { name: "Lilac", hex: "#C8A2C8" },
+      { name: "Baby Pink", hex: "#F4C2C2" },
+      { name: "Powder Blue", hex: "#B0D0E8" },
+      { name: "Cream", hex: "#FFFDD0" },
+      { name: "Mint", hex: "#98FF98" },
+      { name: "Charcoal", hex: "#36454F" },
+      { name: "Blush", hex: "#F5C5C5" },
+    ],
     description: "Wrap yourself in comfort with MiniMe's loungewear collection. Crafted from ultra-soft, breathable fabrics that feel like a hug. Perfect for lazy Sundays, work-from-home days, or winding down after a long day. Style meets comfort, always.",
   },
 ];
@@ -191,6 +267,14 @@ const getBadge = (index, category) => {
   return null;
 };
 
+// Stock status generator
+const getStockStatus = (stock) => {
+  if (stock === 0) return "Out of Stock";
+  if (stock <= 5) return "Only a Few Left";
+  if (stock <= 15) return "Low Stock";
+  return "In Stock";
+};
+
 // Realistic Indian price generator
 const getPrice = (categoryName) => {
   const ranges = {
@@ -207,7 +291,7 @@ const getPrice = (categoryName) => {
   };
   const r = ranges[categoryName] || { min: 999, max: 3999 };
   const price = Math.floor(Math.random() * (r.max - r.min + 1)) + r.min;
-  const discount = Math.floor(price * (0.6 + Math.random() * 0.25)); // 25–40% off
+  const discount = Math.floor(price * (0.6 + Math.random() * 0.25));
   return { price, discountPrice: discount };
 };
 
@@ -220,22 +304,24 @@ categories.forEach((category) => {
     const subtype = category.subtypes[i % category.subtypes.length];
     const { price, discountPrice } = getPrice(category.name);
     const badge = getBadge(i, category);
+    const stock = Math.floor(Math.random() * 45); // 0–44
 
     products.push({
       id: id++,
       title: `${prefix} ${subtype}`,
       category: category.name,
       tags: category.tags,
-      badge,                           // "New" | "Bestseller" | "Trending" | null
+      badge,
       price,
       discountPrice,
       discountPercent: Math.round(((price - discountPrice) / price) * 100),
       rating: Number((Math.random() * 1.5 + 3.5).toFixed(1)),
       reviewCount: Math.floor(Math.random() * 400) + 20,
-      stock: Math.floor(Math.random() * 40) + 5,
+      stock,
+      stockStatus: getStockStatus(stock),   // "In Stock" | "Low Stock" | "Only a Few Left" | "Out of Stock"
       featured: Math.random() > 0.7,
       sizes: category.sizes,
-      colors: category.colors,
+      colors: category.colors,             // [{ name: "White", hex: "#FFFFFF" }, ...]
       description: category.description,
       mainImage: imageSets[category.key][0],
       images: [
@@ -252,48 +338,35 @@ export default products;
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-/** Get all unique category names */
 export const getAllCategories = () => [
   "All",
   ...new Set(products.map((p) => p.category)),
 ];
 
-/** Get all unique tags across products */
 export const getAllTags = () => [
   ...new Set(products.flatMap((p) => p.tags)),
 ];
 
-/** Get featured products */
 export const getFeaturedProducts = () => products.filter((p) => p.featured);
 
-/** Get products with a specific badge */
 export const getByBadge = (badge) =>
   products.filter((p) => p.badge === badge);
 
-/** Get new arrivals */
 export const getNewArrivals = () => getByBadge("New");
-
-/** Get bestsellers */
 export const getBestsellers = () => getByBadge("Bestseller");
-
-/** Get trending products */
 export const getTrending = () => getByBadge("Trending");
 
-/** Filter by category */
 export const getByCategory = (category) =>
   category === "All"
     ? products
     : products.filter((p) => p.category === category);
 
-/** Filter by tag */
 export const getByTag = (tag) =>
   products.filter((p) => p.tags.includes(tag));
 
-/** Get product by ID */
 export const getProductById = (id) =>
   products.find((p) => p.id === Number(id));
 
-/** Sort products */
 export const sortProducts = (list, sortBy) => {
   switch (sortBy) {
     case "price-asc":
@@ -311,7 +384,6 @@ export const sortProducts = (list, sortBy) => {
   }
 };
 
-/** Search products by title or category */
 export const searchProducts = (query) => {
   const q = query.toLowerCase().trim();
   return products.filter(
