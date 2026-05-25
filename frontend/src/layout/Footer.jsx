@@ -45,8 +45,8 @@ export default function Footer() {
               </li>
 
               <li>
-                <a href="/shop" className="hover:text-black transition">
-                  Shop
+                <a href="/collection" className="hover:text-black transition">
+                  Collection
                 </a>
               </li>
 
@@ -66,26 +66,26 @@ export default function Footer() {
 
             <ul className="space-y-3 text-gray-600">
               <li>
-                <a href="#" className="hover:text-black transition">
-                  Women
+                <a href="/collection" className="hover:text-black transition">
+                  Collection
                 </a>
               </li>
 
               <li>
-                <a href="#" className="hover:text-black transition">
-                  Kids
+                <a href="/collection/tops" className="hover:text-black transition">
+                  Tops
                 </a>
               </li>
 
               <li>
-                <a href="#" className="hover:text-black transition">
-                  New Arrivals
+                <a href="/collection/whitedresses" className="hover:text-black transition">
+                  White Dresses
                 </a>
               </li>
 
               <li>
-                <a href="#" className="hover:text-black transition">
-                  Best Sellers
+                <a href="/collection/sequin" className="hover:text-black transition">
+                  Sequin Dresses
                 </a>
               </li>
             </ul>
@@ -137,8 +137,8 @@ export default function Footer() {
           </p>
 
           <div className="flex gap-6 text-sm text-gray-500">
-            <a href="#">Privacy Policy</a>
-            <a href="#">Terms & Conditions</a>
+            <a href="/privacy-policy">Privacy Policy</a>
+            <a href="terms-and-conditions">Terms & Conditions</a>
           </div>
 
         </div>
