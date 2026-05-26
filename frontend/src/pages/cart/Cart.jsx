@@ -30,13 +30,14 @@ const Cart = () => {
 
   return (
     <div style={styles.page}>
+      <style>{responsiveCSS}</style>
       <div style={styles.bgTexture} />
 
       <div style={styles.container}>
 
         <div style={styles.header}>
           <div style={styles.brandBar}>
-            <span style={styles.brandText}>GUCCI</span>
+            <span style={styles.brandText}>MiniMe</span>
           </div>
           <h1 style={styles.pageTitle}>Shopping Bag</h1>
           <p style={styles.pageSubtitle}>
@@ -57,17 +58,18 @@ const Cart = () => {
             </Link>
           </div>
         ) : (
-          <div style={styles.layout}>
+          <div style={styles.layout} className="cart-layout">
 
             <div style={styles.itemsCol}>
               {cart.map((item) => (
-                <div key={`${item.id}-${item.size}-${item.color?.name}`} style={styles.cartItem}>
+                <div key={`${item.id}-${item.size}-${item.color?.name}`} style={styles.cartItem} className="cart-item">
 
                   <div style={styles.imageWrapper}>
                     <img
                       src={item.mainImage}
                       alt={item.title}
                       style={styles.itemImage}
+                      className="cart-item-image"
                     />
                     {item.isNew && (
                       <span style={styles.newBadge}>NEW</span>
@@ -132,7 +134,7 @@ const Cart = () => {
               ))}
             </div>
 
-            <div style={styles.summaryCol}>
+            <div style={styles.summaryCol} className="summary-col">
               <div style={styles.summaryCard}>
                 <h2 style={styles.summaryTitle}>Order Summary</h2>
                 <div style={styles.summaryDivider} />
@@ -201,6 +203,28 @@ const colors = {
   border: "#e0d8c8",
   borderDark: "#c8bda8",
 };
+
+const responsiveCSS = `
+  @media (max-width: 900px) {
+    .cart-layout {
+      grid-template-columns: 1fr !important;
+    }
+    .summary-col {
+      position: static !important;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .cart-item {
+      flex-direction: column !important;
+      gap: 1.25rem !important;
+    }
+    .cart-item-image {
+      width: 100% !important;
+      height: 220px !important;
+    }
+  }
+`;
 
 const styles = {
   page: {
