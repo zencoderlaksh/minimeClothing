@@ -1,87 +1,112 @@
-import { Link, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
+// Updated to reflect the categories in your navbar
 const categories = [
   {
-    name: "Tops",
+    title: "KURTIS",
+    slug: "kurtis",
+    image: "https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?w=600&q=80", 
+  },
+  {
+    title: "COORD SETS",
+    slug: "coord-sets",
+    image: "https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=600&q=80", 
+  },
+  {
+    title: "TOPS",
     slug: "tops",
+    image: "https://images.unsplash.com/photo-1483985988355-763728e1935b?w=600&q=80",
   },
   {
-    name: "White Dresses",
-    slug: "white-dresses",
+    title: "DRESSES", // Combines White, Sequin, and Long Sleeve Dresses
+    slug: "dresses",
+    image: "https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=600&q=80",
   },
   {
-    name: "Sequin Dresses",
-    slug: "sequin-dresses",
+    title: "JUMPSUITS",
+    slug: "jumpsuits",
+    image: "https://images.unsplash.com/photo-1596783074918-c84cb06531ca?w=600&q=80",
   },
   {
-    name: "Long Sleeve Dresses",
-    slug: "long-sleeve-dresses",
+    title: "LOUNGEWEAR",
+    slug: "loungewear",
+    image: "https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?w=600&q=80",
   },
 ];
 
-const CategoryNav = () => {
-  const { category } = useParams();
+const CategoryNav = ({ activeSlug }) => {
+  const navigate = useNavigate();
 
   return (
-    <div className="max-w-7xl mx-auto px-4">
-
-      <div className="border-y border-[#ddd6ce] py-7">
-
-        <h2
-          className="
-            text-sm
-            uppercase
-            tracking-[0.25em]
-            text-[#7f6d5b]
-            mb-6
-          "
-        >
-          Shop By Category
+    <section className="bg-[#f8f6f2] py-14">
+      <div className="max-w-7xl mx-auto px-4">
+        
+        {/* Updated Heading */}
+        <h2 className="text-center text-4xl font-medium uppercase tracking-wide mb-12">
+          Shop by Category
         </h2>
 
-        <div className="flex flex-wrap gap-8">
+        {/* Categories */}
+        <div className="flex justify-center gap-6 overflow-x-auto pb-2">
+          {categories.map((item) => {
+            // Check if the current route matches the slug to apply active styling
+            const isActive = item.slug === activeSlug;
 
-          {categories.map((item) => (
-            <Link
-              key={item.slug}
-              to={`/collection/${item.slug}`}
-              className={`
-                relative
-                uppercase
-                text-sm
-                tracking-[0.2em]
-                pb-2
-                transition-all
+            return (
+              <button
+                key={item.slug}
+                onClick={() => navigate(`/collection/${item.slug}`)}
+                className="flex flex-col items-center group shrink-0 cursor-pointer"
+              >
+                <div
+                  className={`
+                    bg-[#f4f2eb]
+                    p-3
+                    transition-all duration-300
+                    ${
+                      isActive
+                        ? "ring-2 ring-black"
+                        : "group-hover:ring-1 group-hover:ring-black/30"
+                    }
+                  `}
+                >
+                  <img
+                    src={item.image}
+                    alt={item.title}
+                    className="
+                      w-[130px]
+                      h-[190px]
+                      object-cover
+                      object-top
+                      transition-transform
+                      duration-300
+                      group-hover:scale-105
+                    "
+                  />
+                </div>
 
-                ${
-                  category === item.slug
-                    ? "text-black"
-                    : "text-gray-500 hover:text-black"
-                }
-              `}
-            >
-              {item.name}
-
-              {category === item.slug && (
                 <span
-                  className="
-                    absolute
-                    bottom-0
-                    left-0
-                    h-[1px]
-                    w-full
-                    bg-black
-                  "
-                />
-              )}
-            </Link>
-          ))}
-
+                  className={`
+                    mt-4
+                    text-[14px]
+                    uppercase
+                    font-medium
+                    whitespace-nowrap
+                    ${
+                      isActive
+                        ? "text-black"
+                        : "text-gray-700 group-hover:text-black"
+                    }
+                  `}
+                >
+                  {item.title}
+                </span>
+              </button>
+            );
+          })}
         </div>
-
       </div>
-
-    </div>
+    </section>
   );
 };
 

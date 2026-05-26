@@ -9,8 +9,8 @@ import {
 } from "react-icons/hi2";
 import { BsHandbag } from "react-icons/bs";
 import { logo } from "../assets/images";
-import { useCart } from "../context/CartContext";
-import { useWishlist } from "../context/WishlistContext";
+import { useWishlistStore } from "../stores/useWishlistStore";
+import { useCartStore } from "../stores/useCartStore";
 
 const categorySlug = (name) =>
   name
@@ -22,8 +22,8 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [contactOpen, setContactOpen] = useState(false);
 
-  const { cart } = useCart();
-  const { wishlist } = useWishlist();
+  const { cart } = useCartStore();
+  const { wishlist } = useWishlistStore();
 
   const cartCount = cart.reduce((acc, item) => acc + item.quantity, 0);
   const wishlistCount = wishlist.length;
@@ -121,17 +121,21 @@ export default function Navbar() {
 
         {/* MEGA MENU */}
         <div
-          className={`
-            absolute left-0 top-full w-full
-            bg-[#FEF9F3] border-t border-[#E8DFD2]
-            shadow-[0_20px_40px_rgba(0,0,0,0.06)]
-            overflow-hidden
-            transition-all duration-500 ease-out z-[90]
-            ${menuOpen ? "max-h-[500px] opacity-100 py-8" : "max-h-0 opacity-0 py-0"}
-          `}
-        >
-          <div className="max-w-6xl mx-auto px-6 md:px-10">
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-10">
+  className={`
+    absolute left-0 top-full w-full
+    bg-[#FEF9F3] border-t border-[#E8DFD2]
+    shadow-[0_20px_40px_rgba(0,0,0,0.06)]
+    transition-all duration-500 ease-out z-[90]
+    overflow-y-auto
+    ${
+      menuOpen
+        ? "max-h-[85vh] opacity-100 py-8"
+        : "max-h-0 opacity-0 py-0"
+    }
+  `}
+>
+  <div className="max-w-6xl mx-auto px-6 md:px-10">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-10">
 
               {/* SHOP */}
               <div>

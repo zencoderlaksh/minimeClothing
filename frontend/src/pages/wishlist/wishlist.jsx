@@ -1,10 +1,9 @@
 import { Link } from "react-router-dom";
 import Card from "../../components/Card";
-import { useWishlist } from "../../context/WishlistContext";
+import { useWishlistStore } from "../../stores/useWishlistStore";
 
 const Wishlist = () => {
-  const { wishlist } =
-    useWishlist();
+  const { wishlist } = useWishlistStore();
 
   return (
     <div

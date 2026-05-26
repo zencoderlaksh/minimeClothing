@@ -1,7 +1,8 @@
-import { useCart } from "../../context/CartContext";
+import { useCartStore } from "../../stores/useCartStore";
+import {Link} from 'react-router-dom'
 
 const Cart = () => {
-  const { cart, removeFromCart, updateQuantity } = useCart();
+  const { cart, removeFromCart, updateQuantity } = useCartStore();
 
   const total = cart.reduce(
     (acc, item) => acc + item.discountPrice * item.quantity,
@@ -12,32 +13,31 @@ const Cart = () => {
     (acc, item) => acc + (item.originalPrice || item.discountPrice) * item.quantity,
     0
   );
-
+  
   const savings = originalTotal - total;
 
-  const handleDecrement = (id, size, quantity) => {
-    if (quantity <= 1) {
-      removeFromCart(id, size);
+  const handleDecrement = (item) => {
+    if (item.quantity <= 1) {
+      removeFromCart(item.id, item.size, item.color);
     } else {
-      updateQuantity(id, size, quantity - 1);
+      updateQuantity(item.id, item.size, item.color, item.quantity - 1);
     }
   };
 
-  const handleIncrement = (id, size, quantity) => {
-    updateQuantity(id, size, quantity + 1);
+  const handleIncrement = (item) => {
+    updateQuantity(item.id, item.size, item.color, item.quantity + 1);
   };
 
   return (
     <div style={styles.page}>
-      {/* Background texture overlay */}
+      <style>{responsiveCSS}</style>
       <div style={styles.bgTexture} />
 
       <div style={styles.container}>
 
-        {/* Header */}
         <div style={styles.header}>
           <div style={styles.brandBar}>
-            <span style={styles.brandText}>GUCCI</span>
+            <span style={styles.brandText}>MiniMe</span>
           </div>
           <h1 style={styles.pageTitle}>Shopping Bag</h1>
           <p style={styles.pageSubtitle}>
@@ -53,38 +53,36 @@ const Cart = () => {
             <p style={styles.emptySubtitle}>
               Discover our latest collections and add your favourites.
             </p>
-            <button style={styles.continueBtn}>Continue Shopping</button>
+            <Link to='/collection'>
+              <button style={styles.continueBtn}>Continue Shopping</button>
+            </Link>
           </div>
         ) : (
-          <div style={styles.layout}>
+          <div style={styles.layout} className="cart-layout">
 
-            {/* Cart Items */}
             <div style={styles.itemsCol}>
-              {cart.map((item, index) => (
-                <div key={`${item.id}-${item.size}`} style={styles.cartItem}>
+              {cart.map((item) => (
+                <div key={`${item.id}-${item.size}-${item.color?.name}`} style={styles.cartItem} className="cart-item">
 
-                  {/* Item Image */}
                   <div style={styles.imageWrapper}>
                     <img
                       src={item.mainImage}
                       alt={item.title}
                       style={styles.itemImage}
+                      className="cart-item-image"
                     />
                     {item.isNew && (
                       <span style={styles.newBadge}>NEW</span>
                     )}
                   </div>
 
-                  {/* Item Details */}
                   <div style={styles.itemDetails}>
                     <div style={styles.itemTop}>
                       <div>
                         <p style={styles.itemBrand}>GUCCI</p>
                         <h3 style={styles.itemTitle}>{item.title}</h3>
                         <p style={styles.itemMeta}>Size: {item.size}</p>
-                        {item.color && (
-                          <p style={styles.itemMeta}>Colour: {item.color}</p>
-                        )}
+                        <p style={styles.itemMeta}>Colour: {item.color?.name}</p>
                       </div>
                       <div style={styles.priceBlock}>
                         <p style={styles.itemPrice}>₹{item.discountPrice.toLocaleString("en-IN")}</p>
@@ -94,15 +92,13 @@ const Cart = () => {
                       </div>
                     </div>
 
-                    {/* Quantity + Delete */}
                     <div style={styles.itemActions}>
 
-                      {/* Quantity Stepper */}
                       <div style={styles.stepper}>
                         <button
                           type="button"
                           style={styles.stepBtn}
-                          onClick={() => handleDecrement(item.id, item.size, item.quantity)}
+                          onClick={() => handleDecrement(item)}
                           aria-label="Decrease quantity"
                         >
                           −
@@ -111,18 +107,17 @@ const Cart = () => {
                         <button
                           type="button"
                           style={styles.stepBtn}
-                          onClick={() => handleIncrement(item.id, item.size, item.quantity)}
+                          onClick={() => handleIncrement(item)}
                           aria-label="Increase quantity"
                         >
                           +
                         </button>
                       </div>
 
-                      {/* Delete */}
                       <button
                         type="button"
                         style={styles.deleteBtn}
-                        onClick={() => removeFromCart(item.id, item.size)}
+                        onClick={() => removeFromCart(item.id, item.size, item.color)}
                         aria-label="Remove item"
                       >
                         <span style={styles.deleteLine} />
@@ -131,7 +126,6 @@ const Cart = () => {
 
                     </div>
 
-                    {/* Line total */}
                     <p style={styles.lineTotal}>
                       Subtotal: ₹{(item.discountPrice * item.quantity).toLocaleString("en-IN")}
                     </p>
@@ -140,8 +134,7 @@ const Cart = () => {
               ))}
             </div>
 
-            {/* Order Summary */}
-            <div style={styles.summaryCol}>
+            <div style={styles.summaryCol} className="summary-col">
               <div style={styles.summaryCard}>
                 <h2 style={styles.summaryTitle}>Order Summary</h2>
                 <div style={styles.summaryDivider} />
@@ -211,6 +204,28 @@ const colors = {
   borderDark: "#c8bda8",
 };
 
+const responsiveCSS = `
+  @media (max-width: 900px) {
+    .cart-layout {
+      grid-template-columns: 1fr !important;
+    }
+    .summary-col {
+      position: static !important;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .cart-item {
+      flex-direction: column !important;
+      gap: 1.25rem !important;
+    }
+    .cart-item-image {
+      width: 100% !important;
+      height: 220px !important;
+    }
+  }
+`;
+
 const styles = {
   page: {
     minHeight: "100vh",
@@ -247,8 +262,6 @@ const styles = {
     position: "relative",
     zIndex: 1,
   },
-
-  // Header
   header: {
     textAlign: "center",
     marginBottom: "3rem",
@@ -286,8 +299,6 @@ const styles = {
     background: `linear-gradient(to right, transparent, ${colors.gold}, transparent)`,
     margin: "0 auto",
   },
-
-  // Empty State
   emptyState: {
     textAlign: "center",
     padding: "6rem 2rem",
@@ -323,16 +334,12 @@ const styles = {
     cursor: "pointer",
     textTransform: "uppercase",
   },
-
-  // Layout
   layout: {
     display: "grid",
     gridTemplateColumns: "1fr 380px",
     gap: "3rem",
     alignItems: "start",
   },
-
-  // Items Column
   itemsCol: {
     display: "flex",
     flexDirection: "column",
@@ -344,8 +351,6 @@ const styles = {
     padding: "2.5rem 0",
     borderBottom: `1px solid ${colors.border}`,
   },
-
-  // Image
   imageWrapper: {
     position: "relative",
     flexShrink: 0,
@@ -368,8 +373,6 @@ const styles = {
     padding: "3px 7px",
     fontFamily: "sans-serif",
   },
-
-  // Item Details
   itemDetails: {
     flex: 1,
     display: "flex",
@@ -419,8 +422,6 @@ const styles = {
     textDecoration: "line-through",
     margin: 0,
   },
-
-  // Quantity
   itemActions: {
     display: "flex",
     alignItems: "center",
@@ -487,8 +488,6 @@ const styles = {
     margin: 0,
     letterSpacing: "0.05em",
   },
-
-  // Summary
   summaryCol: {
     position: "sticky",
     top: "2rem",
@@ -576,7 +575,6 @@ const styles = {
     fontFamily: "sans-serif",
     letterSpacing: "0.03em",
   },
-
 };
 
 export default Cart;
