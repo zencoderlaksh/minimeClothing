@@ -39,7 +39,12 @@ const ProductDetail = () => {
   const [sizeError, setSizeError] = useState("");
   const [colorError, setColorError] = useState("");
   const [showGuide, setShowGuide] = useState(false);
-  const [added, setAdded] = useState(false);
+
+  // ── Toast stack: array of { id, color, size }
+  const [toasts, setToasts] = useState([]);
+  const toastTimersRef = useRef({});
+  const MAX_TOASTS = 3;
+
   const [isTransitioning, setIsTransitioning] = useState(false);
 
   const autoScrollRef = useRef(null);
@@ -52,7 +57,7 @@ const ProductDetail = () => {
     setQuantity(1);
     setSizeError("");
     setColorError("");
-    setAdded(false);
+    setToasts([]);
     setShowGuide(false);
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, [id]);
@@ -139,6 +144,12 @@ const ProductDetail = () => {
     }
   };
 
+  const dismissToast = (id) => {
+    clearTimeout(toastTimersRef.current[id]);
+    delete toastTimersRef.current[id];
+    setToasts((prev) => prev.filter((t) => t.id !== id));
+  };
+
   const handleAddToCart = () => {
     let hasError = false;
 
@@ -155,12 +166,71 @@ const ProductDetail = () => {
     setSizeError("");
     setColorError("");
     addToCart(product, quantity, selectedSize, selectedColor);
-    setAdded(true);
-    setTimeout(() => setAdded(false), 3000);
+
+    // ── Create a new toast entry with a snapshot of current selections
+    const id = Date.now();
+    const newToast = { id, color: selectedColor, size: selectedSize };
+
+    setToasts((prev) => {
+      // If already at max, drop the oldest (first) one and clear its timer
+      if (prev.length >= MAX_TOASTS) {
+        const oldest = prev[0];
+        clearTimeout(toastTimersRef.current[oldest.id]);
+        delete toastTimersRef.current[oldest.id];
+        return [...prev.slice(1), newToast];
+      }
+      return [...prev, newToast];
+    });
+
+    // Auto-dismiss after 3s
+    toastTimersRef.current[id] = setTimeout(() => {
+      dismissToast(id);
+    }, 3000);
   };
 
   return (
     <>
+      {/* ── TOAST STACK (fixed, bottom-center) ── */}
+      <div
+className="fixed top-6 left-1/2 -translate-x-1/2 z-[9999] flex flex-col gap-2.5 w-[92%] max-w-lg pointer-events-none"        style={{ fontFamily: "Poppins" }}
+      >
+        {toasts.map((t) => (
+          <div
+            key={t.id}
+            className="
+              pointer-events-auto
+              backdrop-blur-md bg-white/95
+              border border-neutral-200
+              shadow-[0_10px_40px_rgba(0,0,0,0.12)]
+              rounded-2xl
+              px-6 py-4
+              flex items-center justify-between
+              animate-[slideDown_0.4s_cubic-bezier(0.22,0.68,0,1.2)_both]
+            "
+          >
+            <div className="flex items-center gap-4">
+              <div className="w-11 h-11 rounded-full bg-green-100 flex items-center justify-center shrink-0">
+                <CheckCircle2 size={22} className="text-green-600" />
+              </div>
+              <div>
+                <h4 className="font-semibold text-gray-900 text-base">Added to Cart</h4>
+                {t.color && t.size && (
+                  <p className="text-sm text-gray-500 mt-1">
+                    {t.color.name} • Size {t.size}
+                  </p>
+                )}
+              </div>
+            </div>
+            <button
+              onClick={() => dismissToast(t.id)}
+              className="text-gray-400 hover:text-gray-700 transition-colors text-lg cursor-pointer ml-4"
+            >
+              ✕
+            </button>
+          </div>
+        ))}
+      </div>
+
       <div className="bg-[#faf8f5] min-h-screen pt-32">
         <div className="max-w-7xl mx-auto px-4 grid lg:grid-cols-2 gap-14">
 
@@ -517,15 +587,6 @@ const ProductDetail = () => {
                 "Add To Cart"
               )}
             </button>
-
-            {added && (
-              <div className="mt-4 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-md flex items-center gap-2">
-                <CheckCircle2 size={18} />
-                <span>
-                  Added to cart — {selectedColor?.name}, Size {selectedSize}
-                </span>
-              </div>
-            )}
 
             {/* FEATURES */}
             <div className="mt-10 bg-white border border-[#e7dfd5] p-6 space-y-4">
