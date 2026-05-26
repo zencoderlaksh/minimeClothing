@@ -86,7 +86,7 @@ export default function AuthLayout({
               transition={{ delay: 0.3, duration: 1 }}
             >
               <div className="flex h-full flex-col justify-between p-5">
-                <span className="text-[0.65rem] uppercase tracking-[0.3em] text-ink/60">Showroom</span>
+                <span className="text-[0.65rem] uppercase font-bold tracking-[0.3em] text-ink/60">Showroom</span>
                 <div>
                   <p className="font-serif-display text-2xl text-ink">Soft Tailoring</p>
                   <p className="text-xs text-ink/60">Linen · Silk · Cashmere</p>
@@ -103,7 +103,7 @@ export default function AuthLayout({
               transition={{ delay: 0.5, duration: 1 }}
             >
               <div className="flex h-full flex-col justify-between p-5">
-                <span className="text-[0.6rem] uppercase tracking-[0.3em] text-ink/60">Edition </span>
+                <span className="text-[0.6rem] uppercase font-bold tracking-[0.3em] text-ink/60">Edition </span>
                 <p className="text-sm text-ink/80">The Essentials Capsule</p>
               </div>
             </motion.div>
