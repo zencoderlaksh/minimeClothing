@@ -15,6 +15,7 @@ import Terms from '../pages/policy/Terms';
 import PrivacyPolicy from '../pages/policy/PrivacyPolicy';
 import Account from '../pages/account/Account';
 import ProtectedRoute from './PrivateRoutes';
+import NotFound from '../pages/notFound/NotFound';
 const AppRoutes = () => {
   return (
     <Routes>
@@ -53,6 +54,7 @@ const AppRoutes = () => {
           path="/wishlist"
           element={<Wishlist />}
         />
+        <Route path="*" element={<NotFound />} />
       </Route>
       <Route path='/login' element={<Login />} />
       <Route path='/signup' element={<SignUp />} />
