@@ -1,110 +1,157 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { useRef, useState, useEffect } from "react";
+import { categories } from "../assets/data";
 
-// Updated to reflect the categories in your navbar
-const categories = [
-  {
-    title: "KURTIS",
-    slug: "kurtis",
-    image: "https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?w=600&q=80", 
-  },
-  {
-    title: "COORD SETS",
-    slug: "coord-sets",
-    image: "https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=600&q=80", 
-  },
-  {
-    title: "TOPS",
-    slug: "tops",
-    image: "https://images.unsplash.com/photo-1483985988355-763728e1935b?w=600&q=80",
-  },
-  {
-    title: "DRESSES", // Combines White, Sequin, and Long Sleeve Dresses
-    slug: "dresses",
-    image: "https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=600&q=80",
-  },
-  {
-    title: "JUMPSUITS",
-    slug: "jumpsuits",
-    image: "https://images.unsplash.com/photo-1596783074918-c84cb06531ca?w=600&q=80",
-  },
-  {
-    title: "LOUNGEWEAR",
-    slug: "loungewear",
-    image: "https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?w=600&q=80",
-  },
-];
+const VISIBLE = 4;
 
 const CategoryNav = ({ activeSlug }) => {
   const navigate = useNavigate();
+  const { category } = useParams(); // ← read the URL param
+  const trackRef = useRef(null);
+  const [offset, setOffset] = useState(0);
+  const [cardWidth, setCardWidth] = useState(0);
 
-  return (
-    <section className="bg-[#f8f6f2] py-14">
-      <div className="max-w-7xl mx-auto px-4">
-        
-        {/* Updated Heading */}
-        <h2 className="text-center text-4xl font-medium uppercase tracking-wide mb-12">
-          Shop by Category
-        </h2>
+  const maxOffset = Math.max(0, categories.length - VISIBLE);
 
-        {/* Categories */}
-        <div className="flex justify-center gap-6 overflow-x-auto pb-2">
-          {categories.map((item) => {
-            // Check if the current route matches the slug to apply active styling
-            const isActive = item.slug === activeSlug;
+  useEffect(() => {
+    const firstCard = trackRef.current?.querySelector(".cn-card");
+    if (firstCard) setCardWidth(firstCard.offsetWidth + 16);
+  }, []);
 
-            return (
-              <button
-                key={item.slug}
-                onClick={() => navigate(`/collection/${item.slug}`)}
-                className="flex flex-col items-center group shrink-0 cursor-pointer"
-              >
-                <div
-                  className={`
-                    bg-[#f4f2eb]
-                    p-3
-                    transition-all duration-300
-                    ${
-                      isActive
-                        ? "ring-2 ring-black"
-                        : "group-hover:ring-1 group-hover:ring-black/30"
-                    }
-                  `}
-                >
-                  <img
-                    src={item.image}
-                    alt={item.title}
-                    className="
-                      w-[130px]
-                      h-[190px]
-                      object-cover
-                      object-top
-                      transition-transform
-                      duration-300
-                      group-hover:scale-105
-                    "
-                  />
-                </div>
+  const goTo = (page) => {
+    const next = Math.max(0, Math.min(page, maxOffset));
+    setOffset(next);
+    if (trackRef.current) {
+      trackRef.current.style.transform = `translateX(-${next * cardWidth}px)`;
+    }
+  };
 
-                <span
-                  className={`
-                    mt-4
-                    text-[14px]
-                    uppercase
-                    font-medium
-                    whitespace-nowrap
-                    ${
-                      isActive
-                        ? "text-black"
-                        : "text-gray-700 group-hover:text-black"
-                    }
-                  `}
-                >
-                  {item.title}
-                </span>
-              </button>
-            );
-          })}
+  const handleCategoryClick = (slug) => {
+    navigate(`/collection/${slug}`);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  // Find active category title from slug
+  const activeCat = categories.find((c) => c.slug === category);
+
+  // ← If a category is selected, show just the heading
+  if (category) {
+    return (
+      <div className="bg-[#f8f6f2] pt-10 pb-4">
+        <div className="max-w-5xl mx-auto px-6">
+          <h1
+            className="text-[32px] font-light text-[#1a1a1a] mt-1 text-center"
+            style={{ fontFamily: "Georgia, serif" }}
+          >
+            {activeCat?.title || category}
+          </h1>
         </div>
+      </div>
+    );
+  }
+
+  // ← Otherwise show the full carousel
+  return (
+    <section className="bg-[#f8f6f2] py-10">
+      <div className="max-w-5xl mx-auto px-6">
+
+        {/* Header */}
+        <div className="flex items-end justify-between mb-6">
+          <div>
+            <p className="text-[10px] tracking-[0.28em] uppercase text-[#8a7f72] font-medium">
+              Curated for you
+            </p>
+            <h2 className="text-[28px] font-light text-[#1a1a1a] mt-1" style={{ fontFamily: "Georgia, serif" }}>
+              Shop by Category
+            </h2>
+          </div>
+
+          {categories.length > VISIBLE && (
+            <div className="flex gap-2">
+              <button
+                onClick={() => goTo(offset - 1)}
+                disabled={offset === 0}
+                className="w-9 h-9 rounded-full border border-[#c8bfb4] bg-white flex items-center justify-center text-[#5c5047] transition-all duration-200 hover:bg-[#1a1a1a] hover:border-[#1a1a1a] hover:text-white disabled:opacity-30 disabled:cursor-default cursor-pointer"
+              >
+                ←
+              </button>
+              <button
+                onClick={() => goTo(offset + 1)}
+                disabled={offset >= maxOffset}
+                className="w-9 h-9 rounded-full border border-[#c8bfb4] bg-white flex items-center justify-center text-[#5c5047] transition-all duration-200 hover:bg-[#1a1a1a] hover:border-[#1a1a1a] hover:text-white disabled:opacity-30 disabled:cursor-default cursor-pointer"
+              >
+                →
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* Carousel Track */}
+        <div className="overflow-hidden">
+          <div
+            ref={trackRef}
+            className="flex gap-4 transition-transform duration-[450ms] ease-[cubic-bezier(0.25,0.46,0.45,0.94)]"
+          >
+            {categories.map((item) => {
+              const isActive = item.slug === activeSlug;
+              return (
+                <button
+                  key={item.slug}
+                  onClick={() => handleCategoryClick(item.slug)}
+                  className="cn-card group flex-none w-[calc(25%-12px)] text-left cursor-pointer"
+                >
+                  <div
+                    className={`relative overflow-hidden rounded-xl aspect-[4/5] bg-[#ede8e0] ${
+                      isActive ? "outline outline-2 outline-offset-[3px] outline-black" : ""
+                    }`}
+                  >
+                    <img
+                      src={item.image}
+                      alt={item.title}
+                      className="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-[1.07]"
+                    />
+                    <div className="absolute inset-0 rounded-xl bg-gradient-to-t from-black/60 via-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-400" />
+                    <div className="absolute bottom-0 left-0 right-0 p-3 z-10">
+                      <p className="text-[11px] tracking-[0.22em] uppercase text-white font-medium opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-350">
+                        {item.title}
+                      </p>
+                      <div className="w-6 h-6 mt-1.5 rounded-full bg-white flex items-center justify-center text-[#1a1a1a] text-xs opacity-0 scale-75 group-hover:opacity-100 group-hover:scale-100 transition-all duration-300">
+                        →
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="pt-2.5 px-1">
+                    <p className={`text-[11px] tracking-[0.14em] uppercase font-medium transition-colors duration-200 ${
+                      isActive ? "text-[#1a1a1a]" : "text-[#5c5047] group-hover:text-[#1a1a1a]"
+                    }`}>
+                      {item.title}
+                    </p>
+                    {item.count && (
+                      <p className="text-[10px] text-[#a0948a] mt-0.5">{item.count}</p>
+                    )}
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Dots */}
+        {categories.length > VISIBLE && (
+          <div className="flex justify-center gap-1.5 mt-5">
+            {Array.from({ length: maxOffset + 1 }).map((_, i) => (
+              <button
+                key={i}
+                onClick={() => goTo(i)}
+                className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
+                  i === offset ? "w-5 bg-[#5c5047]" : "w-1.5 bg-[#c8bfb4]"
+                }`}
+              />
+            ))}
+          </div>
+        )}
+
       </div>
     </section>
   );

@@ -30,7 +30,7 @@ const imageSets = {
     "https://images.pexels.com/photos/2114937/pexels-photo-2114937.jpeg?w=800&auto=compress",
   ],
   kurtis: [
-    "https://images.pexels.com/photos/3973548/pexels-photo-3973548.jpeg?w=800&auto=compress",
+    "https://images.pexels.com/photos/7319455/pexels-photo-7319455.jpeg?w=800&auto=compress",
     "https://images.pexels.com/photos/5698851/pexels-photo-5698851.jpeg?w=800&auto=compress",
     "https://images.pexels.com/photos/8839889/pexels-photo-8839889.jpeg?w=800&auto=compress",
     "https://images.pexels.com/photos/6567607/pexels-photo-6567607.jpeg?w=800&auto=compress",
@@ -51,7 +51,7 @@ const imageSets = {
     "https://images.pexels.com/photos/5704849/pexels-photo-5704849.jpeg?w=800&auto=compress",
   ],
   jumpsuits: [
-    "https://images.pexels.com/photos/2696064/pexels-photo-2696064.jpeg?w=800&auto=compress",
+    "https://images.pexels.com/photos/4946601/pexels-photo-4946601.jpeg?w=800&auto=compress",
     "https://images.pexels.com/photos/3622622/pexels-photo-3622622.jpeg?w=800&auto=compress",
     "https://images.pexels.com/photos/1021693/pexels-photo-1021693.jpeg?w=800&auto=compress",
     "https://images.pexels.com/photos/4946601/pexels-photo-4946601.jpeg?w=800&auto=compress",
@@ -65,7 +65,7 @@ const imageSets = {
     "https://images.pexels.com/photos/3973548/pexels-photo-3973548.jpeg?w=800&auto=compress",
   ],
   loungewear: [
-    "https://images.pexels.com/photos/3621235/pexels-photo-3621235.jpeg?w=800&auto=compress",
+    "https://images.pexels.com/photos/2114937/pexels-photo-2114937.jpeg?w=800&auto=compress",
     "https://images.pexels.com/photos/4046316/pexels-photo-4046316.jpeg?w=800&auto=compress",
     "https://images.pexels.com/photos/3622614/pexels-photo-3622614.jpeg?w=800&auto=compress",
     "https://images.pexels.com/photos/3622608/pexels-photo-3622608.jpeg?w=800&auto=compress",
@@ -73,8 +73,11 @@ const imageSets = {
   ],
 };
 
-const categories = [
+export const categories = [
   {
+    slug: "tops",
+    title: "Tops",
+    image: imageSets.tops[0],
     name: "Tops",
     key: "tops",
     tags: ["Casual", "Western", "Everyday"],
@@ -93,6 +96,9 @@ const categories = [
     description: "Crafted from premium-quality fabric for exceptional comfort and style. Designed with modern tailoring and elegant detailing, this piece is perfect for casual outings, workwear, and everyday wear. Soft, breathable, durable, and easy to pair with your favorite jeans, skirts, or palazzos.",
   },
   {
+    slug: "white-dresses",
+    title: "White Dresses",
+    image: imageSets.whiteDresses[0],
     name: "White Dresses",
     key: "whiteDresses",
     tags: ["Dresses", "Occasion", "Western"],
@@ -108,6 +114,9 @@ const categories = [
     description: "Timeless white dresses crafted from breathable, premium fabric. Whether it's a beach getaway, a brunch date, or a summer soirée, these dresses bring effortless elegance to every occasion. Complete with delicate detailing and a flattering silhouette.",
   },
   {
+    slug: "sequin-dresses",
+    title: "Sequin Dresses",
+    image: imageSets.sequinDresses[0],
     name: "Sequin Dresses",
     key: "sequinDresses",
     tags: ["Party Wear", "Festive", "Glam"],
@@ -124,6 +133,9 @@ const categories = [
     description: "Shine bright at every party, wedding, or festive celebration with our glamorous sequin dresses. Designed to dazzle from every angle with rich embellishments and a figure-flattering cut. Perfect for cocktail nights, receptions, and special events.",
   },
   {
+    slug: "long-sleeve-dresses",
+    title: "Long Sleeve Dresses",
+    image: imageSets.longSleeveDresses[0],
     name: "Long Sleeve Dresses",
     key: "longSleeveDresses",
     tags: ["Winter", "Formal", "Casual"],
@@ -141,6 +153,9 @@ const categories = [
     description: "Stay warm without compromising on style with our long sleeve dress collection. Tailored from cozy, high-quality fabrics perfect for cooler months, these dresses transition seamlessly from office to evening events.",
   },
   {
+    slug: "kurtis",
+    title: "Kurtis",
+    image: imageSets.kurtis[0],
     name: "Kurtis",
     key: "kurtis",
     tags: ["Indian", "Ethnic", "Bestseller"],
@@ -160,6 +175,9 @@ const categories = [
     description: "Celebrate your Indian roots with our stunning kurti collection — from hand-crafted chikankari to vibrant block prints and intricate embroidery. Perfect for casual days, festive gatherings, or office wear. Pair with palazzos, leggings, or jeans for a complete look.",
   },
   {
+    slug: "coord-sets",
+    title: "Coord Sets",
+    image: imageSets.coordSets[0],
     name: "Coord Sets",
     key: "coordSets",
     tags: ["Trending", "New", "Casual"],
@@ -178,6 +196,9 @@ const categories = [
     description: "Effortlessly put-together looks with our curated coord sets. Mix or match the top and bottom, or wear them together as a coordinated set for an instant style upgrade. Perfect for brunch, travel, casual outings, or relaxed office days.",
   },
   {
+    slug: "palazzos",
+    title: "Palazzos",
+    image: imageSets.palazzos[0],
     name: "Palazzos",
     key: "palazzos",
     tags: ["Ethnic Fusion", "Comfortable", "Bestseller"],
@@ -197,6 +218,9 @@ const categories = [
     description: "Breezy, beautiful, and ultra-comfortable — our palazzo collection is designed for the woman who values style and ease in equal measure. Pair with a kurti, crop top, or fitted blouse. Available in a wide range of prints, fabrics, and colors.",
   },
   {
+    slug: "jumpsuits",
+    title: "Jumpsuits",
+    image: imageSets.jumpsuits[0],
     name: "Jumpsuits",
     key: "jumpsuits",
     tags: ["New", "Trendy", "Western"],
@@ -215,6 +239,9 @@ const categories = [
     description: "One piece, complete look. Our jumpsuits are designed to be effortlessly chic for everything from weekend brunches to evening outings. Featuring flattering silhouettes, quality fabrics, and thoughtful detailing that makes dressing up feel effortless.",
   },
   {
+    slug: "indian-fusion",
+    title: "Indian Fusion",
+    image: imageSets.indianFusion[0],
     name: "Indian Fusion",
     key: "indianFusion",
     tags: ["Festive", "New", "Trending"],
@@ -233,6 +260,9 @@ const categories = [
     description: "Where tradition meets contemporary style. Our Indian Fusion collection blends classic Indian craftsmanship — mirror work, zari embroidery, phulkari — with modern silhouettes. Perfect for festivals, weddings, mehendi ceremonies, and cultural events.",
   },
   {
+    slug: "loungewear",
+    title: "Loungewear",
+    image: imageSets.loungewear[0],
     name: "Loungewear",
     key: "loungewear",
     tags: ["Comfortable", "New", "Casual"],

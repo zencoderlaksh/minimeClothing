@@ -1,5 +1,8 @@
 import logo from './logo.png'
 import heroImage from './home.jpg'
+import heroImage2 from './heroImage2.avif'
+import heroImage3 from './heroImage3.avif'
+import heroImage4 from './heroImage4.jpg'
 import top from './top.webp'
 import whitedress from './whitedress.webp'
 import sequen from './sequen.webp'
@@ -8,4 +11,4 @@ import cash from './cash.png'
 import gpay from './gpay.png'
 import rupay from './rupay.png'
 import upi from './upi.png'
-export {logo,heroImage,sequen,top,longsleeve,whitedress,cash,rupay,gpay,upi};
+export {logo,heroImage,heroImage2,heroImage3,heroImage4,sequen,top,longsleeve,whitedress,cash,rupay,gpay,upi};
