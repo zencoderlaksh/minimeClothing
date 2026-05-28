@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import logo from "../../../assets/logo.png";
+import { useNavigate } from "react-router-dom";
 
 export default function AuthLayout({
   children,
@@ -22,6 +23,8 @@ export default function AuthLayout({
     window.addEventListener("mousemove", handler);
     return () => window.removeEventListener("mousemove", handler);
   }, []);
+
+  const navigate = useNavigate();
 
   return (
     <div
@@ -72,7 +75,7 @@ export default function AuthLayout({
               alt="MiniMe"
               className="h-12 w-12 rounded-full object-cover ring-1 ring-[color:var(--gold)]/40"
             />
-            <span className="font-serif-display text-xl tracking-[0.25em] text-ink">
+            <span onClick={() => navigate("/")} className="font-serif-display text-xl tracking-[0.25em] text-ink">
               MINI&nbsp;ME
             </span>
           </motion.div>
