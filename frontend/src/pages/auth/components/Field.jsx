@@ -59,13 +59,21 @@ export function Field({ label, type = "text", icon: Icon, value, onChange, autoC
   );
 }
 
+// new checkbox
 export function Checkbox({ checked, onChange, children }) {
   return (
     <label className="flex cursor-pointer items-start gap-2.5 text-xs text-ink/70">
+      <input
+        type="checkbox"
+        checked={checked}
+        onChange={(e) => onChange(e.target.checked)}
+        className="sr-only"
+      />
       <span
-        onClick={() => onChange(!checked)}
         className={`relative mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-[5px] border transition ${
-          checked ? "border-[color:var(--gold)] bg-[color:var(--gold)]/90" : "border-[color:var(--nude)]/60 bg-white/60"
+          checked
+            ? "border-[color:var(--gold)] bg-[color:var(--gold)]/90"
+            : "border-[color:var(--nude)]/60 bg-white/60"
         }`}
       >
         {checked ? (
@@ -82,7 +90,6 @@ export function Checkbox({ checked, onChange, children }) {
           </motion.svg>
         ) : null}
       </span>
-      <input type="checkbox" checked={checked} onChange={(e) => onChange(e.target.checked)} className="sr-only" />
       <span className="leading-snug">{children}</span>
     </label>
   );
