@@ -3,7 +3,8 @@ import Card from "../../../components/Card";
 import products from "../../../assets/data";
 
 const FeaturedCollection = () => {
-  const featuredProducts = products.slice(0, 8);
+  // Changed from 8 to 4 so it perfectly fits the 4-column grid in one row
+  const featuredProducts = products.slice(0, 4);
 
   return (
     <section className="bg-[#faf8f5] py-24">

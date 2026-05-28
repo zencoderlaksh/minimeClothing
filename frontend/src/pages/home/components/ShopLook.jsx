@@ -208,7 +208,7 @@ export default function ShopLook() {
           onClick={() => goTo(current - 1)}
           disabled={current === 0}
           aria-label="Previous"
-          className="absolute left-3 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-white/88 border border-[#ece8e1] flex items-center justify-center shadow-md text-[#1a1714] hover:bg-white transition-all disabled:opacity-25 disabled:pointer-events-none"
+          className="absolute cursor-pointer left-3 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-white/88 border border-[#ece8e1] flex items-center justify-center shadow-md text-[#1a1714] hover:bg-white transition-all disabled:opacity-25 disabled:pointer-events-none"
         >
           <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
             <polyline points="11,4 6,9 11,14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -220,7 +220,7 @@ export default function ShopLook() {
           onClick={() => goTo(current + 1)}
           disabled={current === slides.length - 1}
           aria-label="Next"
-          className="absolute right-3 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-white/88 border border-[#ece8e1] flex items-center justify-center shadow-md text-[#1a1714] hover:bg-white transition-all disabled:opacity-25 disabled:pointer-events-none"
+          className="absolute right-3 cursor-pointer top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-white/88 border border-[#ece8e1] flex items-center justify-center shadow-md text-[#1a1714] hover:bg-white transition-all disabled:opacity-25 disabled:pointer-events-none"
         >
           <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
             <polyline points="7,4 12,9 7,14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>

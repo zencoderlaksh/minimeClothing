@@ -33,7 +33,8 @@ export default function Navbar() {
   return (
     <>
       {/* NAVBAR */}
-      <nav className="sticky top-0 z-[100] w-full bg-[#FEF9F3] border-b border-[#E8DFD2]">
+      {/* Adjusted bg-opacity to 40, blur to lg, and border opacity for a stronger glass effect */}
+      <nav className="sticky top-0 z-[100] w-full bg-[#FEF9F3]/40 backdrop-blur-lg border-b border-[#E8DFD2]/50">
         <div className="max-w-[1800px] mx-auto h-[90px] px-5 md:px-8 lg:px-12 flex items-center justify-between relative">
 
           {/* LEFT */}
@@ -121,21 +122,21 @@ export default function Navbar() {
 
         {/* MEGA MENU */}
         <div
-  className={`
-    absolute left-0 top-full w-full
-    bg-[#FEF9F3] border-t border-[#E8DFD2]
-    shadow-[0_20px_40px_rgba(0,0,0,0.06)]
-    transition-all duration-500 ease-out z-[90]
-    overflow-y-auto
-    ${
-      menuOpen
-        ? "max-h-[85vh] opacity-100 py-8"
-        : "max-h-0 opacity-0 py-0"
-    }
-  `}
->
-  <div className="max-w-6xl mx-auto px-6 md:px-10">
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-10">
+          className={`
+            absolute left-0 top-full w-full
+            bg-[#FEF9F3] border-t border-[#E8DFD2]
+            shadow-[0_20px_40px_rgba(0,0,0,0.06)]
+            transition-all duration-500 ease-out z-[90]
+            overflow-y-auto
+            ${
+              menuOpen
+                ? "max-h-[85vh] opacity-100 py-8"
+                : "max-h-0 opacity-0 py-0"
+            }
+          `}
+        >
+          <div className="max-w-6xl mx-auto px-6 md:px-10">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-10">
 
               {/* SHOP */}
               <div>

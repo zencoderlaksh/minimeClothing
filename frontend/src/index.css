@@ -191,3 +191,17 @@
   }
 }
 
+
+
+@keyframes marquee {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%); /* Moves exactly half the track length */
+  }
+}
+
+.animate-marquee {
+  animation: marquee 25s linear infinite;
+}
