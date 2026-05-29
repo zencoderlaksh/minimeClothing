@@ -1,75 +1,73 @@
-// data.jsx — MiniMe Product Data
-
 const imageSets = {
   tops: [
-    "https://images.pexels.com/photos/1536619/pexels-photo-1536619.jpeg?w=800&auto=compress",
-    "https://images.pexels.com/photos/2220316/pexels-photo-2220316.jpeg?w=800&auto=compress",
-    "https://images.pexels.com/photos/1021693/pexels-photo-1021693.jpeg?w=800&auto=compress",
-    "https://images.pexels.com/photos/4946601/pexels-photo-4946601.jpeg?w=800&auto=compress",
-    "https://images.pexels.com/photos/3622608/pexels-photo-3622608.jpeg?w=800&auto=compress",
+    "https://images.pexels.com/photos/1066171/pexels-photo-1066171.jpeg",
+    "https://images.pexels.com/photos/37433145/pexels-photo-37433145.jpeg",
+    "https://images.pexels.com/photos/31870834/pexels-photo-31870834.jpeg",
+    "https://images.pexels.com/photos/33976561/pexels-photo-33976561.jpeg",
+    "https://images.pexels.com/photos/9121191/pexels-photo-9121191.jpeg"
   ],
   whiteDresses: [
-    "https://images.pexels.com/photos/1755428/pexels-photo-1755428.jpeg?w=800&auto=compress",
-    "https://images.pexels.com/photos/2803342/pexels-photo-2803342.jpeg?w=800&auto=compress",
-    "https://images.pexels.com/photos/1937336/pexels-photo-1937336.jpeg?w=800&auto=compress",
-    "https://images.pexels.com/photos/2114937/pexels-photo-2114937.jpeg?w=800&auto=compress",
-    "https://images.pexels.com/photos/3622614/pexels-photo-3622614.jpeg?w=800&auto=compress",
+    "https://images.pexels.com/photos/4355257/pexels-photo-4355257.jpeg",
+    "https://images.pexels.com/photos/10619446/pexels-photo-10619446.jpeg",
+    "https://images.pexels.com/photos/35024256/pexels-photo-35024256.jpeg",
+    "https://images.pexels.com/photos/32455016/pexels-photo-32455016.jpeg",
+    "https://images.pexels.com/photos/12942612/pexels-photo-12942612.jpeg"
   ],
   sequinDresses: [
-    "https://images.pexels.com/photos/2058852/pexels-photo-2058852.jpeg?w=800&auto=compress",
-    "https://images.pexels.com/photos/2866119/pexels-photo-2866119.jpeg?w=800&auto=compress",
-    "https://images.pexels.com/photos/3622622/pexels-photo-3622622.jpeg?w=800&auto=compress",
-    "https://images.pexels.com/photos/1036622/pexels-photo-1036622.jpeg?w=800&auto=compress",
-    "https://images.pexels.com/photos/2220316/pexels-photo-2220316.jpeg?w=800&auto=compress",
+    "https://images.pexels.com/photos/2687766/pexels-photo-2687766.jpeg",
+    "https://images.pexels.com/photos/17228223/pexels-photo-17228223.jpeg",
+    "https://images.pexels.com/photos/32169141/pexels-photo-32169141.jpeg",
+    "https://images.pexels.com/photos/10356436/pexels-photo-10356436.jpeg",
+    "https://images.pexels.com/photos/33722978/pexels-photo-33722978.jpeg"
   ],
   longSleeveDresses: [
-    "https://images.pexels.com/photos/2235071/pexels-photo-2235071.jpeg?w=800&auto=compress",
-    "https://images.pexels.com/photos/3622608/pexels-photo-3622608.jpeg?w=800&auto=compress",
-    "https://images.pexels.com/photos/1021693/pexels-photo-1021693.jpeg?w=800&auto=compress",
-    "https://images.pexels.com/photos/1536619/pexels-photo-1536619.jpeg?w=800&auto=compress",
-    "https://images.pexels.com/photos/2114937/pexels-photo-2114937.jpeg?w=800&auto=compress",
+    "https://images.pexels.com/photos/10464307/pexels-photo-10464307.jpeg",
+    "https://images.pexels.com/photos/19222076/pexels-photo-19222076.jpeg",
+    "https://images.pexels.com/photos/13381503/pexels-photo-13381503.jpeg",
+    "https://images.pexels.com/photos/25194063/pexels-photo-25194063.jpeg",
+    "https://images.pexels.com/photos/8272072/pexels-photo-8272072.jpeg"
   ],
   kurtis: [
-    "https://images.pexels.com/photos/7319455/pexels-photo-7319455.jpeg?w=800&auto=compress",
-    "https://images.pexels.com/photos/5698851/pexels-photo-5698851.jpeg?w=800&auto=compress",
-    "https://images.pexels.com/photos/8839889/pexels-photo-8839889.jpeg?w=800&auto=compress",
-    "https://images.pexels.com/photos/6567607/pexels-photo-6567607.jpeg?w=800&auto=compress",
-    "https://images.pexels.com/photos/7319455/pexels-photo-7319455.jpeg?w=800&auto=compress",
+    "https://images.pexels.com/photos/7227990/pexels-photo-7227990.jpeg",
+    "https://images.pexels.com/photos/12942613/pexels-photo-12942613.jpeg",
+    "https://images.pexels.com/photos/27236801/pexels-photo-27236801.jpeg",
+    "https://images.pexels.com/photos/16769685/pexels-photo-16769685.jpeg",
+    "https://images.pexels.com/photos/1066171/pexels-photo-1066171.jpeg?auto=compress" // slight variation
   ],
   coordSets: [
-    "https://images.pexels.com/photos/5303087/pexels-photo-5303087.jpeg?w=800&auto=compress",
-    "https://images.pexels.com/photos/5330866/pexels-photo-5330866.jpeg?w=800&auto=compress",
-    "https://images.pexels.com/photos/4955349/pexels-photo-4955349.jpeg?w=800&auto=compress",
-    "https://images.pexels.com/photos/5704849/pexels-photo-5704849.jpeg?w=800&auto=compress",
-    "https://images.pexels.com/photos/4946601/pexels-photo-4946601.jpeg?w=800&auto=compress",
+    "https://images.pexels.com/photos/37433145/pexels-photo-37433145.jpeg?auto=compress",
+    "https://images.pexels.com/photos/31870834/pexels-photo-31870834.jpeg?auto=compress",
+    "https://images.pexels.com/photos/9121191/pexels-photo-9121191.jpeg?auto=compress",
+    "https://images.pexels.com/photos/4355257/pexels-photo-4355257.jpeg?auto=compress",
+    "https://images.pexels.com/photos/10619446/pexels-photo-10619446.jpeg?auto=compress"
   ],
   palazzos: [
-    "https://images.pexels.com/photos/5935748/pexels-photo-5935748.jpeg?w=800&auto=compress",
-    "https://images.pexels.com/photos/3622611/pexels-photo-3622611.jpeg?w=800&auto=compress",
-    "https://images.pexels.com/photos/2220316/pexels-photo-2220316.jpeg?w=800&auto=compress",
-    "https://images.pexels.com/photos/1536619/pexels-photo-1536619.jpeg?w=800&auto=compress",
-    "https://images.pexels.com/photos/5704849/pexels-photo-5704849.jpeg?w=800&auto=compress",
+    "https://images.pexels.com/photos/35024256/pexels-photo-35024256.jpeg?auto=compress",
+    "https://images.pexels.com/photos/32455016/pexels-photo-32455016.jpeg?auto=compress",
+    "https://images.pexels.com/photos/12942612/pexels-photo-12942612.jpeg?auto=compress",
+    "https://images.pexels.com/photos/2687766/pexels-photo-2687766.jpeg?auto=compress",
+    "https://images.pexels.com/photos/17228223/pexels-photo-17228223.jpeg?auto=compress"
   ],
   jumpsuits: [
-    "https://images.pexels.com/photos/4946601/pexels-photo-4946601.jpeg?w=800&auto=compress",
-    "https://images.pexels.com/photos/3622622/pexels-photo-3622622.jpeg?w=800&auto=compress",
-    "https://images.pexels.com/photos/1021693/pexels-photo-1021693.jpeg?w=800&auto=compress",
-    "https://images.pexels.com/photos/4946601/pexels-photo-4946601.jpeg?w=800&auto=compress",
-    "https://images.pexels.com/photos/5303087/pexels-photo-5303087.jpeg?w=800&auto=compress",
+    "https://images.pexels.com/photos/32169141/pexels-photo-32169141.jpeg?auto=compress",
+    "https://images.pexels.com/photos/10356436/pexels-photo-10356436.jpeg?auto=compress",
+    "https://images.pexels.com/photos/33722978/pexels-photo-33722978.jpeg?auto=compress",
+    "https://images.pexels.com/photos/10464307/pexels-photo-10464307.jpeg?auto=compress",
+    "https://images.pexels.com/photos/19222076/pexels-photo-19222076.jpeg?auto=compress"
   ],
   indianFusion: [
-    "https://images.pexels.com/photos/8839889/pexels-photo-8839889.jpeg?w=800&auto=compress",
-    "https://images.pexels.com/photos/7319455/pexels-photo-7319455.jpeg?w=800&auto=compress",
-    "https://images.pexels.com/photos/5698851/pexels-photo-5698851.jpeg?w=800&auto=compress",
-    "https://images.pexels.com/photos/6567607/pexels-photo-6567607.jpeg?w=800&auto=compress",
-    "https://images.pexels.com/photos/3973548/pexels-photo-3973548.jpeg?w=800&auto=compress",
+    "https://images.pexels.com/photos/13381503/pexels-photo-13381503.jpeg?auto=compress",
+    "https://images.pexels.com/photos/25194063/pexels-photo-25194063.jpeg?auto=compress",
+    "https://images.pexels.com/photos/8272072/pexels-photo-8272072.jpeg?auto=compress",
+    "https://images.pexels.com/photos/7227990/pexels-photo-7227990.jpeg?auto=compress",
+    "https://images.pexels.com/photos/12942613/pexels-photo-12942613.jpeg?auto=compress"
   ],
   loungewear: [
-    "https://images.pexels.com/photos/2114937/pexels-photo-2114937.jpeg?w=800&auto=compress",
-    "https://images.pexels.com/photos/4046316/pexels-photo-4046316.jpeg?w=800&auto=compress",
-    "https://images.pexels.com/photos/3622614/pexels-photo-3622614.jpeg?w=800&auto=compress",
-    "https://images.pexels.com/photos/3622608/pexels-photo-3622608.jpeg?w=800&auto=compress",
-    "https://images.pexels.com/photos/2114937/pexels-photo-2114937.jpeg?w=800&auto=compress",
+    "https://images.pexels.com/photos/27236801/pexels-photo-27236801.jpeg?auto=compress",
+    "https://images.pexels.com/photos/16769685/pexels-photo-16769685.jpeg?auto=compress",
+    "https://images.pexels.com/photos/33976561/pexels-photo-33976561.jpeg?auto=compress",
+    "https://images.pexels.com/photos/10619446/pexels-photo-10619446.jpeg?auto=compress",
+    "https://images.pexels.com/photos/35024256/pexels-photo-35024256.jpeg?auto=compress"
   ],
 };
 

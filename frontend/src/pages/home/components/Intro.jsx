@@ -8,9 +8,14 @@ export default function Intro() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const timerRef = useRef(null);
 
+  // Tell Navbar this page has a full-bleed hero → go transparent
+  useEffect(() => {
+    document.body.setAttribute("data-hero", "true");
+    return () => document.body.removeAttribute("data-hero");
+  }, []);
+
   const startTimer = () => {
     if (timerRef.current) clearInterval(timerRef.current);
-    
     timerRef.current = setInterval(() => {
       setCurrentIndex((prevIndex) => (prevIndex + 1) % backgroundImages.length);
     }, 5000);
@@ -24,7 +29,7 @@ export default function Intro() {
   }, []);
 
   const handlePrev = () => {
-    setCurrentIndex((prevIndex) => 
+    setCurrentIndex((prevIndex) =>
       prevIndex === 0 ? backgroundImages.length - 1 : prevIndex - 1
     );
     startTimer();
@@ -41,9 +46,14 @@ export default function Intro() {
   };
 
   return (
-    <section className="relative min-h-screen w-full overflow-hidden bg-black">
-      
-      {/* Background Images Layers */}
+    /*
+      -mt-[90px]  →  pulls the section up behind the sticky navbar (navbar height = 90px)
+                     so the hero image fills the full viewport top-to-bottom.
+      The navbar is transparent at this point, so the image bleeds through it.
+    */
+    <section className="relative min-h-screen w-full overflow-hidden bg-black -mt-[90px]">
+
+      {/* Background Image Layers */}
       {backgroundImages.map((img, index) => (
         <div
           key={index}
@@ -55,7 +65,7 @@ export default function Intro() {
         />
       ))}
 
-      {/* Overlay */}
+      {/* Dark overlay */}
       <div className="absolute inset-0 bg-black/40 z-10" />
 
       {/* Left Navigation Arrow */}
@@ -94,7 +104,7 @@ export default function Intro() {
         </svg>
       </button>
 
-      {/* Hero Text (Centered on screen) */}
+      {/* Hero Text — centered across the full viewport (image fills behind transparent navbar) */}
       <div className="relative z-20 h-screen flex flex-col items-center justify-center">
         <div className="text-center px-6">
           <h1 className="text-white text-5xl md:text-7xl font-light tracking-wide">
@@ -105,10 +115,9 @@ export default function Intro() {
         </div>
       </div>
 
-      {/* Bottom Layout Container (Houses both the CTA button and the slide indicators) */}
+      {/* Bottom: CTA button + slide dots */}
       <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-30 flex flex-col items-center space-y-6 w-full max-w-xs text-center">
-        
-        {/* Button moved down here */}
+
         <Link
           to="/collection"
           className="px-8 py-4 bg-white text-black rounded-full hover:bg-gray-200 transition-all duration-300 font-medium tracking-wide shadow-xl hover:scale-105 active:scale-95"
@@ -116,14 +125,14 @@ export default function Intro() {
           See Collection
         </Link>
 
-        {/* Slide Indicators (Dots) */}
+        {/* Slide Indicators */}
         <div className="flex space-x-3 items-center justify-center">
           {backgroundImages.map((_, index) => (
             <button
               key={index}
               onClick={() => handleDotClick(index)}
-              className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
-                index === currentIndex ? "bg-white w-8" : "bg-white/40"
+              className={`h-2.5 rounded-full transition-all duration-300 ${
+                index === currentIndex ? "bg-white w-8" : "bg-white/40 w-2.5"
               }`}
               aria-label={`Go to slide ${index + 1}`}
             />
