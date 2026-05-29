@@ -102,51 +102,49 @@ const ProductGallery = ({ product, images }) => {
         )}
       </div>
 
-      <div className="flex justify-end items-center gap-1.5 px-8 py-2 max-w-screen-2xl mx-auto">
-        {images.slice(0, MAX_THUMBS).map((img, i) => (
-          <button
-            key={i}
-            onClick={() => handleManualNav(() => goTo(i))}
-            className={`relative overflow-hidden transition-all duration-300 cursor-pointer shrink-0 border-b-2 ${
-              currentIndex === i
-                ? "border-black opacity-100"
-                : "border-transparent opacity-45 hover:opacity-80"
-            }`}
-            style={{ width: 52, height: 52 }}
-          >
-            <img src={img} alt="" className="w-full h-full object-cover" />
-          </button>
-        ))}
+      {/* Bottom Right Thumbnail Navigation */}
+{images.length > 1 && (
+  <div className="absolute bottom-6 right-6 z-30 flex items-center gap-2 bg-black/30 backdrop-blur-md px-3 py-2 rounded-md">
+    
+    {/* Thumbnails */}
+    <div className="flex gap-1">
+      {images.slice(0, MAX_THUMBS).map((img, i) => (
+        <button
+          key={i}
+          onClick={() => handleManualNav(() => goTo(i))}
+          className={`overflow-hidden border transition-all duration-300 ${
+            currentIndex === i
+              ? "border-white opacity-100"
+              : "border-transparent opacity-50 hover:opacity-100"
+          }`}
+        >
+          <img
+            src={img}
+            alt=""
+            className="w-12 h-12 object-cover"
+          />
+        </button>
+      ))}
+    </div>
 
-        {images.length > MAX_THUMBS && (
-          <div
-            className="bg-[#f0ede8] flex items-center justify-center shrink-0 hover:bg-[#e5e0da] transition-colors"
-            style={{ width: 52, height: 52 }}
-          >
-            <span className="text-[10px] tracking-wide text-gray-500 font-medium">
-              +{images.length - MAX_THUMBS}
-            </span>
-          </div>
-        )}
+    {/* Navigation Arrows */}
+    <div className="flex gap-1 ml-2">
+      <button
+        onClick={() => handleManualNav(goPrev)}
+        className="w-9 h-9 cursor-pointer rounded-full bg-black/50 text-white flex items-center justify-center hover:bg-black/70 transition"
+      >
+        <ChevronLeft size={16} />
+      </button>
 
-        {images.length > 1 && (
-          <div className="flex gap-1 ml-1">
-            <button
-              onClick={() => handleManualNav(goPrev)}
-              className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:border-black hover:bg-gray-50 transition-all cursor-pointer"
-            >
-              <ChevronLeft size={14} />
-            </button>
-
-            <button
-              onClick={() => handleManualNav(goNext)}
-              className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:border-black hover:bg-gray-50 transition-all cursor-pointer"
-            >
-              <ChevronRight size={14} />
-            </button>
-          </div>
-        )}
-      </div>
+      <button
+        onClick={() => handleManualNav(goNext)}
+        className="w-9 h-9 cursor-pointer rounded-full bg-black/50 text-white flex items-center justify-center hover:bg-black/70 transition"
+      >
+        <ChevronRight size={16} />
+      </button>
+    </div>
+  </div>
+)}
     </>
   );
 };
