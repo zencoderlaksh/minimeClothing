@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import {
   HiBars3,
@@ -21,6 +21,8 @@ const categorySlug = (name) =>
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [contactOpen, setContactOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [isHeroPage, setIsHeroPage] = useState(false);
 
   const { cart } = useCartStore();
   const { wishlist } = useWishlistStore();
@@ -30,44 +32,100 @@ export default function Navbar() {
 
   const close = () => setMenuOpen(false);
 
+  // Switch to solid past 60 px of scroll
+  useEffect(() => {
+    const onScroll = () => setIsScrolled(window.scrollY > 60);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll(); // run once on mount
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  // Watch for the data-hero attribute that ProductGallery sets on <body>
+  useEffect(() => {
+    const sync = () => setIsHeroPage(document.body.hasAttribute("data-hero"));
+    const mo = new MutationObserver(sync);
+    mo.observe(document.body, { attributes: true, attributeFilter: ["data-hero"] });
+    sync(); // run once on mount
+    return () => mo.disconnect();
+  }, []);
+
+  // Transparent ONLY when: hero page + at top + no overlay open
+  const transparent = isHeroPage && !isScrolled && !menuOpen && !contactOpen;
+
   return (
     <>
-      {/* NAVBAR */}
-      {/* Adjusted bg-opacity to 40, blur to lg, and border opacity for a stronger glass effect */}
-      <nav className="sticky top-0 z-[100] w-full bg-[#FEF9F3]/40 backdrop-blur-lg border-b border-[#E8DFD2]/50">
+      {/* ── NAVBAR ── */}
+      <nav
+        className={`sticky top-0 z-[100] w-full transition-all duration-500 ease-in-out ${
+          transparent
+            ? "bg-transparent border-transparent"
+            : "bg-[#FEF9F3]/95 backdrop-blur-lg border-b border-[#E8DFD2]/50"
+        }`}
+      >
         <div className="max-w-[1800px] mx-auto h-[90px] px-5 md:px-8 lg:px-12 flex items-center justify-between relative">
 
-          {/* LEFT */}
-          <div className="hidden lg:flex items-center gap-3 text-[17px] font-medium">
-            <span onClick={() => setContactOpen(true)} className="text-xl cursor-pointer">+</span>
-            <button onClick={() => setContactOpen(true)} className="cursor-pointer hover:opacity-70 transition">
+          {/* LEFT – Contact Us */}
+          <div
+            className={`hidden lg:flex items-center gap-3 text-[17px] font-medium transition-colors duration-500 ${
+              transparent ? "text-white" : "text-black"
+            }`}
+          >
+            <span
+              onClick={() => setContactOpen(true)}
+              className="text-xl cursor-pointer"
+            >
+              +
+            </span>
+            <button
+              onClick={() => setContactOpen(true)}
+              className="cursor-pointer hover:opacity-70 transition"
+            >
               Contact Us
             </button>
           </div>
 
-          {/* DESKTOP LOGO */}
+          {/* CENTER – Logo (desktop) */}
           <div className="hidden lg:block absolute left-1/2 -translate-x-1/2">
             <Link to="/">
-              <img src={logo} alt="MiniMe" className="h-32 object-contain cursor-pointer" />
+              <img
+                src={logo}
+                alt="MiniMe"
+                className={`h-32 object-contain cursor-pointer transition-all duration-500 ${
+                  transparent ? "brightness-0 invert" : ""
+                }`}
+              />
             </Link>
           </div>
 
-          {/* MOBILE LOGO */}
+          {/* CENTER – Logo (mobile) */}
           <div className="lg:hidden">
             <Link to="/">
-              <img src={logo} alt="MiniMe" className="h-[85px] object-contain cursor-pointer" />
+              <img
+                src={logo}
+                alt="MiniMe"
+                className={`h-[85px] object-contain cursor-pointer transition-all duration-500 ${
+                  transparent ? "brightness-0 invert" : ""
+                }`}
+              />
             </Link>
           </div>
 
-          {/* RIGHT ICONS */}
-          <div className="ml-auto flex items-center gap-5 md:gap-7">
-
+          {/* RIGHT – Icons */}
+          <div
+            className={`ml-auto flex items-center gap-5 md:gap-7 transition-colors duration-500 ${
+              transparent ? "text-white" : "text-black"
+            }`}
+          >
             {/* WISHLIST */}
             <Link to="/wishlist">
               <div className="relative group cursor-pointer">
                 <HiOutlineHeart className="text-[25px]" />
                 {wishlistCount > 0 && (
-                  <span className="absolute -top-2 -right-2 min-w-[18px] h-[18px] px-[3px] bg-black text-white text-[10px] font-medium rounded-full flex items-center justify-center leading-none pointer-events-none">
+                  <span
+                    className={`absolute -top-2 -right-2 min-w-[18px] h-[18px] px-[3px] text-[10px] font-medium rounded-full flex items-center justify-center leading-none pointer-events-none transition-colors duration-500 ${
+                      transparent ? "bg-white text-black" : "bg-black text-white"
+                    }`}
+                  >
                     {wishlistCount > 99 ? "99+" : wishlistCount}
                   </span>
                 )}
@@ -82,7 +140,11 @@ export default function Navbar() {
               <div className="relative group cursor-pointer">
                 <BsHandbag className="text-[24px]" />
                 {cartCount > 0 && (
-                  <span className="absolute -top-2 -right-2 min-w-[18px] h-[18px] px-[3px] bg-black text-white text-[10px] font-medium rounded-full flex items-center justify-center leading-none pointer-events-none">
+                  <span
+                    className={`absolute -top-2 -right-2 min-w-[18px] h-[18px] px-[3px] text-[10px] font-medium rounded-full flex items-center justify-center leading-none pointer-events-none transition-colors duration-500 ${
+                      transparent ? "bg-white text-black" : "bg-black text-white"
+                    }`}
+                  >
                     {cartCount > 99 ? "99+" : cartCount}
                   </span>
                 )}
@@ -113,14 +175,23 @@ export default function Navbar() {
             </Link>
 
             {/* MENU BUTTON */}
-            <button onClick={() => setMenuOpen(!menuOpen)} className="flex items-center gap-3 cursor-pointer">
-              {menuOpen ? <HiXMark className="text-[30px]" /> : <HiBars3 className="text-[30px]" />}
-              <span className="hidden lg:block text-[18px] font-medium tracking-wide">MENU</span>
+            <button
+              onClick={() => setMenuOpen(!menuOpen)}
+              className="flex items-center gap-3 cursor-pointer"
+            >
+              {menuOpen ? (
+                <HiXMark className="text-[30px]" />
+              ) : (
+                <HiBars3 className="text-[30px]" />
+              )}
+              <span className="hidden lg:block text-[18px] font-medium tracking-wide">
+                MENU
+              </span>
             </button>
           </div>
         </div>
 
-        {/* MEGA MENU */}
+        {/* ── MEGA MENU (always opaque – never transparent) ── */}
         <div
           className={`
             absolute left-0 top-full w-full
@@ -128,11 +199,7 @@ export default function Navbar() {
             shadow-[0_20px_40px_rgba(0,0,0,0.06)]
             transition-all duration-500 ease-out z-[90]
             overflow-y-auto
-            ${
-              menuOpen
-                ? "max-h-[85vh] opacity-100 py-8"
-                : "max-h-0 opacity-0 py-0"
-            }
+            ${menuOpen ? "max-h-[85vh] opacity-100 py-8" : "max-h-0 opacity-0 py-0"}
           `}
         >
           <div className="max-w-6xl mx-auto px-6 md:px-10">
@@ -213,12 +280,15 @@ export default function Navbar() {
         </div>
       </nav>
 
-      {/* CONTACT OVERLAY */}
+      {/* ── CONTACT OVERLAY ── */}
       {contactOpen && (
-        <div className="fixed inset-0 bg-black/30 z-40" onClick={() => setContactOpen(false)} />
+        <div
+          className="fixed inset-0 bg-black/30 z-40"
+          onClick={() => setContactOpen(false)}
+        />
       )}
 
-      {/* CONTACT SIDEBAR */}
+      {/* ── CONTACT SIDEBAR ── */}
       <div
         className={`
           fixed top-0 right-0 h-screen
