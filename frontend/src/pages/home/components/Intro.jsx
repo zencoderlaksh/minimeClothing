@@ -54,7 +54,7 @@ export default function Intro() {
     <section className="relative min-h-screen w-full overflow-hidden bg-black -mt-[90px]">
 
       {/* Background Image Layers */}
-      {backgroundImages.map((img, index) => (
+      {/* {backgroundImages.map((img, index) => (
         <div
           key={index}
           className="absolute inset-0 transition-opacity duration-1000 ease-in-out bg-cover bg-center"
@@ -63,7 +63,22 @@ export default function Intro() {
             opacity: index === currentIndex ? 1 : 0,
           }}
         />
-      ))}
+      ))} */}
+
+      {backgroundImages.map((img, index) => (
+  <div
+    key={index}
+    className="absolute inset-0 transition-opacity duration-1000 ease-in-out bg-cover bg-center"
+    style={{
+      // only set backgroundImage for current and next slide
+      // others stay empty = browser won't fetch them
+      backgroundImage: index === currentIndex || index === currentIndex + 1
+        ? `url(${img})`
+        : 'none',
+      opacity: index === currentIndex ? 1 : 0,
+    }}
+  />
+))}
 
       {/* Dark overlay */}
       <div className="absolute inset-0 bg-black/40 z-10" />

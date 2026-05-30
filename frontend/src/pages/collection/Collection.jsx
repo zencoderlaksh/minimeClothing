@@ -32,6 +32,27 @@ const SPECIAL_ROUTES = {
   },
 };
 
+
+
+  const filterLabel = specialRoute
+    ? { all: "All" }
+    : {
+        all: "All Products",
+        bestsellers: "Best Sellers",
+        newarrivals: "New Arrivals",
+        trending: "Trending",
+      };
+
+  const sortLabel = {
+    featured: "Featured",
+    priceLow: "Price: Low → High",
+    priceHigh: "Price: High → Low",
+    rating: "Top Rated",
+    discount: "Biggest Discount",
+    az: "A → Z",
+    za: "Z → A",
+  };
+
 // ─── Main Collection Component ────────────────────────────────────────────────
 const Collection = () => {
   const { category } = useParams();
@@ -117,25 +138,6 @@ const Collection = () => {
   const handlePageChange = (page) => {
     setCurrentPage(page);
     window.scrollTo({ top: 0, behavior: "smooth" });
-  };
-
-  const filterLabel = specialRoute
-    ? { all: "All" }
-    : {
-        all: "All Products",
-        bestsellers: "Best Sellers",
-        newarrivals: "New Arrivals",
-        trending: "Trending",
-      };
-
-  const sortLabel = {
-    featured: "Featured",
-    priceLow: "Price: Low → High",
-    priceHigh: "Price: High → Low",
-    rating: "Top Rated",
-    discount: "Biggest Discount",
-    az: "A → Z",
-    za: "Z → A",
   };
 
   return (
