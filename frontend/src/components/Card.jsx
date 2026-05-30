@@ -55,7 +55,7 @@ const Card = ({ product }) => {
         </button>
 
         {/* Main Image */}
-        {/* <img
+        <img
           src={product.mainImage}
           alt={product.title}
           className="
@@ -63,9 +63,9 @@ const Card = ({ product }) => {
             transition-all duration-700 ease-out
             group-hover:scale-110 group-hover:opacity-0
           "
-        /> */}
+        />
 
-        <img
+        {/* <img
           src={product.image}
           alt={product.title}
           loading="lazy"
@@ -77,7 +77,7 @@ const Card = ({ product }) => {
             transition-all duration-700 ease-out
             group-hover:scale-110 group-hover:opacity-0
           "
-        />
+        /> */}
 
         {/* Hover Image */}
         {product.images?.[0] && (
