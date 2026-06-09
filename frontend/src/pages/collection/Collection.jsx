@@ -103,21 +103,48 @@ const Collection = () => {
     return items;
   }, [category, filter, sort, location.pathname, specialRoute]);
 
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [category, filter, sort, location.pathname]);
+useEffect(() => {
+  setCurrentPage(1);
+}, [category, filter, sort, location.pathname]);
 
-  const totalPages = Math.ceil(filteredProducts.length / ITEMS_PER_PAGE);
+const totalPages = Math.ceil(filteredProducts.length / ITEMS_PER_PAGE);
 
-  const paginatedProducts = filteredProducts.slice(
-    (currentPage - 1) * ITEMS_PER_PAGE,
-    currentPage * ITEMS_PER_PAGE
-  );
+const paginatedProducts = filteredProducts.slice(
+  (currentPage - 1) * ITEMS_PER_PAGE,
+  currentPage * ITEMS_PER_PAGE
+);
 
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
+const handlePageChange = (page) => {
+  if (page < 1 || page > totalPages) return;
+
+  setCurrentPage(page);
+
+  // Scroll to 20% of page height
+  window.scrollTo({
+    top: document.documentElement.scrollHeight * 0.2,
+    behavior: "smooth",
+  });
+};
+
+// Show only 3 page buttons and keep current page centered
+const pagesPerGroup = 3;
+
+let startPage = Math.max(
+  1,
+  currentPage - Math.floor(pagesPerGroup / 2)
+);
+
+let endPage = startPage + pagesPerGroup - 1;
+
+if (endPage > totalPages) {
+  endPage = totalPages;
+  startPage = Math.max(1, endPage - pagesPerGroup + 1);
+}
+
+const visiblePages = Array.from(
+  { length: endPage - startPage + 1 },
+  (_, i) => startPage + i
+);
 
   const filterLabel = specialRoute
     ? { all: "All" }
@@ -145,78 +172,77 @@ const Collection = () => {
       <CategoryNav activeSlug={category} />
 
       {/* FILTER BAR */}
-      <div className="max-w-7xl mx-auto px-4 py-10">
-        <div className="flex items-center justify-between border-y border-[#ddd6ce] py-5">
-          
-          {/* FILTER */}
-          <div className="relative" ref={filterRef}>
+<div className="max-w-7xl mx-auto px-4 py-10">
+  <div className="flex items-center justify-between border-y border-[#ddd6ce] py-5">
+    
+    {/* FILTER */}
+    <div className="relative" ref={filterRef}>
+      <button
+        onClick={() => setFilterOpen(!filterOpen)}
+        className="flex items-center gap-1 md:gap-2 uppercase tracking-[0.1em] md:tracking-[0.2em] text-[11px] sm:text-xs md:text-sm cursor-pointer"
+      >
+        {filterLabel[filter] || filterLabel["all"]}
+        <ChevronDown size={15} />
+      </button>
+
+      {filterOpen && (
+        <div className="absolute top-full left-0 mt-4 bg-white border border-[#e8dfd4] shadow-xl min-w-[220px] z-50">
+          {Object.entries(filterLabel).map(([key, value]) => (
             <button
-              onClick={() => setFilterOpen(!filterOpen)}
-              className="flex items-center gap-2 uppercase tracking-[0.2em] text-sm cursor-pointer"
+              key={key}
+              onClick={() => {
+                setFilter(key);
+                setFilterOpen(false);
+              }}
+              className={`
+                block w-full text-left px-5 py-4 hover:bg-[#f8f6f2] text-sm cursor-pointer
+                ${filter === key ? "font-semibold text-black" : "text-gray-600"}
+              `}
             >
-              {filterLabel[filter] || filterLabel["all"]}
-              <ChevronDown size={15} />
+              {value}
             </button>
-
-            {filterOpen && (
-              <div className="absolute top-full left-0 mt-4 bg-white border border-[#e8dfd4] shadow-xl min-w-[220px] z-50">
-                {Object.entries(filterLabel).map(([key, value]) => (
-                  <button
-                    key={key}
-                    onClick={() => {
-                      setFilter(key);
-                      setFilterOpen(false);
-                    }}
-                    className={`
-                      block w-full text-left px-5 py-4 hover:bg-[#f8f6f2] text-sm cursor-pointer
-                      ${filter === key ? "font-semibold text-black" : "text-gray-600"}
-                    `}
-                  >
-                    {value}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* COUNT */}
-          <span className="uppercase tracking-[0.2em] text-sm">
-            {filteredProducts.length} Products
-          </span>
-
-          {/* SORT */}
-          <div className="relative" ref={sortRef}>
-            <button
-              onClick={() => setSortOpen(!sortOpen)}
-              className="flex items-center gap-2 uppercase tracking-[0.2em] text-sm cursor-pointer"
-            >
-              {sortLabel[sort]}
-              <ChevronDown size={15} />
-            </button>
-
-            {sortOpen && (
-              <div className="absolute right-0 top-full mt-4 bg-white border border-[#e8dfd4] shadow-xl min-w-[250px] z-50">
-                {Object.entries(sortLabel).map(([key, value]) => (
-                  <button
-                    key={key}
-                    onClick={() => {
-                      setSort(key);
-                      setSortOpen(false);
-                    }}
-                    className={`
-                      block w-full text-left px-5 py-4 hover:bg-[#f8f6f2] text-sm cursor-pointer
-                      ${sort === key ? "font-semibold text-black" : "text-gray-600"}
-                    `}
-                  >
-                    {value}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
+          ))}
         </div>
-      </div>
+      )}
+    </div>
 
+    {/* COUNT */}
+    <span className="uppercase tracking-[0.1em] md:tracking-[0.2em] text-[11px] sm:text-xs md:text-sm">
+      {filteredProducts.length} Products
+    </span>
+
+    {/* SORT */}
+    <div className="relative" ref={sortRef}>
+      <button
+        onClick={() => setSortOpen(!sortOpen)}
+        className="flex items-center gap-1 md:gap-2 uppercase tracking-[0.1em] md:tracking-[0.2em] text-[11px] sm:text-xs md:text-sm cursor-pointer"
+      >
+        {sortLabel[sort]}
+        <ChevronDown size={15} />
+      </button>
+
+      {sortOpen && (
+        <div className="absolute right-0 top-full mt-4 bg-white border border-[#e8dfd4] shadow-xl min-w-[250px] z-50">
+          {Object.entries(sortLabel).map(([key, value]) => (
+            <button
+              key={key}
+              onClick={() => {
+                setSort(key);
+                setSortOpen(false);
+              }}
+              className={`
+                block w-full text-left px-5 py-4 hover:bg-[#f8f6f2] text-sm cursor-pointer
+                ${sort === key ? "font-semibold text-black" : "text-gray-600"}
+              `}
+            >
+              {value}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  </div>
+</div>
       {/* PRODUCTS */}
       <section className="max-w-7xl mx-auto px-4 pb-24">
         {filteredProducts.length === 0 ? (
@@ -227,7 +253,7 @@ const Collection = () => {
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-12">
+          <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-12">
             {paginatedProducts.map((product) => (
               <Card key={product.id} product={product} />
             ))}
@@ -235,55 +261,58 @@ const Collection = () => {
         )}
 
         {/* PAGINATION */}
-        {totalPages > 1 && (
-          <div className="flex items-center justify-center gap-2 mt-16">
-            <button
-              onClick={() => handlePageChange(currentPage - 1)}
-              disabled={currentPage === 1}
-              className="
-                w-10 h-10 flex items-center justify-center
-                border border-[#ddd6ce] uppercase tracking-widest text-xs
-                disabled:opacity-30 disabled:cursor-not-allowed
-                hover:bg-black hover:text-white hover:border-black
-                transition cursor-pointer
-              "
-            >
-              ←
-            </button>
+{totalPages > 1 && (
+  <div className="flex items-center justify-center gap-2 mt-16">
+    {/* Previous Page */}
+    <button
+      onClick={() => handlePageChange(currentPage - 1)}
+      disabled={currentPage === 1}
+      className="
+        w-10 h-10 flex items-center justify-center
+        border border-[#ddd6ce]
+        disabled:opacity-30 disabled:cursor-not-allowed
+        hover:bg-black hover:text-white hover:border-black
+        transition cursor-pointer
+      "
+    >
+      ←
+    </button>
 
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-              <button
-                key={page}
-                onClick={() => handlePageChange(page)}
-                className={`
-                  w-10 h-10 flex items-center justify-center
-                  border text-sm tracking-widest transition cursor-pointer
-                  ${
-                    currentPage === page
-                      ? "bg-black text-white border-black"
-                      : "border-[#ddd6ce] hover:bg-black hover:text-white hover:border-black"
-                  }
-                `}
-              >
-                {page}
-              </button>
-            ))}
+    {/* Visible Pages */}
+    {visiblePages.map((page) => (
+      <button
+        key={page}
+        onClick={() => handlePageChange(page)}
+        className={`
+          w-10 h-10 flex items-center justify-center
+          border text-sm tracking-widest transition cursor-pointer
+          ${
+            currentPage === page
+              ? "bg-black text-white border-black"
+              : "border-[#ddd6ce] hover:bg-black hover:text-white hover:border-black"
+          }
+        `}
+      >
+        {page}
+      </button>
+    ))}
 
-            <button
-              onClick={() => handlePageChange(currentPage + 1)}
-              disabled={currentPage === totalPages}
-              className="
-                w-10 h-10 flex items-center justify-center
-                border border-[#ddd6ce] uppercase tracking-widest text-xs
-                disabled:opacity-30 disabled:cursor-not-allowed
-                hover:bg-black hover:text-white hover:border-black
-                transition cursor-pointer
-              "
-            >
-              →
-            </button>
-          </div>
-        )}
+    {/* Next Page */}
+    <button
+      onClick={() => handlePageChange(currentPage + 1)}
+      disabled={currentPage === totalPages}
+      className="
+        w-10 h-10 flex items-center justify-center
+        border border-[#ddd6ce]
+        disabled:opacity-30 disabled:cursor-not-allowed
+        hover:bg-black hover:text-white hover:border-black
+        transition cursor-pointer
+      "
+    >
+      →
+    </button>
+  </div>
+)}
       </section>
     </div>
   );
