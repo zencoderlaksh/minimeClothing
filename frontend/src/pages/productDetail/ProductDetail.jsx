@@ -103,8 +103,8 @@ const removeToast = (id) => {
 
       <div className="border-t border-gray-100 pt-14 pb-20">
         <div className="max-w-screen-2xl mx-auto px-8 mb-8">
-          <h2 className="text-[13px] uppercase tracking-[0.3em] font-light text-black">
-            You May Also Like
+          <h2 className="text-[13px] uppercase tracking-[0.3em] font-light text-black text-center">
+            Similar Products
           </h2>
         </div>
         <SimilarProducts category={product.category} currentId={product.id} />
