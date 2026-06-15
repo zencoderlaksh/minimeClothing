@@ -65,32 +65,19 @@ export default function Intro() {
   };
 
   const currentImage = backgroundImages[currentIndex];
-  const nextImage =
-    backgroundImages[(currentIndex + 1) % backgroundImages.length];
 
   return (
     <section className="relative min-h-screen w-full overflow-hidden bg-black -mt-[90px]">
-
-      {/* Two Images Side By Side */}
-      <div className="absolute inset-0 flex">
-        <div className="w-1/2 h-full overflow-hidden">
-          <img
-            src={currentImage}
-            alt=""
-            className="w-full h-full object-cover"
-          />
-        </div>
-
-        <div className="w-1/2 h-full overflow-hidden">
-          <img
-            src={nextImage}
-            alt=""
-            className="w-full h-full object-cover"
-          />
-        </div>
+      {/* Background Image */}
+      <div className="absolute inset-0">
+        <img
+          src={currentImage}
+          alt="Hero"
+          className="w-full h-full object-cover transition-all duration-700"
+        />
       </div>
 
-      {/* Overlay */}
+      {/* Dark Overlay */}
       <div className="absolute inset-0 bg-black/40 z-10" />
 
       {/* Previous Arrow */}
@@ -140,16 +127,20 @@ export default function Intro() {
       {/* Hero Content */}
       <div className="relative z-20 h-screen flex flex-col items-center justify-center">
         <div className="text-center px-6">
-          <h1 className="text-white text-5xl md:text-7xl font-light tracking-wide">
+          <h1 className="text-white text-5xl md:text-7xl font-extralight tracking-[0.15em] uppercase">
             Timeless Elegance
             <br />
             For Every Woman
           </h1>
+
+          <p className="text-white/80 mt-6 text-lg tracking-widest uppercase">
+            New Season Collection
+          </p>
         </div>
       </div>
 
-      {/* CTA + Indicators */}
-      <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-30 flex flex-col items-center space-y-6 w-full max-w-xs text-center">
+      {/* CTA + Thumbnail Carousel */}
+      <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-30 flex flex-col items-center gap-6 w-full px-4">
         <Link
           to="/collection"
           className="px-8 py-4 bg-white text-black rounded-full hover:bg-gray-200 transition-all duration-300 font-medium tracking-wide shadow-xl hover:scale-105 active:scale-95"
@@ -157,9 +148,22 @@ export default function Intro() {
           See Collection
         </Link>
 
-        <div className="flex space-x-3 items-center justify-center">
-        
-        </div>
+        {/* Thumbnail Carousel */}
+        {/* Carousel Dots */}
+<div className="flex items-center justify-center gap-3">
+  {backgroundImages.map((_, index) => (
+    <button
+      key={index}
+      onClick={() => handleDotClick(index)}
+      aria-label={`Go to slide ${index + 1}`}
+      className={`transition-all duration-300 rounded-full cursor-pointer ${
+        currentIndex === index
+          ? "w-8 h-2 bg-white"
+          : "w-2 h-2 bg-white/50 hover:bg-white/80"
+      }`}
+    />
+  ))}
+</div>
       </div>
     </section>
   );
