@@ -66,15 +66,16 @@ const ProductGallery = ({ product, images }) => {
         {/* Back Button */}
         <button
           onClick={() => navigate(-1)}
-          className="absolute top-[100px] left-8 z-30 flex items-center gap-1 text-[11px] tracking-[0.15em] uppercase text-black/60 hover:text-black transition-colors bg-white/60 backdrop-blur-sm px-3 py-1.5"
+          className="absolute top-[100px] left-4 md:left-8 z-30 flex items-center gap-1 text-[11px] tracking-[0.15em] uppercase text-black/60 hover:text-black transition-colors bg-white/60 backdrop-blur-sm px-3 py-1.5"
         >
           <ChevronLeft size={13} />
           Back
         </button>
 
-        {/* Two Images Visible At Once */}
+        {/* Mobile/Tablet = 1 Image | Laptop/Desktop = 2 Images */}
         <div className="absolute inset-0 flex">
-          <div className="w-1/2 h-full overflow-hidden">
+          {/* Current Image */}
+          <div className="w-full lg:w-1/2 h-full overflow-hidden">
             <img
               src={currentImage}
               alt={product.title}
@@ -82,7 +83,8 @@ const ProductGallery = ({ product, images }) => {
             />
           </div>
 
-          <div className="w-1/2 h-full overflow-hidden">
+          {/* Second Image - Desktop Only */}
+          <div className="hidden lg:block lg:w-1/2 h-full overflow-hidden">
             <img
               src={nextImage}
               alt={product.title}
@@ -96,14 +98,14 @@ const ProductGallery = ({ product, images }) => {
           <>
             <button
               onClick={() => handleManualNav(goPrev)}
-              className="absolute left-6 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-white/75 backdrop-blur flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:bg-white cursor-pointer"
+              className="absolute left-4 md:left-6 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-white/75 backdrop-blur flex items-center justify-center opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-300 hover:bg-white cursor-pointer"
             >
               <ChevronLeft size={18} />
             </button>
 
             <button
               onClick={() => handleManualNav(goNext)}
-              className="absolute right-6 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-white/75 backdrop-blur flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:bg-white cursor-pointer"
+              className="absolute right-4 md:right-6 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-white/75 backdrop-blur flex items-center justify-center opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-300 hover:bg-white cursor-pointer"
             >
               <ChevronRight size={18} />
             </button>
@@ -111,10 +113,10 @@ const ProductGallery = ({ product, images }) => {
         )}
       </div>
 
-      {/* Bottom Right Thumbnail Navigation */}
+      {/* Thumbnail Navigation */}
       {images.length > 1 && (
-        <div className="absolute bottom-6 right-6 z-30 flex items-center gap-2 bg-black/30 backdrop-blur-md px-3 py-2 rounded-md">
-          {/* ALL Thumbnails */}
+        <div className="absolute bottom-6 right-1/2 translate-x-1/2 lg:right-6 lg:translate-x-0 z-30 flex items-center gap-2 bg-black/30 backdrop-blur-md px-3 py-2 rounded-md max-w-[95vw] overflow-x-auto">
+          {/* Thumbnails */}
           <div className="flex gap-1">
             {images.map((img, i) => (
               <button
@@ -125,7 +127,7 @@ const ProductGallery = ({ product, images }) => {
                 <img
                   src={img}
                   alt=""
-                  className="w-12 h-12 object-cover"
+                  className="w-10 h-10 md:w-12 md:h-12 object-cover"
                 />
               </button>
             ))}
@@ -135,14 +137,14 @@ const ProductGallery = ({ product, images }) => {
           <div className="flex gap-1 ml-2">
             <button
               onClick={() => handleManualNav(goPrev)}
-              className="w-9 h-9 cursor-pointer rounded-full bg-black/50 text-white flex items-center justify-center hover:bg-black/70 transition"
+              className="w-8 h-8 md:w-9 md:h-9 rounded-full bg-black/50 text-white flex items-center justify-center hover:bg-black/70 transition cursor-pointer"
             >
               <ChevronLeft size={16} />
             </button>
 
             <button
               onClick={() => handleManualNav(goNext)}
-              className="w-9 h-9 cursor-pointer rounded-full bg-black/50 text-white flex items-center justify-center hover:bg-black/70 transition"
+              className="w-8 h-8 md:w-9 md:h-9 rounded-full bg-black/50 text-white flex items-center justify-center hover:bg-black/70 transition cursor-pointer"
             >
               <ChevronRight size={16} />
             </button>
