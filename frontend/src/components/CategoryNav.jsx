@@ -14,9 +14,15 @@ const CategoryNav = ({ activeSlug }) => {
   const maxOffset = Math.max(0, categories.length - VISIBLE);
 
   useEffect(() => {
-    const firstCard = trackRef.current?.querySelector(".cn-card");
-    if (firstCard) setCardWidth(firstCard.offsetWidth + 16);
-  }, []);
+  const firstCard = trackRef.current?.querySelector(".cn-card");
+
+  if (firstCard) {
+    const style = window.getComputedStyle(trackRef.current);
+    const gap = parseInt(style.columnGap || style.gap || 16);
+
+    setCardWidth(firstCard.offsetWidth + gap);
+  }
+}, []);
 
   const goTo = (page) => {
     const next = Math.max(0, Math.min(page, maxOffset));
@@ -40,7 +46,7 @@ const CategoryNav = ({ activeSlug }) => {
       <div className="bg-[#f8f6f2] pt-10 pb-4">
         <div className="max-w-5xl mx-auto px-6">
           <h1
-            className="text-[32px] font-light text-[#1a1a1a] mt-1 text-center"
+            className="text-[32px] font-light text-[#1a1a1a] mt-1 text-center uppercase"
             style={{ fontFamily: "Georgia, serif" }}
           >
             {activeCat?.title || category}
@@ -53,7 +59,7 @@ const CategoryNav = ({ activeSlug }) => {
   // ← Otherwise show the full carousel
   return (
     <section className="bg-[#f8f6f2] py-10">
-      <div className="max-w-5xl mx-auto px-6">
+      <div className="max-w-3xl mx-auto px-6">
 
         {/* Header */}
         <div className="flex items-end justify-between mb-6">
@@ -101,7 +107,7 @@ const CategoryNav = ({ activeSlug }) => {
                   className="cn-card group flex-none w-[calc(25%-12px)] text-left cursor-pointer"
                 >
                   <div
-                    className={`relative overflow-hidden rounded-xl aspect-[4/5] bg-[#ede8e0] ${
+                    className={`relative overflow-hidden w-[150px] h-[190px] bg-[#ede8e0] ${
                       isActive ? "outline outline-2 outline-offset-[3px] outline-black" : ""
                     }`}
                   >
@@ -112,9 +118,6 @@ const CategoryNav = ({ activeSlug }) => {
                     />
                     <div className="absolute inset-0 rounded-xl bg-gradient-to-t from-black/60 via-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-400" />
                     <div className="absolute bottom-0 left-0 right-0 p-3 z-10">
-                      <p className="text-[11px] tracking-[0.22em] uppercase text-white font-medium opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-350">
-                        {item.title}
-                      </p>
                       <div className="w-6 h-6 mt-1.5 rounded-full bg-white flex items-center justify-center text-[#1a1a1a] text-xs opacity-0 scale-75 group-hover:opacity-100 group-hover:scale-100 transition-all duration-300">
                         →
                       </div>

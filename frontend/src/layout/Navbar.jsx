@@ -293,7 +293,7 @@ export default function Navbar() {
         className={`
           fixed top-0 right-0 h-screen
           w-full sm:w-[520px]
-          bg-[#FEF9F3] z-50 shadow-2xl
+          bg-[#FEF9F3] z-100 shadow-2xl
           transition-transform duration-700 ease-in-out
           ${contactOpen ? "translate-x-0" : "translate-x-full"}
         `}

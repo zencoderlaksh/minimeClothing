@@ -5,9 +5,7 @@ import { useNavigate } from "react-router-dom";
 const ProductGallery = ({ product, images }) => {
   const navigate = useNavigate();
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isTransitioning, setIsTransitioning] = useState(false);
   const autoScrollRef = useRef(null);
-  const MAX_THUMBS = 5;
 
   useEffect(() => {
     document.body.setAttribute("data-hero", "true");
@@ -15,29 +13,23 @@ const ProductGallery = ({ product, images }) => {
   }, []);
 
   const goNext = useCallback(() => {
-    if (isTransitioning) return;
-    setIsTransitioning(true);
     setCurrentIndex((prev) => (prev + 1) % images.length);
-    setTimeout(() => setIsTransitioning(false), 500);
-  }, [images.length, isTransitioning]);
+  }, [images.length]);
 
   const goPrev = useCallback(() => {
-    if (isTransitioning) return;
-    setIsTransitioning(true);
     setCurrentIndex((prev) => (prev - 1 + images.length) % images.length);
-    setTimeout(() => setIsTransitioning(false), 500);
-  }, [images.length, isTransitioning]);
+  }, [images.length]);
 
   const goTo = (index) => {
-    if (isTransitioning || index === currentIndex) return;
-    setIsTransitioning(true);
     setCurrentIndex(index);
-    setTimeout(() => setIsTransitioning(false), 500);
   };
 
   const startAutoScroll = useCallback(() => {
     if (autoScrollRef.current) clearInterval(autoScrollRef.current);
-    autoScrollRef.current = setInterval(goNext, 3000);
+
+    autoScrollRef.current = setInterval(() => {
+      goNext();
+    }, 3000);
   }, [goNext]);
 
   const stopAutoScroll = useCallback(() => {
@@ -48,7 +40,10 @@ const ProductGallery = ({ product, images }) => {
   }, []);
 
   useEffect(() => {
-    if (images.length > 1) startAutoScroll();
+    if (images.length > 1) {
+      startAutoScroll();
+    }
+
     return stopAutoScroll;
   }, [images.length, startAutoScroll, stopAutoScroll]);
 
@@ -58,6 +53,9 @@ const ProductGallery = ({ product, images }) => {
     setTimeout(startAutoScroll, 6000);
   };
 
+  const currentImage = images[currentIndex];
+  const nextImage = images[(currentIndex + 1) % images.length];
+
   return (
     <>
       <div
@@ -65,24 +63,35 @@ const ProductGallery = ({ product, images }) => {
         onMouseEnter={stopAutoScroll}
         onMouseLeave={startAutoScroll}
       >
+        {/* Back Button */}
         <button
           onClick={() => navigate(-1)}
           className="absolute top-[100px] left-8 z-30 flex items-center gap-1 text-[11px] tracking-[0.15em] uppercase text-black/60 hover:text-black transition-colors bg-white/60 backdrop-blur-sm px-3 py-1.5"
         >
-          <ChevronLeft size={13} /> Back
+          <ChevronLeft size={13} />
+          Back
         </button>
 
-        {images.map((img, i) => (
-          <img
-            key={i}
-            src={img}
-            alt={product.title}
-            className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ease-in-out ${
-              i === currentIndex ? "opacity-100" : "opacity-0"
-            }`}
-          />
-        ))}
+        {/* Two Images Visible At Once */}
+        <div className="absolute inset-0 flex">
+          <div className="w-1/2 h-full overflow-hidden">
+            <img
+              src={currentImage}
+              alt={product.title}
+              className="w-full h-full object-cover"
+            />
+          </div>
 
+          <div className="w-1/2 h-full overflow-hidden">
+            <img
+              src={nextImage}
+              alt={product.title}
+              className="w-full h-full object-cover"
+            />
+          </div>
+        </div>
+
+        {/* Main Navigation Arrows */}
         {images.length > 1 && (
           <>
             <button
@@ -103,48 +112,43 @@ const ProductGallery = ({ product, images }) => {
       </div>
 
       {/* Bottom Right Thumbnail Navigation */}
-{images.length > 1 && (
-  <div className="absolute bottom-6 right-6 z-30 flex items-center gap-2 bg-black/30 backdrop-blur-md px-3 py-2 rounded-md">
-    
-    {/* Thumbnails */}
-    <div className="flex gap-1">
-      {images.slice(0, MAX_THUMBS).map((img, i) => (
-        <button
-          key={i}
-          onClick={() => handleManualNav(() => goTo(i))}
-          className={`overflow-hidden border transition-all duration-300 ${
-            currentIndex === i
-              ? "border-white opacity-100"
-              : "border-transparent opacity-50 hover:opacity-100"
-          }`}
-        >
-          <img
-            src={img}
-            alt=""
-            className="w-12 h-12 object-cover"
-          />
-        </button>
-      ))}
-    </div>
+      {images.length > 1 && (
+        <div className="absolute bottom-6 right-6 z-30 flex items-center gap-2 bg-black/30 backdrop-blur-md px-3 py-2 rounded-md">
+          {/* ALL Thumbnails */}
+          <div className="flex gap-1">
+            {images.map((img, i) => (
+              <button
+                key={i}
+                onClick={() => handleManualNav(() => goTo(i))}
+                className="overflow-hidden opacity-80 hover:opacity-100 transition-opacity duration-300"
+              >
+                <img
+                  src={img}
+                  alt=""
+                  className="w-12 h-12 object-cover"
+                />
+              </button>
+            ))}
+          </div>
 
-    {/* Navigation Arrows */}
-    <div className="flex gap-1 ml-2">
-      <button
-        onClick={() => handleManualNav(goPrev)}
-        className="w-9 h-9 cursor-pointer rounded-full bg-black/50 text-white flex items-center justify-center hover:bg-black/70 transition"
-      >
-        <ChevronLeft size={16} />
-      </button>
+          {/* Navigation Arrows */}
+          <div className="flex gap-1 ml-2">
+            <button
+              onClick={() => handleManualNav(goPrev)}
+              className="w-9 h-9 cursor-pointer rounded-full bg-black/50 text-white flex items-center justify-center hover:bg-black/70 transition"
+            >
+              <ChevronLeft size={16} />
+            </button>
 
-      <button
-        onClick={() => handleManualNav(goNext)}
-        className="w-9 h-9 cursor-pointer rounded-full bg-black/50 text-white flex items-center justify-center hover:bg-black/70 transition"
-      >
-        <ChevronRight size={16} />
-      </button>
-    </div>
-  </div>
-)}
+            <button
+              onClick={() => handleManualNav(goNext)}
+              className="w-9 h-9 cursor-pointer rounded-full bg-black/50 text-white flex items-center justify-center hover:bg-black/70 transition"
+            >
+              <ChevronRight size={16} />
+            </button>
+          </div>
+        </div>
+      )}
     </>
   );
 };
