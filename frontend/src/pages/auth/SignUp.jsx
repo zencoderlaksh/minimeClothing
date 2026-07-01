@@ -1,119 +1,12 @@
-// import { useState } from "react";
-// import { motion } from "framer-motion";
-// import { Mail, Lock, User } from "lucide-react";
-// import { Link } from "react-router-dom";
-// import AuthLayout from "./components/AuthLayout";
-// import { Field, Checkbox } from "./components/Field";
-// import MagneticButton from "./components/MagneticButton";
-// import SocialButtons from "./components/SocialButtons";
-
-// import "./components/style.css"
-
-// const stagger = {
-//   hidden: {},
-//   show: { transition: { staggerChildren: 0.07, delayChildren: 0.15 } },
-// };
-// const item = {
-//   hidden: { opacity: 0, y: 14 },
-//   show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] } },
-// };
-
-// export default function SignUp() {
-//   const [name, setName] = useState("");
-//   const [email, setEmail] = useState("");
-//   const [password, setPassword] = useState("");
-//   const [confirm, setConfirm] = useState("");
-//   const [terms, setTerms] = useState(false);
-//   const [loading, setLoading] = useState(false);
-
-//   const submit = (e) => {
-//     e.preventDefault();
-//     if (!terms) return;
-//     setLoading(true);
-//     setTimeout(() => setLoading(false), 1400);
-//   };
-
-//   return (
-//     <AuthLayout tagline="MiniMe Essentials." kicker="Join the next edition.">
-//       <motion.div variants={stagger} initial="hidden" animate="show">
-//         <motion.div variants={item}>
-//           <p className="text-[0.7rem] uppercase tracking-[0.4em] text-gold-deep">New Member</p>
-//           <h2 className="mt-3 font-serif-display text-4xl leading-tight text-ink sm:text-5xl">
-//             Create <em className="gold-gradient-text not-italic">account.</em>
-//           </h2>
-//           <p className="mt-2 text-sm text-ink/60">
-//             A private wardrobe, early drops, and quiet luxury.
-//           </p>
-//         </motion.div>
-
-//         <form onSubmit={submit} className="mt-8 space-y-4">
-//           <motion.div variants={item}>
-//             <Field label="Full name" icon={User} value={name} onChange={setName} autoComplete="name" required />
-//           </motion.div>
-//           <motion.div variants={item}>
-//             <Field label="Email address" type="email" icon={Mail} value={email} onChange={setEmail} autoComplete="email" required />
-//           </motion.div>
-//           <motion.div variants={item}>
-//             <Field label="Password" type="password" icon={Lock} value={password} onChange={setPassword} autoComplete="new-password" required />
-//           </motion.div>
-//           <motion.div variants={item}>
-//             <Field label="Confirm password" type="password" icon={Lock} value={confirm} onChange={setConfirm} autoComplete="new-password" required />
-//           </motion.div>
-
-//           <motion.div variants={item} className="pt-1">
-//             <Checkbox checked={terms} onChange={setTerms}>
-//               I agree to the <a href="#" className="underline decoration-[color:var(--gold-deep)]/60 underline-offset-2">Terms</a> and{" "}
-//               <a href="#" className="underline decoration-[color:var(--gold-deep)]/60 underline-offset-2">Privacy Policy</a>.
-//             </Checkbox>
-//           </motion.div>
-
-//           <motion.div variants={item} className="pt-2 text-white">
-//             <MagneticButton type="submit" loading={loading}>Become a Member</MagneticButton>
-//           </motion.div>
-//         </form>
-
-//         <motion.div variants={item} className="my-6 flex items-center gap-3">
-//           <span className="h-px flex-1 bg-[color:var(--nude)]/40" />
-//           <span className="text-[0.65rem] uppercase tracking-[0.3em] text-ink/45">or sign up with</span>
-//           <span className="h-px flex-1 bg-[color:var(--nude)]/40" />
-//         </motion.div>
-
-//         <motion.div variants={item}>
-//           <SocialButtons />
-//         </motion.div>
-
-//         <motion.p variants={item} className="mt-8 text-center text-xs text-ink/60">
-//           Already a member?{" "}
-//           <Link to="/login" className="group relative font-medium text-ink">
-//             Sign in
-//             <span className="absolute -bottom-0.5 left-0 h-px w-full origin-left scale-x-0 bg-[color:var(--gold-deep)] transition-transform duration-500 group-hover:scale-x-100" />
-//           </Link>
-//         </motion.p>
-//       </motion.div>
-//     </AuthLayout>
-//   );
-// }
-
-
-
-// next
-// SignUp.jsx
-
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Mail, Lock, User } from "lucide-react";
+import { Mail, Lock, User, Phone, MapPin } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
+import { useSignUp } from "@clerk/react";
 
 import AuthLayout from "./components/AuthLayout";
-import { Field, Checkbox } from "./components/Field";
+import { Field } from "./components/Field";
 import MagneticButton from "./components/MagneticButton";
-import SocialButtons from "./components/SocialButtons";
-import Toast from "./components/Toast";
-
-import { signUpSchema } from "../../schemas/userSchema";
-import { useAuthStore } from "../../store/Authstore";
-
-import "./components/style.css";
 
 const stagger = {
   hidden: {},
@@ -125,183 +18,152 @@ const item = {
 };
 
 export default function SignUp() {
+  const { isLoaded, signUp, setActive } = useSignUp();
   const navigate = useNavigate();
-
-  const signUp = useAuthStore((s) => s.signUp);
-  const message = useAuthStore((s) => s.message);
-  const messageType = useAuthStore((s) => s.messageType);
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirm, setConfirm] = useState("");
-  const [terms, setTerms] = useState(false);
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [city, setCity] = useState("");
+
+  const [pendingVerification, setPendingVerification] = useState(false);
+  const [code, setCode] = useState("");
   const [loading, setLoading] = useState(false);
-  const [errors, setErrors] = useState({});
+  const [error, setError] = useState("");
 
-  const submit = (e) => {
+  const submit = async (e) => {
     e.preventDefault();
-
-    // ── Zod validation ───────────────────────────────────────────────────
-    const result = signUpSchema.safeParse({ name, email, password, confirm, terms });
-
-    if (!result.success) {
-      setErrors(result.error.flatten().fieldErrors);
+    console.log("Submit triggered. isLoaded:", isLoaded, { email, name });
+    
+    if (!isLoaded) {
+      console.error("Clerk is not loaded yet!");
       return;
     }
-
-    setErrors({});
     setLoading(true);
+    setError("");
 
-    // ── Auth store sign-up ───────────────────────────────────────────────
-    const { ok } = signUp(result.data);
+    try {
+      const parts = name.split(" ");
+      const firstName = parts[0];
+      const lastName = parts.slice(1).join(" ");
 
-    setTimeout(() => {
+      console.log("Attempting to sign up with:", { email, firstName, lastName, phoneNumber, city });
+      
+      await signUp.create({
+        emailAddress: email,
+        password,
+        firstName,
+        lastName,
+        unsafeMetadata: {
+          phoneNumber,
+          city,
+        },
+      });
+
+      // Send verification email
+      await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
+      setPendingVerification(true);
+    } catch (err) {
+      console.error("SignUp error:", err);
+      setError(err.errors?.[0]?.longMessage || err.errors?.[0]?.message || err.message || JSON.stringify(err));
+    } finally {
       setLoading(false);
-      if (ok) navigate("/account");
-    }, 1000);
+    }
+  };
+
+  const onPressVerify = async (e) => {
+    e.preventDefault();
+    if (!isLoaded) return;
+    setLoading(true);
+    setError("");
+
+    try {
+      const completeSignUp = await signUp.attemptEmailAddressVerification({
+        code,
+      });
+
+      if (completeSignUp.status === "complete") {
+        await setActive({ session: completeSignUp.createdSessionId });
+        navigate("/");
+      } else {
+        console.error(completeSignUp);
+        setError("Unable to complete signup.");
+      }
+    } catch (err) {
+      console.error(err);
+      setError(err.errors?.[0]?.message || "Invalid code.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <>
-      {/* Global toast */}
-      <Toast message={message} type={messageType} />
+    <AuthLayout tagline="MiniMe Essentials." kicker="Join the next edition.">
+      <motion.div variants={stagger} initial="hidden" animate="show" className="relative">
+        <motion.div variants={item}>
+          <p className="text-[0.7rem] uppercase tracking-[0.4em] text-gold-deep">New Member</p>
+          <h2 className="mt-3 font-serif-display text-4xl leading-tight text-ink sm:text-5xl">
+            {pendingVerification ? "Verify Email" : "Create account."}
+          </h2>
+          <p className="mt-2 text-sm text-ink/60 mb-8">
+            {pendingVerification 
+              ? `We sent a code to ${email}`
+              : "A private wardrobe, early drops, and quiet luxury."}
+          </p>
+        </motion.div>
 
-      <AuthLayout tagline="MiniMe Essentials." kicker="Join the next edition.">
-        <motion.div variants={stagger} initial="hidden" animate="show">
+        {error && (
+          <motion.p variants={item} className="text-red-500 text-xs mb-4 bg-red-100 p-2 rounded">
+            {error}
+          </motion.p>
+        )}
 
-          {/* ── Heading ── */}
-          <motion.div variants={item}>
-            <p className="text-[0.7rem] uppercase tracking-[0.4em] text-gold-deep">New Member</p>
-            <h2 className="mt-3 font-serif-display text-4xl leading-tight text-ink sm:text-5xl">
-              Create <em className="gold-gradient-text not-italic">account.</em>
-            </h2>
-            <p className="mt-2 text-sm text-ink/60">
-              A private wardrobe, early drops, and quiet luxury.
-            </p>
-          </motion.div>
-
-          <form onSubmit={submit} className="mt-8 space-y-4">
-
-            {/* Name */}
+        {!pendingVerification ? (
+          <form className="space-y-4">
             <motion.div variants={item}>
-              <Field
-                label="Full name"
-                icon={User}
-                value={name}
-                onChange={setName}
-                autoComplete="name"
-                required
-              />
-              {errors.name && (
-                <p className="mt-1 text-xs text-red-500">{errors.name[0]}</p>
-              )}
+              <Field label="Full name" icon={User} value={name} onChange={setName} required />
             </motion.div>
-
-            {/* Email */}
             <motion.div variants={item}>
-              <Field
-                label="Email address"
-                type="email"
-                icon={Mail}
-                value={email}
-                onChange={setEmail}
-                autoComplete="email"
-                required
-              />
-              {errors.email && (
-                <p className="mt-1 text-xs text-red-500">{errors.email[0]}</p>
-              )}
+              <Field label="Email address" type="email" icon={Mail} value={email} onChange={setEmail} required />
             </motion.div>
-
-            {/* Password */}
             <motion.div variants={item}>
-              <Field
-                label="Password"
-                type="password"
-                icon={Lock}
-                value={password}
-                onChange={setPassword}
-                autoComplete="new-password"
-                required
-              />
-              {errors.password && (
-                <p className="mt-1 text-xs text-red-500">{errors.password[0]}</p>
-              )}
+              <Field label="Password" type="password" icon={Lock} value={password} onChange={setPassword} required />
             </motion.div>
-
-            {/* Confirm Password */}
             <motion.div variants={item}>
-              <Field
-                label="Confirm password"
-                type="password"
-                icon={Lock}
-                value={confirm}
-                onChange={setConfirm}
-                autoComplete="new-password"
-                required
-              />
-              {errors.confirm && (
-                <p className="mt-1 text-xs text-red-500">{errors.confirm[0]}</p>
-              )}
+              <Field label="Phone number" type="tel" icon={Phone} value={phoneNumber} onChange={setPhoneNumber} required />
             </motion.div>
-
-            {/* Terms */}
-            <motion.div variants={item} className="pt-1">
-              <Checkbox checked={terms} onChange={setTerms}>
-                I agree to the{" "}
-                <a
-                  href="#"
-                  className="underline decoration-[color:var(--gold-deep)]/60 underline-offset-2"
-                >
-                  Terms
-                </a>{" "}
-                and{" "}
-                <a
-                  href="#"
-                  className="underline decoration-[color:var(--gold-deep)]/60 underline-offset-2"
-                >
-                  Privacy Policy
-                </a>
-                .
-              </Checkbox>
-              {errors.terms && (
-                <p className="mt-1 text-xs text-red-500">{errors.terms[0]}</p>
-              )}
+            <motion.div variants={item}>
+              <Field label="City" type="text" icon={MapPin} value={city} onChange={setCity} required />
             </motion.div>
-
-            {/* Submit */}
-            <motion.div variants={item} className="pt-2 text-white">
-              <MagneticButton type="submit" loading={loading}>
+            
+            <motion.div variants={item} className="pt-4 text-white">
+              <MagneticButton type="button" loading={loading} onClick={submit}>
                 Become a Member
               </MagneticButton>
             </motion.div>
+
+            <motion.p variants={item} className="mt-8 text-center text-xs text-ink/60">
+              Already a member?{" "}
+              <Link to="/login" className="group relative font-medium text-ink">
+                Sign in
+                <span className="absolute -bottom-0.5 left-0 h-px w-full origin-left scale-x-0 bg-[color:var(--gold-deep)] transition-transform duration-500 group-hover:scale-x-100" />
+              </Link>
+            </motion.p>
           </form>
-
-          {/* Social */}
-          <motion.div variants={item} className="my-6 flex items-center gap-3">
-            <span className="h-px flex-1 bg-[color:var(--nude)]/40" />
-            <span className="text-[0.65rem] uppercase tracking-[0.3em] text-ink/45">
-              or sign up with
-            </span>
-            <span className="h-px flex-1 bg-[color:var(--nude)]/40" />
-          </motion.div>
-
-          <motion.div variants={item}>
-            <SocialButtons />
-          </motion.div>
-
-          {/* Login link */}
-          <motion.p variants={item} className="mt-8 text-center text-xs text-ink/60">
-            Already a member?{" "}
-            <Link to="/login" className="group relative font-medium text-ink">
-              Sign in
-              <span className="absolute -bottom-0.5 left-0 h-px w-full origin-left scale-x-0 bg-[color:var(--gold-deep)] transition-transform duration-500 group-hover:scale-x-100" />
-            </Link>
-          </motion.p>
-
-        </motion.div>
-      </AuthLayout>
-    </>
+        ) : (
+          <form className="space-y-4">
+            <motion.div variants={item}>
+              <Field label="Verification Code" icon={Lock} value={code} onChange={setCode} required />
+            </motion.div>
+            <motion.div variants={item} className="pt-4 text-white">
+              <MagneticButton type="button" loading={loading} onClick={onPressVerify}>
+                Verify Code
+              </MagneticButton>
+            </motion.div>
+          </form>
+        )}
+      </motion.div>
+    </AuthLayout>
   );
 }

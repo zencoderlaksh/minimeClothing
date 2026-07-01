@@ -128,7 +128,7 @@ export default function Intro() {
       <div className="relative z-20 h-screen flex flex-col items-center justify-center">
         <div className="text-center px-6">
           <h1 className="text-white text-5xl md:text-7xl font-extralight tracking-[0.15em] uppercase">
-            Timeless Experience
+            Timeless Elegance
             <br />
             For Every Woman
           </h1>
@@ -157,8 +157,8 @@ export default function Intro() {
               onClick={() => handleDotClick(index)}
               aria-label={`Go to slide ${index + 1}`}
               className={`transition-all duration-300 rounded-full cursor-pointer ${currentIndex === index
-                  ? "w-8 h-2 bg-white"
-                  : "w-2 h-2 bg-white/50 hover:bg-white/80"
+                ? "w-8 h-2 bg-white"
+                : "w-2 h-2 bg-white/50 hover:bg-white/80"
                 }`}
             />
           ))}

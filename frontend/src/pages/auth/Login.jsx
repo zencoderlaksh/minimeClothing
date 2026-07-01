@@ -1,20 +1,6 @@
-
-
-import { useState } from "react";
 import { motion } from "framer-motion";
-import { Mail, Lock } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
-
+import { SignIn } from "@clerk/react";
 import AuthLayout from "./components/AuthLayout";
-import { Field, Checkbox } from "./components/Field";
-import MagneticButton from "./components/MagneticButton";
-import SocialButtons from "./components/SocialButtons";
-import Toast from "./components/Toast";
-
-import { userSchema } from "../../schemas/userSchema";
-import { useAuthStore } from "../../store/Authstore";
-
-import "./components/style.css";
 
 const stagger = {
   hidden: {},
@@ -26,137 +12,45 @@ const item = {
 };
 
 export default function Login() {
-  const navigate = useNavigate();
-
-  const login = useAuthStore((s) => s.login);
-  const message = useAuthStore((s) => s.message);
-  const messageType = useAuthStore((s) => s.messageType);
-
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [remember, setRemember] = useState(true);
-  const [loading, setLoading] = useState(false);
-  const [errors, setErrors] = useState({});
-
-  const submit = async (e) => {
-    e.preventDefault();
-
-    // ── Zod validation ───────────────────────────────────────────────────
-    const result = userSchema.safeParse({ email, password, remember });
-
-    if (!result.success) {
-      setErrors(result.error.flatten().fieldErrors);
-      return;
-    }
-
-    setErrors({});
-    setLoading(true);
-
-    // ── Auth store login ─────────────────────────────────────────────────
-    const { ok } = login(result.data);
-
-    setTimeout(() => {
-      setLoading(false);
-      if (ok) navigate("/account");
-    }, 1000);
-  };
-
   return (
-    <>
-      {/* Global toast */}
-      <Toast message={message} type={messageType} />
-
-      <AuthLayout tagline="Wear Confidence." kicker="Welcome back to MiniMe.">
-        <motion.div variants={stagger} initial="hidden" animate="show" className="relative">
-
-          {/* ── Heading ── */}
-          <motion.div variants={item}>
-            <p className="text-[0.7rem] uppercase tracking-[0.4em] text-gold-deep">Members</p>
-            <h2 className="mt-3 font-serif-display text-4xl leading-tight text-ink sm:text-5xl">
-              Sign <em className="gold-gradient-text not-italic">in.</em>
-            </h2>
-            <p className="mt-2 text-sm text-ink/60">
-              Continue your edit. Your wishlist is waiting.
-            </p>
-          </motion.div>
-
-          <form onSubmit={submit} className="mt-8 space-y-4">
-
-            {/* Email */}
-            <motion.div variants={item}>
-              <Field
-                label="Email address"
-                type="email"
-                icon={Mail}
-                value={email}
-                onChange={setEmail}
-                autoComplete="email"
-                required
-              />
-              {errors.email && (
-                <p className="mt-1 text-xs text-red-500">{errors.email[0]}</p>
-              )}
-            </motion.div>
-
-            {/* Password */}
-            <motion.div variants={item}>
-              <Field
-                label="Password"
-                type="password"
-                icon={Lock}
-                value={password}
-                onChange={setPassword}
-                autoComplete="current-password"
-                required
-              />
-              {errors.password && (
-                <p className="mt-1 text-xs text-red-500">{errors.password[0]}</p>
-              )}
-            </motion.div>
-
-            {/* Remember + Forgot */}
-            <motion.div variants={item} className="flex items-center justify-between pt-1">
-              <Checkbox checked={remember} onChange={setRemember}>
-                Remember me
-              </Checkbox>
-              <a href="#" className="group relative text-xs text-ink/70">
-                Forgot password?
-                <span className="absolute -bottom-0.5 left-0 h-px w-0 bg-[color:var(--gold-deep)] transition-all duration-300 group-hover:w-full" />
-              </a>
-            </motion.div>
-
-            {/* Submit */}
-            <motion.div variants={item} className="pt-2 text-white">
-              <MagneticButton type="submit" loading={loading}>
-                Enter the Atelier
-              </MagneticButton>
-            </motion.div>
-          </form>
-
-          {/* Social */}
-          <motion.div variants={item} className="my-6 flex items-center gap-3">
-            <span className="h-px flex-1 bg-[color:var(--nude)]/40" />
-            <span className="text-[0.65rem] uppercase tracking-[0.3em] text-ink/45">
-              or continue with
-            </span>
-            <span className="h-px flex-1 bg-[color:var(--nude)]/40" />
-          </motion.div>
-
-          <motion.div variants={item}>
-            <SocialButtons />
-          </motion.div>
-
-          {/* Sign-up link */}
-          <motion.p variants={item} className="mt-8 text-center text-xs text-ink/60">
-            New to MiniMe?{" "}
-            <Link to="/signup" className="group relative font-medium text-ink">
-              Create an account
-              <span className="absolute -bottom-0.5 left-0 h-px w-full origin-left scale-x-0 bg-[color:var(--gold-deep)] transition-transform duration-500 group-hover:scale-x-100" />
-            </Link>
-          </motion.p>
-
+    <AuthLayout tagline="Wear Confidence." kicker="Welcome back to MiniMe.">
+      <motion.div variants={stagger} initial="hidden" animate="show" className="relative">
+        <motion.div variants={item}>
+          <p className="text-[0.7rem] uppercase tracking-[0.4em] text-gold-deep">Members</p>
+          <h2 className="mt-3 font-serif-display text-4xl leading-tight text-ink sm:text-5xl">
+            Sign <em className="gold-gradient-text not-italic">in.</em>
+          </h2>
+          <p className="mt-2 text-sm text-ink/60 mb-8">
+            Continue your edit. Your wishlist is waiting.
+          </p>
         </motion.div>
-      </AuthLayout>
-    </>
+        
+        <motion.div variants={item}>
+          <SignIn 
+            routing="path" 
+            path="/login" 
+            signUpUrl="/signup"
+            appearance={{
+              elements: {
+                formButtonPrimary: "bg-[color:var(--gold-deep)] hover:bg-[color:var(--gold-deep)]/90 text-white shadow-none uppercase tracking-widest text-xs py-3 rounded-none",
+                card: "bg-transparent shadow-none w-full p-0 m-0",
+                headerTitle: "hidden",
+                headerSubtitle: "hidden",
+                socialButtonsBlockButton: "border border-[color:var(--nude)] text-ink hover:bg-[color:var(--nude)]/20 shadow-none rounded-none",
+                formFieldInput: "bg-transparent border-b border-[color:var(--nude)] rounded-none px-0 py-2 focus:ring-0 focus:border-[color:var(--gold-deep)] shadow-none text-ink outline-none",
+                formFieldLabel: "text-ink/60 text-xs tracking-widest uppercase mb-2",
+                footerAction: "hidden", // We use our own custom titles above
+                dividerRow: "hidden",
+                socialButtons: "mb-6",
+                logoBox: "hidden",
+                formFieldLabelRow: "mb-0",
+                identityPreviewEditButton: "text-[color:var(--gold-deep)] hover:text-ink transition-colors",
+                formResendCodeLink: "text-[color:var(--gold-deep)] hover:text-ink transition-colors"
+              }
+            }}
+          />
+        </motion.div>
+      </motion.div>
+    </AuthLayout>
   );
 }

@@ -21,7 +21,7 @@ import {
   Star,
 } from "lucide-react";
 
-import { useAuthStore } from "../../store/Authstore";
+import { useUser, useClerk } from "@clerk/react";
 import Toast from "../auth/components/Toast";
 
 // ─── Animation variants ────────────────────────────────────────────────────────
@@ -128,22 +128,23 @@ function ProfileRow({ label, value, onSave }) {
 // ─── Main component ────────────────────────────────────────────────────────────
 export default function Account() {
   const navigate = useNavigate();
-  const user = useAuthStore((s) => s.user);
-  const logout = useAuthStore((s) => s.logout);
-  const updateProfile = useAuthStore((s) => s.updateProfile);
-  const message = useAuthStore((s) => s.message);
-  const messageType = useAuthStore((s) => s.messageType);
+  const { user } = useUser();
+  const { signOut } = useClerk();
+  
+  // These are removed, keeping placeholders to not break UI
+  const message = null;
+  const messageType = null;
 
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await signOut();
     navigate("/login");
   };
 
   // Derive initials for avatar
-  const initials = user?.name
-    ? user.name
+  const initials = user?.fullName
+    ? user.fullName
         .split(" ")
         .map((n) => n[0])
         .slice(0, 2)
@@ -196,9 +197,9 @@ export default function Account() {
                   Member since {memberSince}
                 </p>
                 <h1 className="font-serif-display text-2xl leading-tight truncate">
-                  {user?.name}
+                  {user?.fullName || "User"}
                 </h1>
-                <p className="text-sm text-white/55 truncate mt-0.5">{user?.email}</p>
+                <p className="text-sm text-white/55 truncate mt-0.5">{user?.primaryEmailAddress?.emailAddress}</p>
               </div>
             </div>
 
@@ -224,23 +225,36 @@ export default function Account() {
             <Section title="Profile Details" icon={User} custom={1}>
               <ProfileRow
                 label="Full Name"
-                value={user?.name}
-                onSave={(v) => updateProfile({ name: v })}
+                value={user?.fullName || "User"}
+                onSave={async (v) => {
+                  try {
+                    const parts = v.split(" ");
+                    await user?.update({ firstName: parts[0], lastName: parts.slice(1).join(" ") });
+                  } catch(e) { console.error(e) }
+                }}
               />
               <ProfileRow
                 label="Email"
-                value={user?.email}
-                onSave={(v) => updateProfile({ email: v })}
+                value={user?.primaryEmailAddress?.emailAddress}
+                onSave={() => console.log("Updating email requires verification flow")}
               />
               <ProfileRow
                 label="Phone"
-                value={user?.phone}
-                onSave={(v) => updateProfile({ phone: v })}
+                value={user?.unsafeMetadata?.phoneNumber}
+                onSave={async (v) => {
+                  try {
+                    await user?.update({ unsafeMetadata: { ...user.unsafeMetadata, phoneNumber: v } });
+                  } catch(e) { console.error(e) }
+                }}
               />
               <ProfileRow
-                label="Bio"
-                value={user?.bio}
-                onSave={(v) => updateProfile({ bio: v })}
+                label="City"
+                value={user?.unsafeMetadata?.city || ""}
+                onSave={async (v) => {
+                  try {
+                    await user?.update({ unsafeMetadata: { ...user.unsafeMetadata, city: v } });
+                  } catch(e) { console.error(e) }
+                }}
               />
             </Section>
           </motion.div>

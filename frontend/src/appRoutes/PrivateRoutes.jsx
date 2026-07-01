@@ -11,7 +11,7 @@
 // ProtectedRoute.jsx
 
 import { Navigate } from "react-router-dom";
-import { useAuthStore } from "../store/Authstore";
+import { useAuth } from "@clerk/react";
 
 /**
  * Wraps a route that requires authentication.
@@ -22,9 +22,13 @@ import { useAuthStore } from "../store/Authstore";
  *   <Route path="/account" element={<ProtectedRoute><Account /></ProtectedRoute>} />
  */
 export default function ProtectedRoute({ children, redirect = false }) {
-  const user = useAuthStore((s) => s.user);
+  const { isLoaded, userId } = useAuth();
 
-  if (!user) {
+  if (!isLoaded) {
+    return null;
+  }
+
+  if (!userId) {
     if (redirect) return <Navigate to="/login" replace />;
     return <NotLoggedInGate />;
   }

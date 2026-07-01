@@ -5,6 +5,7 @@ import compression from "compression";
 import morgan from "morgan";
 import rateLimit from "express-rate-limit";
 import routes from "./routes/index.js";
+import webhookRoutes from "./routes/webhookRoutes.js";
 import errorHandler from "./middleware/error.middleware.js";
 import { clerkMiddleware } from "@clerk/express";
 
@@ -18,6 +19,9 @@ app.use(
     credentials: true,
   })
 );
+
+app.use("/api/v1/webhooks", webhookRoutes);
+
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
 
