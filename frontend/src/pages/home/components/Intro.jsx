@@ -128,7 +128,7 @@ export default function Intro() {
       <div className="relative z-20 h-screen flex flex-col items-center justify-center">
         <div className="text-center px-6">
           <h1 className="text-white text-5xl md:text-7xl font-extralight tracking-[0.15em] uppercase">
-            Timeless Elegance
+            Timeless Experience
             <br />
             For Every Woman
           </h1>
@@ -150,20 +150,19 @@ export default function Intro() {
 
         {/* Thumbnail Carousel */}
         {/* Carousel Dots */}
-<div className="flex items-center justify-center gap-3">
-  {backgroundImages.map((_, index) => (
-    <button
-      key={index}
-      onClick={() => handleDotClick(index)}
-      aria-label={`Go to slide ${index + 1}`}
-      className={`transition-all duration-300 rounded-full cursor-pointer ${
-        currentIndex === index
-          ? "w-8 h-2 bg-white"
-          : "w-2 h-2 bg-white/50 hover:bg-white/80"
-      }`}
-    />
-  ))}
-</div>
+        <div className="flex items-center justify-center gap-3">
+          {backgroundImages.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => handleDotClick(index)}
+              aria-label={`Go to slide ${index + 1}`}
+              className={`transition-all duration-300 rounded-full cursor-pointer ${currentIndex === index
+                  ? "w-8 h-2 bg-white"
+                  : "w-2 h-2 bg-white/50 hover:bg-white/80"
+                }`}
+            />
+          ))}
+        </div>
       </div>
     </section>
   );
