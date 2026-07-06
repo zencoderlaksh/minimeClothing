@@ -1,6 +1,6 @@
 // Account.jsx
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import {
@@ -21,7 +21,7 @@ import {
   Star,
 } from "lucide-react";
 
-import { useUser, useClerk } from "@clerk/react";
+import { useUser, useClerk, useAuth } from "@clerk/react";
 import Toast from "../auth/components/Toast";
 
 // ─── Animation variants ────────────────────────────────────────────────────────
@@ -130,6 +130,76 @@ export default function Account() {
   const navigate = useNavigate();
   const { user } = useUser();
   const { signOut } = useClerk();
+  const { getToken } = useAuth();
+  
+  const [addresses, setAddresses] = useState([]);
+  const [fetchingAddresses, setFetchingAddresses] = useState(false);
+  const [editingAddressId, setEditingAddressId] = useState(null);
+  const [addressDraft, setAddressDraft] = useState({});
+
+  useEffect(() => {
+    const fetchAddresses = async () => {
+      setFetchingAddresses(true);
+      try {
+        const token = await getToken();
+        if (!token) return;
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/users/addresses`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const data = await res.json();
+        if (data.success) {
+          setAddresses(data.addresses || []);
+        }
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setFetchingAddresses(false);
+      }
+    };
+    if (user) fetchAddresses();
+  }, [user, getToken]);
+
+  const saveAddress = async () => {
+    try {
+      const token = await getToken();
+      const isNew = editingAddressId === 'new';
+      const url = isNew 
+        ? `${import.meta.env.VITE_API_URL}/users/addresses` 
+        : `${import.meta.env.VITE_API_URL}/users/addresses/${editingAddressId}`;
+      const method = isNew ? 'POST' : 'PUT';
+      
+      const res = await fetch(url, {
+        method,
+        headers: { 
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(addressDraft)
+      });
+      const data = await res.json();
+      if (data.success) {
+        setAddresses(data.addresses);
+        setEditingAddressId(null);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const removeAddress = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this address?")) return;
+    try {
+      const token = await getToken();
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/users/addresses/${id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (data.success) setAddresses(data.addresses);
+    } catch (err) {
+      console.error(err);
+    }
+  };
   
   // These are removed, keeping placeholders to not break UI
   const message = null;
@@ -256,6 +326,82 @@ export default function Account() {
                   } catch(e) { console.error(e) }
                 }}
               />
+            </Section>
+          </motion.div>
+
+          {/* ── Addresses ── */}
+          <motion.div variants={fadeUp} initial="hidden" animate="show" custom={1.5}>
+            <Section title="Addresses" icon={MapPin} custom={1.5}>
+              <div className="space-y-4">
+                {fetchingAddresses ? (
+                  <p className="text-sm text-[color:var(--ink,#1a1612)]/40 text-center py-4">Loading...</p>
+                ) : addresses.length === 0 ? (
+                  <p className="text-sm text-[color:var(--ink,#1a1612)]/40 text-center py-4">No addresses saved yet.</p>
+                ) : (
+                  addresses.map((addr) => (
+                    <div key={addr._id} className="relative p-4 rounded-xl border border-[color:var(--nude,#e8ddd0)] bg-[color:var(--parchment,#faf8f4)]/50">
+                      {addr.isDefault && (
+                        <span className="absolute top-4 right-4 text-[0.55rem] px-2 py-0.5 rounded-full bg-[color:var(--gold-deep,#b8960c)]/10 text-[color:var(--gold-deep,#b8960c)] font-medium">
+                          DEFAULT
+                        </span>
+                      )}
+                      <p className="text-xs uppercase tracking-widest text-[color:var(--ink,#1a1612)]/40 mb-1">{addr.label}</p>
+                      <p className="text-sm font-medium text-[color:var(--ink,#1a1612)]">{addr.street}</p>
+                      <p className="text-sm text-[color:var(--ink,#1a1612)]/70">{addr.city}, {addr.state} {addr.zipCode}</p>
+                      <p className="text-sm text-[color:var(--ink,#1a1612)]/70">{addr.country}</p>
+                      <div className="flex gap-3 mt-3">
+                        <button 
+                          onClick={() => { setEditingAddressId(addr._id); setAddressDraft(addr); }}
+                          className="text-xs text-[color:var(--gold-deep,#b8960c)] hover:underline"
+                        >
+                          Edit
+                        </button>
+                        <button 
+                          onClick={() => removeAddress(addr._id)}
+                          className="text-xs text-red-400 hover:underline"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </div>
+                  ))
+                )}
+                
+                {editingAddressId ? (
+                  <div className="mt-4 p-4 rounded-xl border border-[color:var(--gold-deep,#b8960c)]/30 bg-white">
+                    <p className="text-xs uppercase tracking-widest text-[color:var(--gold-deep,#b8960c)] mb-3">
+                      {editingAddressId === 'new' ? 'Add New Address' : 'Edit Address'}
+                    </p>
+                    <div className="space-y-3">
+                      <input type="text" placeholder="Label (e.g. Home, Work)" value={addressDraft.label || ''} onChange={e => setAddressDraft({...addressDraft, label: e.target.value})} className="w-full text-sm p-2 rounded-lg border border-[color:var(--nude,#e8ddd0)] bg-transparent outline-none focus:border-[color:var(--gold-deep,#b8960c)] transition-colors" />
+                      <input type="text" placeholder="Street Address" value={addressDraft.street || ''} onChange={e => setAddressDraft({...addressDraft, street: e.target.value})} className="w-full text-sm p-2 rounded-lg border border-[color:var(--nude,#e8ddd0)] bg-transparent outline-none focus:border-[color:var(--gold-deep,#b8960c)] transition-colors" />
+                      <div className="grid grid-cols-2 gap-3">
+                        <input type="text" placeholder="City" value={addressDraft.city || ''} onChange={e => setAddressDraft({...addressDraft, city: e.target.value})} className="w-full text-sm p-2 rounded-lg border border-[color:var(--nude,#e8ddd0)] bg-transparent outline-none focus:border-[color:var(--gold-deep,#b8960c)] transition-colors" />
+                        <input type="text" placeholder="State" value={addressDraft.state || ''} onChange={e => setAddressDraft({...addressDraft, state: e.target.value})} className="w-full text-sm p-2 rounded-lg border border-[color:var(--nude,#e8ddd0)] bg-transparent outline-none focus:border-[color:var(--gold-deep,#b8960c)] transition-colors" />
+                      </div>
+                      <div className="grid grid-cols-2 gap-3">
+                        <input type="text" placeholder="ZIP / Postal Code" value={addressDraft.zipCode || ''} onChange={e => setAddressDraft({...addressDraft, zipCode: e.target.value})} className="w-full text-sm p-2 rounded-lg border border-[color:var(--nude,#e8ddd0)] bg-transparent outline-none focus:border-[color:var(--gold-deep,#b8960c)] transition-colors" />
+                        <input type="text" placeholder="Country" value={addressDraft.country || ''} onChange={e => setAddressDraft({...addressDraft, country: e.target.value})} className="w-full text-sm p-2 rounded-lg border border-[color:var(--nude,#e8ddd0)] bg-transparent outline-none focus:border-[color:var(--gold-deep,#b8960c)] transition-colors" />
+                      </div>
+                      <label className="flex items-center gap-2 text-sm text-[color:var(--ink,#1a1612)]">
+                        <input type="checkbox" checked={addressDraft.isDefault || false} onChange={e => setAddressDraft({...addressDraft, isDefault: e.target.checked})} className="rounded text-[color:var(--gold-deep,#b8960c)] focus:ring-[color:var(--gold-deep,#b8960c)] accent-[color:var(--gold-deep,#b8960c)]" />
+                        Set as Default Address
+                      </label>
+                      <div className="flex gap-3 pt-2">
+                        <button onClick={saveAddress} className="flex-1 py-2 rounded-lg bg-[color:var(--gold-deep,#b8960c)] text-white text-sm font-medium hover:opacity-90 transition-opacity">Save Address</button>
+                        <button onClick={() => setEditingAddressId(null)} className="flex-1 py-2 rounded-lg border border-[color:var(--nude,#e8ddd0)] text-[color:var(--ink,#1a1612)] text-sm hover:bg-[color:var(--nude,#e8ddd0)]/30 transition-colors">Cancel</button>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <button 
+                    onClick={() => { setEditingAddressId('new'); setAddressDraft({ country: 'India', isDefault: addresses.length === 0 }); }}
+                    className="w-full py-3 rounded-xl border border-dashed border-[color:var(--gold-deep,#b8960c)]/40 text-sm text-[color:var(--gold-deep,#b8960c)] hover:bg-[color:var(--gold-deep,#b8960c)]/5 transition-colors flex items-center justify-center gap-2"
+                  >
+                    + Add New Address
+                  </button>
+                )}
+              </div>
             </Section>
           </motion.div>
 
