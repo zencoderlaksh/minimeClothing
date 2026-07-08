@@ -2,20 +2,8 @@ import { useMemo, useState, useRef, useEffect } from "react";
 import { useParams, useLocation } from "react-router-dom";
 import { ChevronDown } from "lucide-react";
 
-import products from "../../assets/data";
 import Card from "../../components/Card";
-
-// Importing your CategoryNav component
-import CategoryNav from "../../components/CategoryNav"; 
-
-const categoryMap = {};
-products.forEach((p) => {
-  const slug = p.category
-    .toLowerCase()
-    .replace(/\s+/g, "-")
-    .replace(/[^a-z0-9-]/g, "");
-  categoryMap[slug] = p.category;
-});
+import CategoryNav from "../../components/CategoryNav";
 
 const SPECIAL_ROUTES = {
   new: {
@@ -37,6 +25,9 @@ const Collection = () => {
   const { category } = useParams();
   const location = useLocation();
 
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  
   const [filter, setFilter] = useState("all");
   const [sort, setSort] = useState("featured");
   const [filterOpen, setFilterOpen] = useState(false);
@@ -50,6 +41,21 @@ const Collection = () => {
   const specialRoute = SPECIAL_ROUTES[category] || null;
 
   useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/products`);
+        const data = await res.json();
+        if (data.success) {
+          setProducts(data.products);
+        }
+      } catch (err) {
+        console.error("Failed to fetch products", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProducts();
+
     const closeMenus = (e) => {
       if (filterRef.current && !filterRef.current.contains(e.target))
         setFilterOpen(false);
@@ -63,53 +69,65 @@ const Collection = () => {
   const filteredProducts = useMemo(() => {
     let items = [...products];
 
+    // Helper: is new arrival?
+    const isNew = (p) => {
+      if (!p.createdAt) return false;
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+      return new Date(p.createdAt) > thirtyDaysAgo;
+    };
+
     if (specialRoute) {
-      items = items.filter((p) => p.badge === specialRoute.badgeFilter);
-    } else if (category && categoryMap[category]) {
-      items = items.filter((p) => p.category === categoryMap[category]);
+      if (specialRoute.badgeFilter === "New") items = items.filter(isNew);
+      else if (specialRoute.badgeFilter === "Trending") items = items.filter(p => p.isTrending);
+      else if (specialRoute.badgeFilter === "Bestseller") items = items.filter(p => p.isBestSeller);
+    } else if (category) {
+      items = items.filter((p) => p.category.toLowerCase().replace(/\s+/g, "-") === category);
     }
 
     if (filter === "bestsellers") {
-      items = items.filter((p) => p.badge === "Bestseller");
+      items = items.filter((p) => p.isBestSeller);
     } else if (filter === "newarrivals") {
-      items = items.filter((p) => p.badge === "New");
+      items = items.filter(isNew);
     } else if (filter === "trending") {
-      items = items.filter((p) => p.badge === "Trending");
+      items = items.filter((p) => p.isTrending);
     }
 
     switch (sort) {
       case "priceLow":
-        items.sort((a, b) => a.discountPrice - b.discountPrice);
+        items.sort((a, b) => (a.price || 0) - (b.price || 0));
         break;
       case "priceHigh":
-        items.sort((a, b) => b.discountPrice - a.discountPrice);
+        items.sort((a, b) => (b.price || 0) - (a.price || 0));
         break;
       case "rating":
-        items.sort((a, b) => b.rating - a.rating);
+        // Sort logic if you add rating field
         break;
       case "discount":
-        items.sort((a, b) => b.discountPercent - a.discountPercent);
+        // Sort logic if you add discount calculation
         break;
       case "az":
-        items.sort((a, b) => a.title.localeCompare(b.title));
+        items.sort((a, b) => a.name.localeCompare(b.name));
         break;
       case "za":
-        items.sort((a, b) => b.title.localeCompare(a.title));
+        items.sort((a, b) => b.name.localeCompare(a.name));
         break;
       default:
         break;
     }
 
     return items;
-  }, [category, filter, sort, location.pathname, specialRoute]);
+  }, [products, category, filter, sort, location.pathname, specialRoute]);
 
 useEffect(() => {
   setCurrentPage(1);
 }, [category, filter, sort, location.pathname]);
 
-const totalPages = Math.ceil(filteredProducts.length / ITEMS_PER_PAGE);
+const displayProducts = filteredProducts.length > 0 ? filteredProducts : products;
 
-const paginatedProducts = filteredProducts.slice(
+const totalPages = Math.ceil(displayProducts.length / ITEMS_PER_PAGE);
+
+const paginatedProducts = displayProducts.slice(
   (currentPage - 1) * ITEMS_PER_PAGE,
   currentPage * ITEMS_PER_PAGE
 );
@@ -208,7 +226,7 @@ const visiblePages = Array.from(
 
     {/* COUNT */}
     <span className="uppercase tracking-[0.1em] md:tracking-[0.2em] text-[11px] sm:text-xs md:text-sm">
-      {filteredProducts.length} Products
+      {displayProducts.length} Products
     </span>
 
     {/* SORT */}
@@ -245,19 +263,17 @@ const visiblePages = Array.from(
 </div>
       {/* PRODUCTS */}
       <section className="max-w-7xl mx-auto px-4 pb-24">
-        {filteredProducts.length === 0 ? (
-          <div className="text-center py-32">
-            <p className="text-4xl mb-4">🧺</p>
-            <p className="uppercase tracking-[0.2em] text-sm text-gray-400">
-              No products found
-            </p>
-          </div>
+        {loading ? (
+          <div className="text-center py-32 text-gray-500">Loading products...</div>
         ) : (
-          <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-12">
-            {paginatedProducts.map((product) => (
-              <Card key={product.id} product={product} />
-            ))}
-          </div>
+          <>
+
+            <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-12">
+              {paginatedProducts.map((product) => (
+                <Card key={product._id} product={product} />
+              ))}
+            </div>
+          </>
         )}
 
         {/* PAGINATION */}

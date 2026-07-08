@@ -15,7 +15,11 @@ import Terms from '../pages/policy/Terms';
 import PrivacyPolicy from '../pages/policy/PrivacyPolicy';
 import Account from '../pages/account/Account';
 import ProtectedRoute from './PrivateRoutes';
+import AdminRoute from './AdminRoute';
+import AdminDashboard from '../pages/admin/AdminDashboard';
 import NotFound from '../pages/notFound/NotFound';
+import Success from '../pages/checkout/Success';
+import UserOrders from '../pages/orders/UserOrders';
 const AppRoutes = () => {
   return (
     <Routes>
@@ -47,6 +51,10 @@ const AppRoutes = () => {
          element={<ProductDetail />}
         />
         <Route
+         path="/products/:category/:id"
+         element={<ProductDetail />}
+        />
+        <Route
          path="/cart"
          element={<Cart />}
         />
@@ -54,10 +62,34 @@ const AppRoutes = () => {
           path="/wishlist"
           element={<Wishlist />}
         />
+        <Route
+          path="/checkout/success"
+          element={
+            <ProtectedRoute>
+              <Success />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/orders"
+          element={
+            <ProtectedRoute>
+              <UserOrders />
+            </ProtectedRoute>
+          }
+        />
         <Route path="*" element={<NotFound />} />
       </Route>
       <Route path='/login/*' element={<Login />} />
       <Route path='/signup/*' element={<SignUp />} />
+      <Route 
+        path='/admin/*' 
+        element={
+          <AdminRoute>
+            <AdminDashboard />
+          </AdminRoute>
+        } 
+      />
     </Routes>
   )
 }

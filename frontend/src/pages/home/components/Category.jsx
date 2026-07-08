@@ -1,31 +1,43 @@
 import { Link } from "react-router-dom";
-import {sequen,top,longsleeve,whitedress} from '../../../assets/images'
-// Replace with your own images
-
+import { useState, useEffect } from "react";
 
 export default function Category() {
-  const categories = [
-    {
-      name: "TOPS",
-      image: top,
-      link: "/tops",
-    },
-    {
-      name: "WHITE DRESSES",
-      image: whitedress,
-      link: "/white-dresses",
-    },
-    {
-      name: "SEQUIN DRESSES",
-      image: sequen,
-      link: "/sequin-dresses",
-    },
-    {
-      name: "LONG SLEEVE DRESSES",
-      image: longsleeve,
-      link: "/long-sleeve-dresses",
-    },
-  ];
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/products`);
+        const data = await res.json();
+        
+        if (data.success) {
+          const uniqueCats = [];
+          const seen = new Set();
+          
+          data.products.forEach(product => {
+            const catName = product.category;
+            if (!seen.has(catName)) {
+              seen.add(catName);
+              uniqueCats.push({
+                name: catName,
+                image: product.images?.[0] || "",
+                link: catName.toLowerCase()
+              });
+            }
+          });
+          
+          setCategories(uniqueCats.slice(0, 4));
+        }
+      } catch (err) {
+        console.error("Failed to fetch categories", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchCategories();
+  }, []);
 
   return (
     <section className="bg-[#F5F4ED] py-16 overflow-hidden">
@@ -101,51 +113,43 @@ export default function Category() {
                 scrollbar-hide
               "
             >
-              {categories.map((item, index) => (
-                <Link
-                  key={index}
-                  to={`/collection/${item.link}`}
-                  className="
-                    min-w-[220px]
-                    md:min-w-[260px]
-                    lg:min-w-0
-                    group
-                    flex
-                    flex-col
-                    items-center
-                  "
-                >
-                  <div className="overflow-hidden">
-                    <img
-                      src={item.image}
-                      alt={item.name}
-                      className="
-                        h-[320px]
-                        md:h-[380px]
-                        lg:h-[420px]
-                        object-contain
-                        transition-transform
-                        duration-500
-                        group-hover:scale-105
-                      "
-                    />
-                  </div>
-
-                  <h3
+              {loading ? (
+                <div className="w-full text-center py-20 text-gray-500">Loading categories...</div>
+              ) : categories.length > 0 ? (
+                categories.map((item, index) => (
+                  <Link
+                    key={index}
+                    to={`/collection/${item.link}`}
                     className="
-                      mt-8
-                      text-center
-                      text-lg
-                      md:text-xl
-                      font-medium
-                      uppercase
-                      tracking-wide
+                      min-w-[220px]
+                      md:min-w-[260px]
+                      lg:min-w-0
+                      group
+                      flex
+                      flex-col
+                      items-center
                     "
                   >
-                    {item.name}
-                  </h3>
-                </Link>
-              ))}
+                    <div className="overflow-hidden w-full aspect-[3/4] rounded-[20px]">
+                      <img
+                        src={item.image}
+                        alt={item.name}
+                        className="
+                          w-full h-full object-cover
+                          transition-transform
+                          duration-500
+                          group-hover:scale-105
+                        "
+                      />
+                    </div>
+                    <h3 className="mt-6 text-center text-lg md:text-xl font-medium uppercase tracking-wide">
+                      {item.name}
+                    </h3>
+                  </Link>
+                ))
+              ) : (
+                <div className="w-full text-center py-20 text-gray-500">No categories found.</div>
+              )}
             </div>
 
           </div>

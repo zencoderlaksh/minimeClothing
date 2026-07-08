@@ -12,28 +12,50 @@ const SIZES = ["XS", "S", "M", "L", "XL"];
 
 const Card = ({ product }) => {
   const navigate = useNavigate();
-  const { addToWishlist, removeFromWishlist, isWishlisted } =
-    useWishlistStore();
-  const wishlisted = isWishlisted(product.id);
+  const { addToWishlist, removeFromWishlist, isWishlisted } = useWishlistStore();
+  const productId = product._id || product.id;
+  const wishlisted = isWishlisted(productId);
 
   const handleWishlist = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    wishlisted ? removeFromWishlist(product.id) : addToWishlist(product);
+    wishlisted ? removeFromWishlist(productId) : addToWishlist(product);
   };
 
   // Navigate to product page with the chosen size pre-selected
   const handleSizeClick = (e, size) => {
     e.preventDefault();
     e.stopPropagation();
-    navigate(`/product/${product.id}`, { state: { preSelectedSize: size } });
+    const catPath = (product.subCategory || product.category || "all").toLowerCase().replace(/\s+/g, '-');
+    navigate(`/products/${catPath}/${productId}`, { state: { preSelectedSize: size } });
   };
 
-  const badge = product.badge ? badgeConfig[product.badge] : null;
-  const sizes = product.sizes || SIZES;
+  // Dynamic fields mapper
+  const productName = product.name || product.title;
+  const currentPrice = product.price || product.discountPrice;
+  const oldPrice = product.originalPrice || (product.discountPrice ? product.price : null);
+  const mainImage = product.images?.[0] || product.mainImage;
+  const hoverImage = product.images?.[1] || product.images?.[0] || mainImage;
+  
+  // Badge logic
+  let activeBadge = product.badge ? badgeConfig[product.badge] : null;
+  if (!activeBadge) {
+    if (product.isTrending) activeBadge = badgeConfig.Trending;
+    else if (product.isBestSeller) activeBadge = badgeConfig.Bestseller;
+    else if (product.createdAt) {
+       const thirtyDaysAgo = new Date();
+       thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+       if (new Date(product.createdAt) > thirtyDaysAgo) {
+         activeBadge = badgeConfig.New;
+       }
+    }
+  }
+
+  const sizes = product.sizes && product.sizes.length > 0 ? product.sizes : SIZES;
+  const catPath = (product.subCategory || product.category || "all").toLowerCase().replace(/\s+/g, '-');
 
   return (
-    <Link to={`/product/${product.id}`} className="group block">
+    <Link to={`/products/${catPath}/${productId}`} className="group block">
       <div className="relative overflow-hidden bg-[#f7f3ee] cursor-pointer rounded-[20px] aspect-[3/4]">
         {/* WISHLIST */}
         <button
@@ -56,8 +78,8 @@ const Card = ({ product }) => {
 
         {/* Main Image */}
         <img
-          src={product.mainImage}
-          alt={product.title}
+          src={mainImage}
+          alt={productName}
           className="
             absolute inset-0 w-full h-full object-cover rounded-[20px]
             transition-all duration-700 ease-out
@@ -80,10 +102,10 @@ const Card = ({ product }) => {
         /> */}
 
         {/* Hover Image */}
-        {product.images?.[0] && (
+        {hoverImage && hoverImage !== mainImage && (
           <img
-            src={product.images[0]}
-            alt={product.title}
+            src={hoverImage}
+            alt={productName}
             className="
               absolute inset-0 w-full h-full object-cover rounded-[20px]
               opacity-0 scale-[1.08]
@@ -146,16 +168,16 @@ const Card = ({ product }) => {
         </button>
 
         {/* DYNAMIC BADGE */}
-        {badge && (
+        {activeBadge && (
           <div
             className={`
             absolute top-3 left-3 z-20
-            ${badge.bg} ${badge.text}
+            ${activeBadge.bg} ${activeBadge.text}
             px-3 py-1 rounded-full
             text-[9px] uppercase tracking-[0.22em] font-medium
           `}
           >
-            {badge.label}
+            {activeBadge.label}
           </div>
         )}
 
@@ -178,15 +200,15 @@ const Card = ({ product }) => {
 
       {/* BELOW-IMAGE INFO */}
       <div className="pt-3 px-1">
-        <p className="text-[12.5px] text-[#6b5c4f] truncate">{product.title}</p>
+        <p className="text-[12.5px] text-[#6b5c4f] truncate">{productName}</p>
         <div className="flex items-center justify-between mt-1">
           <div className="flex items-center gap-2">
             <span className="text-[14px] font-semibold text-[#1a1a1a]">
-              ₹{product.discountPrice.toLocaleString()}
+              ₹{Number(currentPrice).toLocaleString()}
             </span>
-            {product.price && product.price !== product.discountPrice && (
+            {oldPrice && oldPrice > currentPrice && (
               <span className="text-[11.5px] text-gray-400 line-through">
-                ₹{product.price.toLocaleString()}
+                ₹{Number(oldPrice).toLocaleString()}
               </span>
             )}
           </div>

@@ -1,17 +1,45 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { useRef, useState, useEffect } from "react";
-import { categories } from "../assets/data";
 
 const VISIBLE = 4;
 
 const CategoryNav = ({ activeSlug }) => {
   const navigate = useNavigate();
-  const { category } = useParams(); // ← read the URL param
+  const { category } = useParams();
   const trackRef = useRef(null);
   const [offset, setOffset] = useState(0);
   const [cardWidth, setCardWidth] = useState(0);
+  const [categories, setCategories] = useState([]);
 
   const maxOffset = Math.max(0, categories.length - VISIBLE);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/products`);
+        const data = await res.json();
+        if (data.success) {
+          const uniqueCats = [];
+          const seen = new Set();
+          data.products.forEach(p => {
+            if (!seen.has(p.category)) {
+              seen.add(p.category);
+              uniqueCats.push({
+                title: p.category,
+                slug: p.category.toLowerCase().replace(/\s+/g, "-"),
+                image: p.images?.[0] || "",
+                count: data.products.filter(pr => pr.category === p.category).length + " items"
+              });
+            }
+          });
+          setCategories(uniqueCats);
+        }
+      } catch (err) {
+        console.error("Failed to fetch nav categories", err);
+      }
+    };
+    fetchCategories();
+  }, []);
 
   useEffect(() => {
   const firstCard = trackRef.current?.querySelector(".cn-card");
@@ -71,6 +99,10 @@ const CategoryNav = ({ activeSlug }) => {
               Shop by Category
             </h2>
           </div>
+
+          {categories.length === 0 && (
+            <p className="text-sm text-gray-400">Loading categories...</p>
+          )}
 
           {categories.length > VISIBLE && (
             <div className="flex gap-2">

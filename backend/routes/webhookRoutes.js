@@ -1,7 +1,9 @@
 import { Router } from "express";
 import express from "express";
 import { Webhook } from "svix";
+import { Webhooks } from "@dodopayments/express";
 import User from "../models/User.js";
+import Order from "../models/Order.js";
 
 const router = Router();
 
@@ -46,17 +48,15 @@ router.post(
       try {
         const { email_addresses, first_name, last_name, image_url, unsafe_metadata } = evt.data;
         const email = email_addresses && email_addresses.length > 0 ? email_addresses[0].email_address : "";
-        const phoneNumber = unsafe_metadata?.phoneNumber || "";
-        const city = unsafe_metadata?.city || "";
+        const phone = unsafe_metadata?.phoneNumber || "";
+        const name = `${first_name || ""} ${last_name || ""}`.trim();
 
         await User.create({
           clerkId: id,
           email,
-          firstName: first_name,
-          lastName: last_name,
-          avatarUrl: image_url,
-          phoneNumber,
-          city
+          name: name || "User",
+          avatar: image_url,
+          phone,
         });
 
         console.log(`User created and saved to db: ${id}`);
@@ -68,12 +68,12 @@ router.post(
       try {
         const { email_addresses, first_name, last_name, image_url, unsafe_metadata } = evt.data;
         const email = email_addresses && email_addresses.length > 0 ? email_addresses[0].email_address : "";
-        const phoneNumber = unsafe_metadata?.phoneNumber || "";
-        const city = unsafe_metadata?.city || "";
+        const phone = unsafe_metadata?.phoneNumber || "";
+        const name = `${first_name || ""} ${last_name || ""}`.trim();
 
         await User.findOneAndUpdate(
           { clerkId: id },
-          { email, firstName: first_name, lastName: last_name, avatarUrl: image_url, phoneNumber, city },
+          { email, name: name || "User", avatar: image_url, phone },
           { new: true }
         );
       } catch (error) {
@@ -89,6 +89,37 @@ router.post(
 
     return res.status(200).json({ success: true, message: "Webhook processed" });
   }
+);
+
+// Dodo Payments Webhook
+router.post(
+  "/dodo",
+  Webhooks({
+    webhookKey: process.env.DODO_PAYMENTS_WEBHOOK_SECRET,
+    onPayload: async (payload) => {
+      console.log("Received Dodo Event:", payload.event_type);
+      
+      try {
+        if (payload.event_type === "payment.succeeded" || payload.event_type === "payment_intent.succeeded" || payload.event_type === "payment.successful") {
+          // payload.data might contain metadata
+          const metadata = payload.data?.metadata;
+          const dodoPaymentId = payload.data?.payment_id || payload.data?.id;
+
+          if (metadata && metadata.order_id) {
+            await Order.findByIdAndUpdate(metadata.order_id, {
+              paymentStatus: "paid",
+              dodoPaymentId: dodoPaymentId
+            });
+            console.log("Order marked as paid:", metadata.order_id);
+          } else {
+            console.warn("Received payment success but no order_id in metadata");
+          }
+        }
+      } catch (error) {
+        console.error("Error processing Dodo webhook:", error);
+      }
+    },
+  })
 );
 
 export default router;

@@ -1,19 +1,37 @@
 import { useState, useMemo, useEffect, useRef } from "react";
 import { HiMagnifyingGlass, HiXMark } from "react-icons/hi2";
-import products from "../../assets/data";
 import Card from "../../components/Card";
 
 const TRENDING = ["Tops", "White Dresses", "Sequin Dresses", "Long Sleeve Dresses"];
-
-const categories = ["All", ...new Set(products.map((p) => p.category))];
 
 const Search = () => {
   const [query, setQuery] = useState("");
   const [focused, setFocused] = useState(false);
   const [activeCategory, setActiveCategory] = useState("All");
   const [currentPage, setCurrentPage] = useState(1);
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
   const ITEMS_PER_PAGE = 12;
   const inputRef = useRef(null);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/products`);
+        const data = await res.json();
+        if (data.success) {
+          setProducts(data.products);
+        }
+      } catch (err) {
+        console.error("Failed to fetch products for search", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProducts();
+  }, []);
+
+  const categories = useMemo(() => ["All", ...new Set(products.map((p) => p.category))], [products]);
 
   useEffect(() => {
     setTimeout(() => inputRef.current?.focus(), 300);
@@ -29,17 +47,19 @@ const Search = () => {
     return products.filter((p) => {
       const matchesQuery =
         !query.trim() ||
-        p.title.toLowerCase().includes(query.toLowerCase()) ||
-        p.category?.toLowerCase().includes(query.toLowerCase());
+        p.name?.toLowerCase().includes(query.toLowerCase()) ||
+        p.title?.toLowerCase().includes(query.toLowerCase()) ||
+        p.category?.toLowerCase().includes(query.toLowerCase()) ||
+        p.subCategory?.toLowerCase().includes(query.toLowerCase());
       const matchesCategory =
         activeCategory === "All" || p.category === activeCategory;
       return matchesQuery && matchesCategory;
     });
-  }, [query, activeCategory]);
+  }, [query, activeCategory, products]);
 
   const featured = useMemo(
     () => products.filter((p) => p.featured).slice(0, 4),
-    []
+    [products]
   );
 
   const totalPages = Math.ceil(results.length / ITEMS_PER_PAGE);
@@ -148,7 +168,7 @@ const Search = () => {
         {/* ══════════════════════════════════════
             EMPTY STATE — trending + featured
         ══════════════════════════════════════ */}
-        {!showResults && (
+        {!showResults && !loading && (
           <>
             {/* Trending keywords */}
             <div className="text-center mb-14">
@@ -189,7 +209,7 @@ const Search = () => {
               </p>
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-10">
                 {featured.map((product) => (
-                  <Card key={product.id} product={product} />
+                  <Card key={product._id} product={product} />
                 ))}
               </div>
             </div>
@@ -240,7 +260,7 @@ const Search = () => {
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-12">
                   {paginatedResults.map((product) => (
                     <div
-                      key={product.id}
+                      key={product._id || product.id}
                       className="animate-fadeUp"
                       style={{ animationFillMode: "both" }}
                     >

@@ -1,15 +1,30 @@
 import { useRef, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import products from "../../../assets/data";
 
 const SimilarProducts = ({ category, currentId }) => {
   const scrollRef = useRef(null);
   const [scrollProgress, setScrollProgress] = useState(0);
+  const [similarProducts, setSimilarProducts] = useState([]);
 
-  const similarProducts = products
-    .filter((item) => item.category === category && item.id !== currentId)
-    .slice(0, 10);
+  useEffect(() => {
+    if (!category) return;
+    const fetchSimilar = async () => {
+      try {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/products?category=${category}`);
+        const data = await res.json();
+        if (data.success) {
+          const filtered = data.products
+            .filter((item) => item._id !== currentId)
+            .slice(0, 10);
+          setSimilarProducts(filtered);
+        }
+      } catch (err) {
+        console.error("Failed to fetch similar products", err);
+      }
+    };
+    fetchSimilar();
+  }, [category, currentId]);
 
   // Update progress bar when scrolling
   const handleScroll = () => {
@@ -61,28 +76,30 @@ const SimilarProducts = ({ category, currentId }) => {
           className="flex overflow-x-auto gap-4 snap-x scrollbar-hide pb-4"
           style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
         >
-          {similarProducts.map((product) => (
+          {similarProducts.map((product) => {
+            const pId = product._id || product.id;
+            return (
             <Link
-              key={product.id}
-              to={`/product/${product.id}`}
+              key={pId}
+              to={`/products/all/${pId}`}
               className="min-w-[280px] w-[280px] shrink-0 snap-start flex flex-col group/item cursor-pointer"
             >
               {/* IMAGE FIX: Changed to w-full h-full object-cover so it fits properly */}
               <div className="w-full h-[320px] bg-[#f9f9f9] overflow-hidden mb-4 relative">
                 <img 
-                  src={product.mainImage} 
-                  alt={product.title} 
+                  src={product.images?.[0] || ""} 
+                  alt={product.name || product.title} 
                   className="w-full h-full object-cover group-hover/item:scale-105 transition-transform duration-700 ease-in-out" 
                 />
               </div>
               <h3 className="text-[12px] font-medium text-black truncate mb-1">
-                {product.title}
+                {product.name || product.title}
               </h3>
               <p className="text-[12px] text-gray-500">
-                ₹{product.discountPrice.toLocaleString()}
+                ₹{Number(product.price).toLocaleString()}
               </p>
             </Link>
-          ))}
+          )})}
         </div>
       </div>
 

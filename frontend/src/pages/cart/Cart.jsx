@@ -1,8 +1,12 @@
 import { useCartStore } from "../../stores/useCartStore";
-import {Link} from 'react-router-dom'
+import { Link } from 'react-router-dom';
+import { useAuth } from "@clerk/react";
+import { useState } from "react";
 
 const Cart = () => {
   const { cart, removeFromCart, updateQuantity } = useCartStore();
+  const { getToken } = useAuth();
+  const [isCheckingOut, setIsCheckingOut] = useState(false);
 
   const total = cart.reduce(
     (acc, item) => acc + item.discountPrice * item.quantity,
@@ -26,6 +30,32 @@ const Cart = () => {
 
   const handleIncrement = (item) => {
     updateQuantity(item.id, item.size, item.color, item.quantity + 1);
+  };
+
+  const handleCheckout = async () => {
+    try {
+      setIsCheckingOut(true);
+      const token = await getToken();
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/orders/checkout`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ cartItems: cart }),
+      });
+      const data = await response.json();
+      if (data.success && data.url) {
+        window.location.href = data.url;
+      } else {
+        alert("Failed to initiate checkout");
+      }
+    } catch (error) {
+      console.error("Checkout error:", error);
+      alert("Something went wrong during checkout.");
+    } finally {
+      setIsCheckingOut(false);
+    }
   };
 
   return (
@@ -165,8 +195,12 @@ const Cart = () => {
                   <span style={styles.totalValue}>₹{total.toLocaleString("en-IN")}</span>
                 </div>
 
-                <button style={styles.checkoutBtn}>
-                  PROCEED TO CHECKOUT
+                <button 
+                  style={{...styles.checkoutBtn, opacity: isCheckingOut ? 0.7 : 1}} 
+                  onClick={handleCheckout}
+                  disabled={isCheckingOut}
+                >
+                  {isCheckingOut ? "PROCESSING..." : "PROCEED TO CHECKOUT"}
                 </button>
 
                 <div style={styles.secureNote}>

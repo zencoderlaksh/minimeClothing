@@ -1,10 +1,28 @@
 import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
 import Card from "../../../components/Card";
-import products from "../../../assets/data";
 
 const FeaturedCollection = () => {
-  // Changed from 8 to 4 so it perfectly fits the 4-column grid in one row
-  const featuredProducts = products.slice(0, 4);
+  const [featuredProducts, setFeaturedProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchNewArrivals = async () => {
+      try {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/products?newArrivals=true`);
+        const data = await res.json();
+        if (data.success) {
+          // Show up to 4 new arrivals
+          setFeaturedProducts(data.products.slice(0, 4));
+        }
+      } catch (err) {
+        console.error("Failed to fetch new arrivals", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchNewArrivals();
+  }, []);
 
   return (
     <section className="bg-[#faf8f5] py-24">
@@ -71,9 +89,15 @@ const FeaturedCollection = () => {
 
         {/* Products */}
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-8">
-          {featuredProducts.map((product) => (
-            <Card key={product.id} product={product} />
-          ))}
+          {loading ? (
+            <div className="col-span-full flex justify-center py-20 text-[#b8a089]">Loading collection...</div>
+          ) : featuredProducts.length > 0 ? (
+            featuredProducts.map((product) => (
+              <Card key={product._id} product={product} />
+            ))
+          ) : (
+            <div className="col-span-full flex justify-center py-20 text-[#b8a089]">No new arrivals found.</div>
+          )}
         </div>
 
         {/* Bottom CTA */}

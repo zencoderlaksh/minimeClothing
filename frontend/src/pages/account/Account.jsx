@@ -1,165 +1,223 @@
-// Account.jsx
-
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import {
-  User,
-  Mail,
-  Phone,
-  MapPin,
-  ShoppingBag,
-  Heart,
-  Bell,
-  Shield,
-  LogOut,
-  ChevronRight,
-  Edit3,
-  Check,
-  Package,
-  Truck,
-  Star,
-} from "lucide-react";
-
 import { useUser, useClerk, useAuth } from "@clerk/react";
-import Toast from "../auth/components/Toast";
+import { MapPin, Shield, LogOut, Camera, Trash2, Edit3, Plus, X } from "lucide-react";
 
 // ─── Animation variants ────────────────────────────────────────────────────────
 const fadeUp = {
-  hidden: { opacity: 0, y: 18 },
+  hidden: { opacity: 0, y: 15 },
   show: (i = 0) => ({
     opacity: 1,
     y: 0,
-    transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1], delay: i * 0.07 },
+    transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1], delay: i * 0.1 },
   }),
 };
 
-// ─── Mock order history ────────────────────────────────────────────────────────
-const MOCK_ORDERS = [
-  {
-    id: "MM-2891",
-    date: "12 May 2026",
-    status: "Delivered",
-    items: ["Linen Co-ord Set", "Pearl Drop Earrings"],
-    total: "₹4,290",
-    icon: Package,
-  },
-  {
-    id: "MM-2744",
-    date: "2 Apr 2026",
-    status: "In Transit",
-    items: ["Minimal Kalamkari Kurti"],
-    total: "₹1,890",
-    icon: Truck,
-  },
-];
-
-// ─── Mock wishlist ─────────────────────────────────────────────────────────────
-const MOCK_WISHLIST = [
-  { id: 1, name: "Ivory Wrap Dress", price: "₹3,499", tag: "New" },
-  { id: 2, name: "Block-print Shirt", price: "₹1,799", tag: "Low Stock" },
-  { id: 3, name: "Oxidised Silver Cuffs", price: "₹899", tag: null },
-];
-
-// ─── Section wrapper ───────────────────────────────────────────────────────────
+// ─── Minimal Section Wrapper ───────────────────────────────────────────────────
 function Section({ title, icon: Icon, children, custom }) {
   return (
     <motion.section
       variants={fadeUp}
       custom={custom}
-      className="rounded-2xl border border-[color:var(--nude,#e8ddd0)]/60 bg-white/70 backdrop-blur-sm p-6"
+      className="mb-8"
     >
-      <div className="flex items-center gap-2 mb-5">
-        <Icon size={15} style={{ color: "var(--gold-deep, #b8960c)" }} />
-        <h2 className="text-[0.65rem] uppercase tracking-[0.4em] text-[color:var(--gold-deep,#b8960c)]">
+      <div className="flex items-center gap-2 mb-4 px-2">
+        <Icon size={14} className="text-[color:var(--gold-deep,#b8960c)]" />
+        <h2 className="text-[0.6rem] uppercase tracking-widest font-medium text-[color:var(--gold-deep,#b8960c)]">
           {title}
         </h2>
       </div>
-      {children}
+      <div className="border border-[color:var(--nude,#e8ddd0)] bg-white/50 backdrop-blur-sm rounded-xl overflow-hidden">
+        {children}
+      </div>
     </motion.section>
   );
 }
 
-// ─── Editable field row ────────────────────────────────────────────────────────
-function ProfileRow({ label, value, onSave }) {
-  const [editing, setEditing] = useState(false);
-  const [draft, setDraft] = useState(value ?? "");
-
-  const commit = () => {
-    onSave(draft);
-    setEditing(false);
-  };
-
+// ─── Confirmation Modal ────────────────────────────────────────────────────────
+function ConfirmModal({ isOpen, title, message, onConfirm, onCancel, confirmText = "Confirm" }) {
   return (
-    <div className="flex items-center justify-between py-3 border-b border-[color:var(--nude,#e8ddd0)]/40 last:border-0">
-      <div className="flex-1 min-w-0">
-        <p className="text-[0.6rem] uppercase tracking-widest text-[color:var(--ink,#1a1612)]/40 mb-0.5">
-          {label}
-        </p>
-        {editing ? (
-          <input
-            autoFocus
-            value={draft}
-            onChange={(e) => setDraft(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && commit()}
-            className="w-full text-sm text-[color:var(--ink,#1a1612)] bg-transparent border-b border-[color:var(--gold-deep,#b8960c)] outline-none py-0.5"
-          />
-        ) : (
-          <p className="text-sm text-[color:var(--ink,#1a1612)] truncate">
-            {value || <span className="italic text-[color:var(--ink,#1a1612)]/30">Not set</span>}
-          </p>
-        )}
-      </div>
-
-      <button
-        onClick={editing ? commit : () => setEditing(true)}
-        className="ml-4 shrink-0 p-1.5 rounded-lg hover:bg-[color:var(--nude,#e8ddd0)]/40 transition-colors"
-      >
-        {editing ? (
-          <Check size={14} style={{ color: "var(--gold-deep, #b8960c)" }} />
-        ) : (
-          <Edit3 size={13} className="text-[color:var(--ink,#1a1612)]/40" />
-        )}
-      </button>
-    </div>
+    <AnimatePresence>
+      {isOpen && (
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-[color:var(--ink,#1a1612)]/40 backdrop-blur-sm"
+        >
+          <motion.div 
+            initial={{ scale: 0.95, opacity: 0, y: 10 }}
+            animate={{ scale: 1, opacity: 1, y: 0 }}
+            exit={{ scale: 0.95, opacity: 0, y: 10 }}
+            className="bg-[color:var(--parchment,#faf8f4)] rounded-2xl p-6 max-w-sm w-full shadow-2xl border border-[color:var(--nude,#e8ddd0)]"
+          >
+            <h3 className="text-lg font-serif-display text-[color:var(--ink,#1a1612)] mb-2">{title}</h3>
+            <p className="text-sm text-[color:var(--ink,#1a1612)]/70 mb-6">{message}</p>
+            <div className="flex gap-3 justify-end">
+              <button 
+                onClick={onCancel}
+                className="px-4 py-2 rounded-full border border-[color:var(--nude,#e8ddd0)] text-[color:var(--ink,#1a1612)] text-sm font-medium hover:bg-[color:var(--nude,#e8ddd0)]/30 transition-colors"
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={onConfirm}
+                className="px-4 py-2 rounded-full bg-[color:var(--ink,#1a1612)] text-white text-sm font-medium hover:opacity-90 transition-opacity"
+              >
+                {confirmText}
+              </button>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }
 
-// ─── Main component ────────────────────────────────────────────────────────────
+// ─── Main Component ────────────────────────────────────────────────────────────
 export default function Account() {
   const navigate = useNavigate();
-  const { user } = useUser();
+  const { user: clerkUser } = useUser();
   const { signOut } = useClerk();
   const { getToken } = useAuth();
   
+  const [dbUser, setDbUser] = useState(null);
   const [addresses, setAddresses] = useState([]);
-  const [fetchingAddresses, setFetchingAddresses] = useState(false);
+  const [paymentCards, setPaymentCards] = useState([]);
+  
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const fileInputRef = useRef(null);
+
+  // Profile Edit State
+  const [editingProfile, setEditingProfile] = useState(false);
+  const [profileDraft, setProfileDraft] = useState({ name: "" });
+
+  // Address Form State
   const [editingAddressId, setEditingAddressId] = useState(null);
   const [addressDraft, setAddressDraft] = useState({});
 
-  useEffect(() => {
-    const fetchAddresses = async () => {
-      setFetchingAddresses(true);
-      try {
-        const token = await getToken();
-        if (!token) return;
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/users/addresses`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        const data = await res.json();
-        if (data.success) {
-          setAddresses(data.addresses || []);
-        }
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setFetchingAddresses(false);
-      }
-    };
-    if (user) fetchAddresses();
-  }, [user, getToken]);
+  // Card Form State
+  const [editingCardId, setEditingCardId] = useState(null);
+  const [cardDraft, setCardDraft] = useState({});
 
+  // Modal State
+  const [modalConfig, setModalConfig] = useState({ isOpen: false, title: "", message: "", action: null, confirmText: "" });
+
+  const openModal = (title, message, confirmText, action) => {
+    setModalConfig({ isOpen: true, title, message, action, confirmText });
+  };
+  
+  const closeModal = () => {
+    setModalConfig({ ...modalConfig, isOpen: false });
+  };
+  
+  const handleConfirm = () => {
+    if (modalConfig.action) modalConfig.action();
+    closeModal();
+  };
+
+  useEffect(() => {
+    fetchProfile();
+  }, [clerkUser, getToken]);
+
+  const fetchProfile = async () => {
+    try {
+      const token = await getToken();
+      if (!token) return;
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/users/profile`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (data.success) {
+        setDbUser(data.user);
+        setAddresses(data.user.addresses || []);
+        setPaymentCards(data.user.paymentCards || []);
+      }
+    } catch (err) {
+      console.error("Failed to fetch user profile:", err);
+    }
+  };
+
+  const handleLogout = async () => {
+    await signOut();
+    navigate("/login");
+  };
+
+  const handleAvatarUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingAvatar(true);
+
+    try {
+      // Sync image to Clerk so the UserButton and Clerk profile update instantly
+      if (clerkUser) {
+        await clerkUser.setProfileImage({ file }).catch(err => console.warn("Clerk image sync failed:", err));
+      }
+
+      const formData = new FormData();
+      formData.append("image", file);
+      
+      const token = await getToken();
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/users/avatar`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+        body: formData
+      });
+      const data = await res.json();
+      if (data.success) {
+        setDbUser((prev) => ({ ...prev, avatar: data.avatar }));
+      } else {
+        alert("Upload failed: " + (data.message || "Unknown error"));
+      }
+    } catch (err) {
+      console.error("Avatar upload failed:", err);
+      alert("Upload failed: " + err.message);
+    } finally {
+      setUploadingAvatar(false);
+    }
+  };
+
+  // ─── Profile Edit Logic ──────────────────────────────────────────────────────
+  const saveProfile = async () => {
+    try {
+      // Sync name to Clerk so the UserButton updates instantly
+      if (clerkUser && profileDraft.name) {
+        const parts = profileDraft.name.split(" ");
+        await clerkUser.update({
+          firstName: parts[0] || "",
+          lastName: parts.slice(1).join(" ") || ""
+        }).catch(err => console.warn("Clerk name sync failed:", err));
+      }
+
+      const token = await getToken();
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/users/profile`, {
+        method: 'PUT',
+        headers: { 
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(profileDraft)
+      });
+      const data = await res.json();
+      if (data.success) {
+        setDbUser(data.user);
+        setEditingProfile(false);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  // ─── Address Logic ───────────────────────────────────────────────────────────
   const saveAddress = async () => {
+    // Validate required fields
+    if (!addressDraft.street || !addressDraft.city || !addressDraft.state || !addressDraft.zipCode) {
+      alert("Please fill in all required address fields (Street, City, State, ZIP).");
+      return;
+    }
+
     try {
       const token = await getToken();
       const isNew = editingAddressId === 'new';
@@ -180,14 +238,16 @@ export default function Account() {
       if (data.success) {
         setAddresses(data.addresses);
         setEditingAddressId(null);
+      } else {
+        alert("Failed to save address: " + (data.message || "Unknown error"));
       }
     } catch (err) {
       console.error(err);
+      alert("Error saving address: " + err.message);
     }
   };
 
   const removeAddress = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this address?")) return;
     try {
       const token = await getToken();
       const res = await fetch(`${import.meta.env.VITE_API_URL}/users/addresses/${id}`, {
@@ -200,434 +260,416 @@ export default function Account() {
       console.error(err);
     }
   };
-  
-  // These are removed, keeping placeholders to not break UI
-  const message = null;
-  const messageType = null;
 
-  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
-
-  const handleLogout = async () => {
-    await signOut();
-    navigate("/login");
+  const triggerRemoveAddress = (id) => {
+    openModal(
+      "Delete Address",
+      "Are you sure you want to remove this address? This cannot be undone.",
+      "Delete",
+      () => removeAddress(id)
+    );
   };
 
-  // Derive initials for avatar
-  const initials = user?.fullName
-    ? user.fullName
-        .split(" ")
-        .map((n) => n[0])
-        .slice(0, 2)
-        .join("")
-        .toUpperCase()
-    : "MM";
+  // ─── Payment Card Logic ──────────────────────────────────────────────────────
+  const saveCreditCard = async () => {
+    // If editing an existing card, we might not require the full card number (they might leave it blank to keep the old one).
+    const isNew = editingCardId === 'new';
+    if (isNew && (!cardDraft.cardNumber || !cardDraft.expiry || !cardDraft.cvc)) {
+      alert("Please fill in all credit card fields.");
+      return;
+    }
 
-  const memberSince = user?.createdAt
-    ? new Date(user.createdAt).toLocaleDateString("en-IN", {
-        month: "long",
-        year: "numeric",
-      })
-    : "—";
+    // Parse expiry (MM/YY)
+    let expMonth = cardDraft.expMonth;
+    let expYear = cardDraft.expYear;
+    if (cardDraft.expiry) {
+      const parts = cardDraft.expiry.split('/');
+      if (parts.length === 2) {
+        expMonth = parseInt(parts[0], 10);
+        expYear = parseInt("20" + parts[1], 10);
+      }
+    }
+
+    const payload = {
+      ...cardDraft,
+      expMonth,
+      expYear
+    };
+
+    try {
+      const token = await getToken();
+      const url = isNew 
+        ? `${import.meta.env.VITE_API_URL}/users/cards` 
+        : `${import.meta.env.VITE_API_URL}/users/cards/${editingCardId}`;
+      const method = isNew ? 'POST' : 'PUT';
+
+      const res = await fetch(url, {
+        method,
+        headers: { 
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (data.success) {
+        setPaymentCards(data.paymentCards);
+        setEditingCardId(null);
+        setCardDraft({});
+      } else {
+        alert("Failed to save card: " + (data.message || "Unknown error"));
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Error saving card: " + err.message);
+    }
+  };
+
+  const removeCard = async (id) => {
+    try {
+      const token = await getToken();
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/users/cards/${id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (data.success) setPaymentCards(data.paymentCards);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const triggerRemoveCard = (id) => {
+    openModal(
+      "Remove Card",
+      "Are you sure you want to remove this payment method?",
+      "Remove",
+      () => removeCard(id)
+    );
+  };
+
+  const initials = dbUser?.name
+    ? dbUser.name.split(" ").map((n) => n[0]).slice(0, 2).join("").toUpperCase()
+    : clerkUser?.fullName?.split(" ").map((n) => n[0]).slice(0, 2).join("").toUpperCase() || "MM";
+
+  const displayName = (dbUser?.name && dbUser.name !== "User") 
+    ? dbUser.name 
+    : (clerkUser?.fullName || "Member");
+  
+  // If the DB has a placeholder email, use the Clerk email instead
+  const dbEmail = dbUser?.email;
+  const displayEmail = dbEmail && !dbEmail.includes("@placeholder.com") 
+    ? dbEmail 
+    : clerkUser?.primaryEmailAddress?.emailAddress;
+    
+  const avatarUrl = dbUser?.avatar || clerkUser?.imageUrl;
 
   return (
-    <>
-      <Toast message={message} type={messageType} />
+    <div className="min-h-screen bg-[color:var(--parchment,#faf8f4)] px-4 py-12 sm:px-8">
+      <motion.div initial="hidden" animate="show" className="mx-auto max-w-2xl">
+        
+        <h1 className="font-serif-display text-3xl text-center text-[color:var(--ink,#1a1612)] mb-10">
+          Account <em className="gold-gradient-text not-italic">Settings</em>
+        </h1>
 
-      <div className="min-h-screen bg-[color:var(--parchment,#faf8f4)] px-4 py-12 sm:px-8">
-        <div className="mx-auto max-w-2xl space-y-6">
-
-          {/* ── Hero card ── */}
-          <motion.div
-            variants={fadeUp}
-            initial="hidden"
-            animate="show"
-            className="relative overflow-hidden rounded-3xl bg-[color:var(--ink,#1a1612)] px-8 py-10 text-white"
-          >
-            {/* Gold blob */}
-            <div
-              className="absolute -top-10 -right-10 h-48 w-48 rounded-full opacity-10 blur-3xl"
-              style={{ background: "var(--gold-deep, #b8960c)" }}
-            />
-
-            <div className="relative flex items-center gap-6">
-              {/* Avatar */}
-              <div
-                className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl text-lg font-semibold"
-                style={{
-                  background:
-                    "linear-gradient(135deg, var(--gold-mid,#d4a72c), var(--gold-deep,#b8960c))",
-                  color: "#fff",
-                }}
-              >
-                {initials}
-              </div>
-
-              <div className="flex-1 min-w-0">
-                <p className="text-[0.6rem] uppercase tracking-[0.45em] text-white/40 mb-1">
-                  Member since {memberSince}
-                </p>
-                <h1 className="font-serif-display text-2xl leading-tight truncate">
-                  {user?.fullName || "User"}
-                </h1>
-                <p className="text-sm text-white/55 truncate mt-0.5">{user?.primaryEmailAddress?.emailAddress}</p>
-              </div>
-            </div>
-
-            {/* Quick stats */}
-            <div className="relative mt-8 grid grid-cols-3 gap-4 border-t border-white/10 pt-6">
-              {[
-                { label: "Orders", value: MOCK_ORDERS.length },
-                { label: "Wishlist", value: MOCK_WISHLIST.length },
-                { label: "Reviews", value: 4 },
-              ].map(({ label, value }) => (
-                <div key={label} className="text-center">
-                  <p className="text-xl font-semibold">{value}</p>
-                  <p className="text-[0.6rem] uppercase tracking-widest text-white/40 mt-0.5">
-                    {label}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </motion.div>
-
-          {/* ── Profile details ── */}
-          <motion.div variants={fadeUp} initial="hidden" animate="show" custom={1}>
-            <Section title="Profile Details" icon={User} custom={1}>
-              <ProfileRow
-                label="Full Name"
-                value={user?.fullName || "User"}
-                onSave={async (v) => {
-                  try {
-                    const parts = v.split(" ");
-                    await user?.update({ firstName: parts[0], lastName: parts.slice(1).join(" ") });
-                  } catch(e) { console.error(e) }
-                }}
-              />
-              <ProfileRow
-                label="Email"
-                value={user?.primaryEmailAddress?.emailAddress}
-                onSave={() => console.log("Updating email requires verification flow")}
-              />
-              <ProfileRow
-                label="Phone"
-                value={user?.unsafeMetadata?.phoneNumber}
-                onSave={async (v) => {
-                  try {
-                    await user?.update({ unsafeMetadata: { ...user.unsafeMetadata, phoneNumber: v } });
-                  } catch(e) { console.error(e) }
-                }}
-              />
-              <ProfileRow
-                label="City"
-                value={user?.unsafeMetadata?.city || ""}
-                onSave={async (v) => {
-                  try {
-                    await user?.update({ unsafeMetadata: { ...user.unsafeMetadata, city: v } });
-                  } catch(e) { console.error(e) }
-                }}
-              />
-            </Section>
-          </motion.div>
-
-          {/* ── Addresses ── */}
-          <motion.div variants={fadeUp} initial="hidden" animate="show" custom={1.5}>
-            <Section title="Addresses" icon={MapPin} custom={1.5}>
-              <div className="space-y-4">
-                {fetchingAddresses ? (
-                  <p className="text-sm text-[color:var(--ink,#1a1612)]/40 text-center py-4">Loading...</p>
-                ) : addresses.length === 0 ? (
-                  <p className="text-sm text-[color:var(--ink,#1a1612)]/40 text-center py-4">No addresses saved yet.</p>
+        {/* ── Profile Section ── */}
+        <motion.div variants={fadeUp} custom={0} className="mb-8">
+          <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 p-6 rounded-2xl border border-[color:var(--nude,#e8ddd0)] bg-white/70 backdrop-blur-sm relative">
+            {/* Avatar */}
+            <div className="relative group shrink-0">
+              <div className="w-24 h-24 rounded-full overflow-hidden border border-[color:var(--nude,#e8ddd0)] bg-[color:var(--parchment,#faf8f4)] flex items-center justify-center text-xl font-medium text-[color:var(--ink,#1a1612)]/50">
+                {avatarUrl ? (
+                  <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
                 ) : (
-                  addresses.map((addr) => (
-                    <div key={addr._id} className="relative p-4 rounded-xl border border-[color:var(--nude,#e8ddd0)] bg-[color:var(--parchment,#faf8f4)]/50">
-                      {addr.isDefault && (
-                        <span className="absolute top-4 right-4 text-[0.55rem] px-2 py-0.5 rounded-full bg-[color:var(--gold-deep,#b8960c)]/10 text-[color:var(--gold-deep,#b8960c)] font-medium">
-                          DEFAULT
-                        </span>
-                      )}
-                      <p className="text-xs uppercase tracking-widest text-[color:var(--ink,#1a1612)]/40 mb-1">{addr.label}</p>
-                      <p className="text-sm font-medium text-[color:var(--ink,#1a1612)]">{addr.street}</p>
-                      <p className="text-sm text-[color:var(--ink,#1a1612)]/70">{addr.city}, {addr.state} {addr.zipCode}</p>
-                      <p className="text-sm text-[color:var(--ink,#1a1612)]/70">{addr.country}</p>
-                      <div className="flex gap-3 mt-3">
-                        <button 
-                          onClick={() => { setEditingAddressId(addr._id); setAddressDraft(addr); }}
-                          className="text-xs text-[color:var(--gold-deep,#b8960c)] hover:underline"
-                        >
-                          Edit
-                        </button>
-                        <button 
-                          onClick={() => removeAddress(addr._id)}
-                          className="text-xs text-red-400 hover:underline"
-                        >
-                          Delete
-                        </button>
-                      </div>
-                    </div>
-                  ))
+                  initials
                 )}
-                
-                {editingAddressId ? (
-                  <div className="mt-4 p-4 rounded-xl border border-[color:var(--gold-deep,#b8960c)]/30 bg-white">
-                    <p className="text-xs uppercase tracking-widest text-[color:var(--gold-deep,#b8960c)] mb-3">
-                      {editingAddressId === 'new' ? 'Add New Address' : 'Edit Address'}
-                    </p>
-                    <div className="space-y-3">
-                      <input type="text" placeholder="Label (e.g. Home, Work)" value={addressDraft.label || ''} onChange={e => setAddressDraft({...addressDraft, label: e.target.value})} className="w-full text-sm p-2 rounded-lg border border-[color:var(--nude,#e8ddd0)] bg-transparent outline-none focus:border-[color:var(--gold-deep,#b8960c)] transition-colors" />
-                      <input type="text" placeholder="Street Address" value={addressDraft.street || ''} onChange={e => setAddressDraft({...addressDraft, street: e.target.value})} className="w-full text-sm p-2 rounded-lg border border-[color:var(--nude,#e8ddd0)] bg-transparent outline-none focus:border-[color:var(--gold-deep,#b8960c)] transition-colors" />
-                      <div className="grid grid-cols-2 gap-3">
-                        <input type="text" placeholder="City" value={addressDraft.city || ''} onChange={e => setAddressDraft({...addressDraft, city: e.target.value})} className="w-full text-sm p-2 rounded-lg border border-[color:var(--nude,#e8ddd0)] bg-transparent outline-none focus:border-[color:var(--gold-deep,#b8960c)] transition-colors" />
-                        <input type="text" placeholder="State" value={addressDraft.state || ''} onChange={e => setAddressDraft({...addressDraft, state: e.target.value})} className="w-full text-sm p-2 rounded-lg border border-[color:var(--nude,#e8ddd0)] bg-transparent outline-none focus:border-[color:var(--gold-deep,#b8960c)] transition-colors" />
-                      </div>
-                      <div className="grid grid-cols-2 gap-3">
-                        <input type="text" placeholder="ZIP / Postal Code" value={addressDraft.zipCode || ''} onChange={e => setAddressDraft({...addressDraft, zipCode: e.target.value})} className="w-full text-sm p-2 rounded-lg border border-[color:var(--nude,#e8ddd0)] bg-transparent outline-none focus:border-[color:var(--gold-deep,#b8960c)] transition-colors" />
-                        <input type="text" placeholder="Country" value={addressDraft.country || ''} onChange={e => setAddressDraft({...addressDraft, country: e.target.value})} className="w-full text-sm p-2 rounded-lg border border-[color:var(--nude,#e8ddd0)] bg-transparent outline-none focus:border-[color:var(--gold-deep,#b8960c)] transition-colors" />
-                      </div>
-                      <label className="flex items-center gap-2 text-sm text-[color:var(--ink,#1a1612)]">
-                        <input type="checkbox" checked={addressDraft.isDefault || false} onChange={e => setAddressDraft({...addressDraft, isDefault: e.target.checked})} className="rounded text-[color:var(--gold-deep,#b8960c)] focus:ring-[color:var(--gold-deep,#b8960c)] accent-[color:var(--gold-deep,#b8960c)]" />
-                        Set as Default Address
-                      </label>
-                      <div className="flex gap-3 pt-2">
-                        <button onClick={saveAddress} className="flex-1 py-2 rounded-lg bg-[color:var(--gold-deep,#b8960c)] text-white text-sm font-medium hover:opacity-90 transition-opacity">Save Address</button>
-                        <button onClick={() => setEditingAddressId(null)} className="flex-1 py-2 rounded-lg border border-[color:var(--nude,#e8ddd0)] text-[color:var(--ink,#1a1612)] text-sm hover:bg-[color:var(--nude,#e8ddd0)]/30 transition-colors">Cancel</button>
-                      </div>
-                    </div>
-                  </div>
-                ) : (
+              </div>
+              
+              {uploadingAvatar ? (
+                <div className="absolute inset-0 bg-white/60 flex items-center justify-center rounded-full">
+                  <span className="text-[10px] uppercase tracking-widest font-medium text-[color:var(--ink,#1a1612)]">Uploading</span>
+                </div>
+              ) : (
+                <button 
+                  onClick={() => fileInputRef.current?.click()}
+                  className="absolute inset-0 bg-[color:var(--ink,#1a1612)]/40 flex items-center justify-center rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                >
+                  <Camera size={20} className="text-white" />
+                </button>
+              )}
+              <input 
+                type="file" 
+                ref={fileInputRef} 
+                className="hidden" 
+                accept="image/*" 
+                onChange={handleAvatarUpload}
+              />
+            </div>
+
+            {/* Info */}
+            <div className="flex-1 text-center sm:text-left min-w-0">
+              <div className="flex items-center justify-between mb-1">
+                <p className="text-[0.6rem] uppercase tracking-widest text-[color:var(--ink,#1a1612)]/40">
+                  Personal Details
+                </p>
+                {!editingProfile && (
                   <button 
-                    onClick={() => { setEditingAddressId('new'); setAddressDraft({ country: 'India', isDefault: addresses.length === 0 }); }}
-                    className="w-full py-3 rounded-xl border border-dashed border-[color:var(--gold-deep,#b8960c)]/40 text-sm text-[color:var(--gold-deep,#b8960c)] hover:bg-[color:var(--gold-deep,#b8960c)]/5 transition-colors flex items-center justify-center gap-2"
+                    onClick={() => { setEditingProfile(true); setProfileDraft({ name: dbUser?.name !== "User" ? dbUser?.name : (clerkUser?.fullName || "") }); }}
+                    className="text-[color:var(--ink,#1a1612)]/40 hover:text-[color:var(--gold-deep,#b8960c)] transition-colors cursor-pointer"
                   >
-                    + Add New Address
+                    <Edit3 size={16} />
                   </button>
                 )}
               </div>
-            </Section>
-          </motion.div>
 
-          {/* ── Order history ── */}
-          <motion.div variants={fadeUp} initial="hidden" animate="show" custom={2}>
-            <Section title="Order History" icon={ShoppingBag} custom={2}>
-              {MOCK_ORDERS.length === 0 ? (
-                <p className="text-sm text-[color:var(--ink,#1a1612)]/40 text-center py-4">
-                  No orders yet.
-                </p>
-              ) : (
-                <div className="space-y-3">
-                  {MOCK_ORDERS.map((order) => (
-                    <div
-                      key={order.id}
-                      className="flex items-center gap-4 rounded-xl bg-[color:var(--nude,#e8ddd0)]/20 p-4"
-                    >
-                      <div
-                        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl"
-                        style={{
-                          background:
-                            "linear-gradient(135deg, var(--gold-mid,#d4a72c)18, var(--gold-deep,#b8960c)18)",
-                          backgroundColor: "var(--nude, #e8ddd0)",
-                        }}
-                      >
-                        <order.icon
-                          size={16}
-                          style={{ color: "var(--gold-deep, #b8960c)" }}
-                        />
-                      </div>
-
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-0.5">
-                          <span className="text-xs font-medium text-[color:var(--ink,#1a1612)]">
-                            {order.id}
-                          </span>
-                          <span
-                            className={`text-[0.6rem] px-2 py-0.5 rounded-full font-medium ${
-                              order.status === "Delivered"
-                                ? "bg-green-100 text-green-700"
-                                : "bg-amber-100 text-amber-700"
-                            }`}
-                          >
-                            {order.status}
-                          </span>
-                        </div>
-                        <p className="text-[0.7rem] text-[color:var(--ink,#1a1612)]/50 truncate">
-                          {order.items.join(", ")}
-                        </p>
-                      </div>
-
-                      <div className="text-right shrink-0">
-                        <p className="text-sm font-medium text-[color:var(--ink,#1a1612)]">
-                          {order.total}
-                        </p>
-                        <p className="text-[0.6rem] text-[color:var(--ink,#1a1612)]/40">
-                          {order.date}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </Section>
-          </motion.div>
-
-          {/* ── Wishlist ── */}
-          <motion.div variants={fadeUp} initial="hidden" animate="show" custom={3}>
-            <Section title="Wishlist" icon={Heart} custom={3}>
-              {MOCK_WISHLIST.length === 0 ? (
-                <p className="text-sm text-[color:var(--ink,#1a1612)]/40 text-center py-4">
-                  Your wishlist is empty.
-                </p>
-              ) : (
-                <div className="space-y-2.5">
-                  {MOCK_WISHLIST.map((item) => (
-                    <div
-                      key={item.id}
-                      className="flex items-center justify-between rounded-xl px-4 py-3 hover:bg-[color:var(--nude,#e8ddd0)]/25 transition-colors"
-                    >
-                      <div className="flex items-center gap-3">
-                        <Heart
-                          size={14}
-                          className="fill-[color:var(--gold-deep,#b8960c)] text-[color:var(--gold-deep,#b8960c)]"
-                        />
-                        <span className="text-sm text-[color:var(--ink,#1a1612)]">
-                          {item.name}
-                        </span>
-                        {item.tag && (
-                          <span className="text-[0.55rem] px-1.5 py-0.5 rounded-full bg-[color:var(--gold-deep,#b8960c)]/10 text-[color:var(--gold-deep,#b8960c)] font-medium">
-                            {item.tag}
-                          </span>
-                        )}
-                      </div>
-                      <span className="text-sm font-medium text-[color:var(--ink,#1a1612)]">
-                        {item.price}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </Section>
-          </motion.div>
-
-          {/* ── Preferences & notifications ── */}
-          <motion.div variants={fadeUp} initial="hidden" animate="show" custom={4}>
-            <Section title="Notifications" icon={Bell} custom={4}>
-              {[
-                { label: "New drop alerts", sub: "Be first to know about new collections" },
-                { label: "Order updates", sub: "Shipping, delivery, and return status" },
-                { label: "Wishlist restocks", sub: "When saved items are back in stock" },
-              ].map(({ label, sub }) => (
-                <div
-                  key={label}
-                  className="flex items-center justify-between py-3.5 border-b border-[color:var(--nude,#e8ddd0)]/40 last:border-0"
-                >
-                  <div>
-                    <p className="text-sm text-[color:var(--ink,#1a1612)]">{label}</p>
-                    <p className="text-xs text-[color:var(--ink,#1a1612)]/45 mt-0.5">{sub}</p>
+              {editingProfile ? (
+                <div className="mt-2 space-y-3">
+                  <input 
+                    type="text" 
+                    placeholder="Your Name" 
+                    value={profileDraft.name} 
+                    onChange={e => setProfileDraft({ name: e.target.value })} 
+                    className="w-full text-sm p-2.5 rounded-lg border border-[color:var(--nude,#e8ddd0)] bg-white outline-none focus:border-[color:var(--gold-deep,#b8960c)] transition-colors cursor-pointer"
+                  />
+                  <div className="flex gap-2">
+                    <button onClick={saveProfile} className="px-4 py-2 rounded-lg bg-[color:var(--ink,#1a1612)] text-white text-xs font-medium hover:opacity-90 transition-opacity cursor-pointer">Save</button>
+                    <button onClick={() => setEditingProfile(false)} className="px-4 py-2 rounded-lg border border-[color:var(--nude,#e8ddd0)] text-[color:var(--ink,#1a1612)] text-xs hover:bg-[color:var(--nude,#e8ddd0)]/30 transition-colors cursor-pointer">Cancel</button>
                   </div>
-                  {/* Toggle pill */}
-                  <TogglePill defaultOn />
                 </div>
-              ))}
-            </Section>
-          </motion.div>
-
-          {/* ── Security ── */}
-          <motion.div variants={fadeUp} initial="hidden" animate="show" custom={5}>
-            <Section title="Security" icon={Shield} custom={5}>
-              {[
-                { label: "Change password", href: "#" },
-                { label: "Two-factor authentication", href: "#" },
-                { label: "Linked accounts", href: "#" },
-              ].map(({ label, href }) => (
-                <a
-                  key={label}
-                  href={href}
-                  className="flex items-center justify-between py-3.5 border-b border-[color:var(--nude,#e8ddd0)]/40 last:border-0 hover:text-[color:var(--gold-deep,#b8960c)] transition-colors group"
-                >
-                  <span className="text-sm text-[color:var(--ink,#1a1612)] group-hover:text-[color:var(--gold-deep,#b8960c)] transition-colors">
-                    {label}
-                  </span>
-                  <ChevronRight size={14} className="text-[color:var(--ink,#1a1612)]/30 group-hover:text-[color:var(--gold-deep,#b8960c)] transition-colors" />
-                </a>
-              ))}
-            </Section>
-          </motion.div>
-
-          {/* ── Logout ── */}
-          <motion.div variants={fadeUp} initial="hidden" animate="show" custom={6}>
-            <AnimatePresence mode="wait">
-              {showLogoutConfirm ? (
-                <motion.div
-                  key="confirm"
-                  initial={{ opacity: 0, scale: 0.97 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.97 }}
-                  className="rounded-2xl border border-red-200/60 bg-white/70 p-6 text-center"
-                >
-                  <p className="text-sm text-[color:var(--ink,#1a1612)] mb-1 font-medium">
-                    Sign out of MiniMe?
+              ) : (
+                <>
+                  <h2 className="text-xl font-medium text-[color:var(--ink,#1a1612)] truncate">
+                    {displayName}
+                  </h2>
+                  <p className="text-sm text-[color:var(--ink,#1a1612)]/60 truncate mt-1">
+                    {displayEmail}
                   </p>
-                  <p className="text-xs text-[color:var(--ink,#1a1612)]/45 mb-5">
-                    You can always sign back in anytime.
-                  </p>
-                  <div className="flex gap-3 justify-center">
-                    <button
-                      onClick={() => setShowLogoutConfirm(false)}
-                      className="px-5 py-2 rounded-xl text-sm border border-[color:var(--nude,#e8ddd0)] text-[color:var(--ink,#1a1612)] hover:bg-[color:var(--nude,#e8ddd0)]/30 transition-colors"
-                    >
-                      Stay
-                    </button>
-                    <button
-                      onClick={handleLogout}
-                      className="px-5 py-2 rounded-xl text-sm bg-red-500 text-white hover:bg-red-600 transition-colors"
-                    >
-                      Yes, sign out
-                    </button>
+                </>
+              )}
+            </div>
+          </div>
+        </motion.div>
+
+        {/* ── Addresses ── */}
+        <Section title="Delivery Addresses" icon={MapPin} custom={1}>
+          <div className="divide-y divide-[color:var(--nude,#e8ddd0)]">
+            {addresses.length === 0 && !editingAddressId && (
+              <p className="p-6 text-center text-sm text-[color:var(--ink,#1a1612)]/40">
+                No addresses saved yet.
+              </p>
+            )}
+
+            {addresses.map(addr => (
+              <div key={addr._id} className="p-5 hover:bg-[color:var(--parchment,#faf8f4)]/30 transition-colors flex justify-between items-start">
+                <div>
+                  <div className="flex items-center gap-2 mb-1">
+                    <p className="text-xs uppercase tracking-widest text-[color:var(--ink,#1a1612)]/60 font-medium">
+                      {addr.label}
+                    </p>
+                    {addr.isDefault && (
+                      <span className="text-[0.55rem] px-2 py-0.5 rounded-full bg-[color:var(--gold-deep,#b8960c)]/10 text-[color:var(--gold-deep,#b8960c)] font-medium">
+                        DEFAULT
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-sm font-medium text-[color:var(--ink,#1a1612)] mt-2">{addr.street}</p>
+                  <p className="text-sm text-[color:var(--ink,#1a1612)]/70">{addr.city}, {addr.state} {addr.zipCode}</p>
+                  <p className="text-sm text-[color:var(--ink,#1a1612)]/70">{addr.country}</p>
+                </div>
+                <div className="flex gap-4">
+                  <button onClick={() => { setEditingAddressId(addr._id); setAddressDraft(addr); }} className="text-[color:var(--ink,#1a1612)]/40 hover:text-[color:var(--gold-deep,#b8960c)] transition-colors cursor-pointer">
+                    <Edit3 size={16} />
+                  </button>
+                  <button onClick={() => triggerRemoveAddress(addr._id)} className="text-[color:var(--ink,#1a1612)]/40 hover:text-red-400 transition-colors cursor-pointer">
+                    <Trash2 size={16} />
+                  </button>
+                </div>
+              </div>
+            ))}
+
+            <AnimatePresence>
+              {editingAddressId && (
+                <motion.div 
+                  initial={{ opacity: 0, height: 0 }} 
+                  animate={{ opacity: 1, height: 'auto' }} 
+                  exit={{ opacity: 0, height: 0 }}
+                  className="p-5 bg-[color:var(--parchment,#faf8f4)]/50"
+                >
+                  <div className="space-y-3">
+                    <input type="text" placeholder="Label (e.g. Home)" value={addressDraft.label || ''} onChange={e => setAddressDraft({...addressDraft, label: e.target.value})} className="w-full text-sm p-2.5 rounded-lg border border-[color:var(--nude,#e8ddd0)] bg-white outline-none focus:border-[color:var(--gold-deep,#b8960c)] transition-colors cursor-pointer" />
+                    <input type="text" placeholder="Street Address" value={addressDraft.street || ''} onChange={e => setAddressDraft({...addressDraft, street: e.target.value})} className="w-full text-sm p-2.5 rounded-lg border border-[color:var(--nude,#e8ddd0)] bg-white outline-none focus:border-[color:var(--gold-deep,#b8960c)] transition-colors cursor-pointer" />
+                    <div className="grid grid-cols-2 gap-3">
+                      <input type="text" placeholder="City" value={addressDraft.city || ''} onChange={e => setAddressDraft({...addressDraft, city: e.target.value})} className="w-full text-sm p-2.5 rounded-lg border border-[color:var(--nude,#e8ddd0)] bg-white outline-none focus:border-[color:var(--gold-deep,#b8960c)] transition-colors cursor-pointer" />
+                      <input type="text" placeholder="State" value={addressDraft.state || ''} onChange={e => setAddressDraft({...addressDraft, state: e.target.value})} className="w-full text-sm p-2.5 rounded-lg border border-[color:var(--nude,#e8ddd0)] bg-white outline-none focus:border-[color:var(--gold-deep,#b8960c)] transition-colors cursor-pointer" />
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      <input type="text" placeholder="ZIP" value={addressDraft.zipCode || ''} onChange={e => setAddressDraft({...addressDraft, zipCode: e.target.value})} className="w-full text-sm p-2.5 rounded-lg border border-[color:var(--nude,#e8ddd0)] bg-white outline-none focus:border-[color:var(--gold-deep,#b8960c)] transition-colors cursor-pointer" />
+                      <input type="text" placeholder="Country" value={addressDraft.country || ''} onChange={e => setAddressDraft({...addressDraft, country: e.target.value})} className="w-full text-sm p-2.5 rounded-lg border border-[color:var(--nude,#e8ddd0)] bg-white outline-none focus:border-[color:var(--gold-deep,#b8960c)] transition-colors cursor-pointer" />
+                    </div>
+                    <label className="flex items-center gap-2 text-sm text-[color:var(--ink,#1a1612)]/80 pt-2 cursor-pointer">
+                      <input type="checkbox" checked={addressDraft.isDefault || false} onChange={e => setAddressDraft({...addressDraft, isDefault: e.target.checked})} className="rounded text-[color:var(--gold-deep,#b8960c)] focus:ring-[color:var(--gold-deep,#b8960c)] cursor-pointer" />
+                      Set as Default Address
+                    </label>
+                    <div className="flex gap-3 pt-3">
+                      <button onClick={saveAddress} className="flex-1 py-2.5 rounded-lg bg-[color:var(--ink,#1a1612)] text-white text-sm font-medium hover:opacity-90 transition-opacity cursor-pointer">Save</button>
+                      <button onClick={() => setEditingAddressId(null)} className="flex-1 py-2.5 rounded-lg border border-[color:var(--nude,#e8ddd0)] text-[color:var(--ink,#1a1612)] text-sm hover:bg-[color:var(--nude,#e8ddd0)]/30 transition-colors cursor-pointer">Cancel</button>
+                    </div>
                   </div>
                 </motion.div>
-              ) : (
-                <motion.button
-                  key="btn"
-                  initial={{ opacity: 0, scale: 0.97 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.97 }}
-                  onClick={() => setShowLogoutConfirm(true)}
-                  className="
-                    w-full flex items-center justify-center gap-2.5 py-4 rounded-2xl
-                    border border-red-200/50 text-red-500 text-sm font-medium
-                    hover:bg-red-50 hover:border-red-300 transition-all
-                  "
-                >
-                  <LogOut size={15} />
-                  Sign out
-                </motion.button>
               )}
             </AnimatePresence>
-          </motion.div>
 
-          {/* Bottom spacing */}
-          <div className="h-8" />
-        </div>
-      </div>
-    </>
-  );
-}
+            {!editingAddressId && addresses.length < 10 && (
+              <button 
+                onClick={() => { setEditingAddressId('new'); setAddressDraft({ country: 'India', isDefault: addresses.length === 0 }); }}
+                className="w-full p-4 text-sm text-[color:var(--gold-deep,#b8960c)] hover:bg-[color:var(--parchment,#faf8f4)]/50 transition-colors flex items-center justify-center gap-2 font-medium cursor-pointer"
+              >
+                <Plus size={16} />
+                Add New Address
+              </button>
+            )}
+            {!editingAddressId && addresses.length >= 10 && (
+              <p className="w-full p-4 text-xs text-center text-[color:var(--ink,#1a1612)]/40 italic">
+                You have reached the maximum limit of 10 addresses.
+              </p>
+            )}
+          </div>
+        </Section>
 
-// ── Tiny toggle pill ───────────────────────────────────────────────────────────
-function TogglePill({ defaultOn = false }) {
-  const [on, setOn] = useState(defaultOn);
-  return (
-    <button
-      onClick={() => setOn((v) => !v)}
-      className={`relative h-5 w-9 rounded-full transition-colors duration-300 ${
-        on
-          ? "bg-[color:var(--gold-deep,#b8960c)]"
-          : "bg-[color:var(--nude,#e8ddd0)]"
-      }`}
-    >
-      <span
-        className={`absolute top-0.5 h-4 w-4 rounded-full bg-white shadow transition-transform duration-300 ${
-          on ? "translate-x-4" : "translate-x-0.5"
-        }`}
+        {/* ── Credit Cards ── */}
+        <Section title="Credit Cards" icon={Shield} custom={2}>
+          <div className="divide-y divide-[color:var(--nude,#e8ddd0)]">
+            {paymentCards.length === 0 && (
+              <p className="p-6 text-center text-sm text-[color:var(--ink,#1a1612)]/40">
+                No cards saved yet.
+              </p>
+            )}
+
+            {paymentCards.map(card => (
+              <div key={card._id} className="p-5 flex items-center justify-between hover:bg-[color:var(--parchment,#faf8f4)]/30 transition-colors">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-8 bg-[color:var(--parchment,#faf8f4)] border border-[color:var(--nude,#e8ddd0)] rounded flex items-center justify-center text-[0.6rem] font-medium uppercase text-[color:var(--ink,#1a1612)]">
+                    {card.brand}
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-[color:var(--ink,#1a1612)] tracking-widest">
+                      •••• •••• •••• {card.last4}
+                    </p>
+                    <p className="text-xs text-[color:var(--ink,#1a1612)]/50 mt-0.5">
+                      Expires {card.expMonth}/{card.expYear}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex gap-4">
+                  <button onClick={() => { 
+                    setEditingCardId(card._id); 
+                    setCardDraft({
+                      ...card,
+                      expiry: card.expMonth && card.expYear ? `${String(card.expMonth).padStart(2, '0')}/${String(card.expYear).slice(-2)}` : ''
+                    }); 
+                  }} className="text-[color:var(--ink,#1a1612)]/40 hover:text-[color:var(--gold-deep,#b8960c)] transition-colors cursor-pointer">
+                    <Edit3 size={16} />
+                  </button>
+                  <button onClick={() => triggerRemoveCard(card._id)} className="text-[color:var(--ink,#1a1612)]/40 hover:text-red-400 transition-colors cursor-pointer">
+                    <Trash2 size={16} />
+                  </button>
+                </div>
+              </div>
+            ))}
+
+            <AnimatePresence>
+              {editingCardId && (
+                <motion.div 
+                  initial={{ opacity: 0, height: 0 }} 
+                  animate={{ opacity: 1, height: 'auto' }} 
+                  exit={{ opacity: 0, height: 0 }}
+                  className="p-5 bg-[color:var(--parchment,#faf8f4)]/50"
+                >
+                  <div className="space-y-3">
+                    <input type="text" placeholder="Cardholder Name" value={cardDraft.name || ''} onChange={e => setCardDraft({...cardDraft, name: e.target.value})} className="w-full text-sm p-2.5 rounded-lg border border-[color:var(--nude,#e8ddd0)] bg-white outline-none focus:border-[color:var(--gold-deep,#b8960c)] transition-colors cursor-pointer" />
+                    <select 
+                      value={cardDraft.brand || 'Visa'} 
+                      onChange={e => setCardDraft({...cardDraft, brand: e.target.value})}
+                      className="w-full text-sm p-2.5 rounded-lg border border-[color:var(--nude,#e8ddd0)] bg-white outline-none focus:border-[color:var(--gold-deep,#b8960c)] transition-colors cursor-pointer"
+                    >
+                      <option value="Visa">Visa</option>
+                      <option value="Mastercard">Mastercard</option>
+                      <option value="American Express">American Express</option>
+                      <option value="Discover">Discover</option>
+                      <option value="RuPay">RuPay</option>
+                      <option value="Other">Other</option>
+                    </select>
+                    <input type="text" placeholder={editingCardId === 'new' ? "Card Number (16 digits)" : "New Card Number (leave blank to keep)"} value={cardDraft.cardNumber || ''} maxLength="16" onChange={e => setCardDraft({...cardDraft, cardNumber: e.target.value})} className="w-full text-sm p-2.5 rounded-lg border border-[color:var(--nude,#e8ddd0)] bg-white outline-none focus:border-[color:var(--gold-deep,#b8960c)] transition-colors tracking-widest cursor-pointer" />
+                    <div className="grid grid-cols-2 gap-3">
+                      <input 
+                        type="text" 
+                        placeholder="MM/YY" 
+                        value={cardDraft.expiry || ''} 
+                        maxLength="5" 
+                        onChange={e => {
+                          let val = e.target.value.replace(/\D/g, '');
+                          if (val.length > 2) val = val.slice(0, 2) + '/' + val.slice(2);
+                          setCardDraft({...cardDraft, expiry: val});
+                        }} 
+                        className="w-full text-sm p-2.5 rounded-lg border border-[color:var(--nude,#e8ddd0)] bg-white outline-none focus:border-[color:var(--gold-deep,#b8960c)] transition-colors cursor-pointer" 
+                      />
+                      <input type="text" placeholder="CVC" value={cardDraft.cvc || ''} maxLength="4" onChange={e => setCardDraft({...cardDraft, cvc: e.target.value})} className="w-full text-sm p-2.5 rounded-lg border border-[color:var(--nude,#e8ddd0)] bg-white outline-none focus:border-[color:var(--gold-deep,#b8960c)] transition-colors cursor-pointer" />
+                    </div>
+                    <div className="flex gap-3 pt-3">
+                      <button onClick={saveCreditCard} className="flex-1 py-2.5 rounded-lg bg-[color:var(--ink,#1a1612)] text-white text-sm font-medium hover:opacity-90 transition-opacity cursor-pointer">Save Card</button>
+                      <button onClick={() => setEditingCardId(null)} className="flex-1 py-2.5 rounded-lg border border-[color:var(--nude,#e8ddd0)] text-[color:var(--ink,#1a1612)] text-sm hover:bg-[color:var(--nude,#e8ddd0)]/30 transition-colors cursor-pointer">Cancel</button>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {!editingCardId && paymentCards.length < 3 && (
+              <button 
+                onClick={() => { setEditingCardId('new'); setCardDraft({ brand: 'Visa' }); }}
+                className="w-full p-4 text-sm text-[color:var(--gold-deep,#b8960c)] hover:bg-[color:var(--parchment,#faf8f4)]/50 transition-colors flex items-center justify-center gap-2 font-medium cursor-pointer"
+              >
+                <Plus size={16} />
+                Add Credit Card
+              </button>
+            )}
+            {!editingCardId && paymentCards.length >= 3 && (
+              <p className="w-full p-4 text-xs text-center text-[color:var(--ink,#1a1612)]/40 italic">
+                You have reached the maximum limit of 3 credit cards.
+              </p>
+            )}
+          </div>
+        </Section>
+
+        {/* ── Logout ── */}
+        <motion.div variants={fadeUp} custom={3} className="pt-6">
+          <button
+            onClick={() => {
+              openModal("Sign Out", "Are you sure you want to sign out of your account?", "Sign Out", handleLogout);
+            }}
+            className="
+              mx-auto flex items-center justify-center gap-2 px-8 py-3 rounded-full
+              border border-[color:var(--ink,#1a1612)]/10 text-[color:var(--ink,#1a1612)] text-sm font-medium
+              hover:bg-[color:var(--ink,#1a1612)] hover:text-white transition-all cursor-pointer
+            "
+          >
+            <LogOut size={16} />
+            Sign Out
+          </button>
+        </motion.div>
+
+        <div className="h-16" />
+      </motion.div>
+
+      {/* Reusable Modal */}
+      <ConfirmModal 
+        isOpen={modalConfig.isOpen}
+        title={modalConfig.title}
+        message={modalConfig.message}
+        confirmText={modalConfig.confirmText}
+        onConfirm={handleConfirm}
+        onCancel={closeModal}
       />
-    </button>
+    </div>
   );
 }
