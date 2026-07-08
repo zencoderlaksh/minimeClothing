@@ -1,17 +1,133 @@
 import User from "../models/User.js";
-import crypto from "crypto";
+import cloudinary from "../config/cloudinary.js";
+import { getAuth } from "@clerk/express";
+import dodo from "../config/dodo.js";
 
-// @desc    Get user addresses
-// @route   GET /api/v1/users/addresses
-// @access  Private
-export const getAddresses = async (req, res, next) => {
+// Helper to extract public ID from Cloudinary URL
+const extractPublicId = (url) => {
+  if (!url) return null;
   try {
-    const clerkId = req.auth.userId;
+    const parts = url.split("/");
+    const lastPart = parts[parts.length - 1];
+    const publicIdWithExtension = lastPart.split(".")[0];
+    const folderPath = parts.slice(parts.indexOf("minime_avatars")).join("/").split(".")[0];
+    return folderPath || publicIdWithExtension;
+  } catch (e) {
+    return null;
+  }
+};
+
+// @desc    Get complete user profile
+// @route   GET /api/v1/users/profile
+// @access  Private
+export const getProfile = async (req, res, next) => {
+  try {
+    const clerkId = getAuth(req).userId;
+    let user = await User.findOne({ clerkId });
+    if (!user) {
+      console.log("[Profile] User not found, creating fallback user for:", clerkId);
+      user = await User.create({
+        clerkId,
+        name: "User",
+        email: `${clerkId}@placeholder.com`,
+      });
+    }
+    res.status(200).json({ success: true, user });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Upload avatar to Cloudinary and update profile
+// @route   POST /api/v1/users/avatar
+// @access  Private
+export const uploadAvatar = async (req, res, next) => {
+  try {
+    console.log("[Avatar Upload] Starting for user:", getAuth(req).userId);
+    const clerkId = getAuth(req).userId;
     const user = await User.findOne({ clerkId });
+    
+    if (!user) {
+      console.log("[Avatar Upload] User not found in DB");
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    if (!req.file) {
+      console.log("[Avatar Upload] No file received in req.file");
+      return res.status(400).json({ success: false, message: "No image file provided" });
+    }
+
+    console.log(`[Avatar Upload] Received file: ${req.file.originalname}, Size: ${req.file.size}`);
+
+    // Delete old avatar if it exists and is hosted on Cloudinary
+    if (user.avatar && user.avatar.includes("cloudinary.com")) {
+      const oldPublicId = extractPublicId(user.avatar);
+      if (oldPublicId) {
+        console.log(`[Avatar Upload] Deleting old avatar: ${oldPublicId}`);
+        await cloudinary.uploader.destroy(oldPublicId).catch((err) => console.log("Failed to delete old avatar:", err));
+      }
+    }
+
+    // Upload new image from memory buffer to Cloudinary
+    console.log("[Avatar Upload] Uploading to Cloudinary...");
+    const b64 = Buffer.from(req.file.buffer).toString("base64");
+    const dataURI = "data:" + req.file.mimetype + ";base64," + b64;
+    
+    const uploadResponse = await cloudinary.uploader.upload(dataURI, {
+      folder: "minime_avatars",
+      resource_type: "auto",
+    });
+
+    console.log("[Avatar Upload] Cloudinary upload successful:", uploadResponse.secure_url);
+
+    user.avatar = uploadResponse.secure_url;
+    await user.save();
+
+    res.status(200).json({ success: true, avatar: user.avatar });
+  } catch (error) {
+    console.error("[Avatar Upload] Error:", error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// @desc    Update basic profile fields (not handled by Clerk, or syncing them back)
+// @route   PUT /api/v1/users/profile
+// @access  Private
+export const updateProfile = async (req, res, next) => {
+  try {
+    const clerkId = getAuth(req).userId;
+    const { name } = req.body;
+
+    const user = await User.findOneAndUpdate(
+      { clerkId },
+      { name },
+      { new: true }
+    );
+    
     if (!user) {
       return res.status(404).json({ success: false, message: "User not found" });
     }
-    res.status(200).json({ success: true, addresses: user.addresses });
+
+    // Sync to Dodo Payments
+    try {
+      if (!user.dodoCustomerId) {
+        const dodoCustomer = await dodo.customers.create({
+          name: user.name,
+          email: user.email,
+          phone_number: user.phone || ""
+        });
+        user.dodoCustomerId = dodoCustomer.customer_id;
+        await user.save();
+      } else {
+        await dodo.customers.update(user.dodoCustomerId, {
+          name: user.name,
+        });
+      }
+    } catch (err) {
+      console.error("Failed to sync profile to Dodo Payments:", err);
+    }
+
+    res.status(200).json({ success: true, user });
   } catch (error) {
     next(error);
   }
@@ -22,25 +138,23 @@ export const getAddresses = async (req, res, next) => {
 // @access  Private
 export const addAddress = async (req, res, next) => {
   try {
-    const clerkId = req.auth.userId;
+    const clerkId = getAuth(req).userId;
     const { label, street, city, state, zipCode, country, isDefault } = req.body;
 
     const user = await User.findOne({ clerkId });
-    if (!user) {
-      return res.status(404).json({ success: false, message: "User not found" });
+    if (!user) return res.status(404).json({ success: false, message: "User not found" });
+
+    if (user.addresses.length >= 10) {
+      return res.status(400).json({ success: false, message: "Maximum limit of 10 addresses reached." });
     }
 
     if (isDefault) {
-      // Unset any existing default
-      user.addresses.forEach((addr) => {
-        addr.isDefault = false;
-      });
+      user.addresses.forEach((addr) => (addr.isDefault = false));
     } else if (user.addresses.length === 0) {
-      // First address is always default
       req.body.isDefault = true;
     }
 
-    const newAddress = {
+    user.addresses.push({
       label: label || "Home",
       street,
       city,
@@ -48,10 +162,27 @@ export const addAddress = async (req, res, next) => {
       zipCode,
       country: country || "India",
       isDefault: req.body.isDefault !== undefined ? req.body.isDefault : isDefault,
-    };
+    });
 
-    user.addresses.push(newAddress);
     await user.save();
+
+    // Sync address to Dodo Payments Customer
+    try {
+      if (user.dodoCustomerId) {
+        // Mocking the sync based on generic structure
+        await dodo.customers.update(user.dodoCustomerId, {
+          billing_address: {
+            street: street,
+            city: city,
+            state: state,
+            zipcode: zipCode,
+            country: country || "India"
+          }
+        });
+      }
+    } catch (err) {
+      console.error("Failed to sync address to Dodo Payments:", err);
+    }
 
     res.status(201).json({ success: true, addresses: user.addresses });
   } catch (error) {
@@ -64,24 +195,18 @@ export const addAddress = async (req, res, next) => {
 // @access  Private
 export const updateAddress = async (req, res, next) => {
   try {
-    const clerkId = req.auth.userId;
+    const clerkId = getAuth(req).userId;
     const addressId = req.params.id;
     const { label, street, city, state, zipCode, country, isDefault } = req.body;
 
     const user = await User.findOne({ clerkId });
-    if (!user) {
-      return res.status(404).json({ success: false, message: "User not found" });
-    }
+    if (!user) return res.status(404).json({ success: false, message: "User not found" });
 
     const address = user.addresses.id(addressId);
-    if (!address) {
-      return res.status(404).json({ success: false, message: "Address not found" });
-    }
+    if (!address) return res.status(404).json({ success: false, message: "Address not found" });
 
     if (isDefault && !address.isDefault) {
-      user.addresses.forEach((addr) => {
-        addr.isDefault = false;
-      });
+      user.addresses.forEach((addr) => (addr.isDefault = false));
     }
 
     if (label) address.label = label;
@@ -93,7 +218,6 @@ export const updateAddress = async (req, res, next) => {
     if (isDefault !== undefined) address.isDefault = isDefault;
 
     await user.save();
-
     res.status(200).json({ success: true, addresses: user.addresses });
   } catch (error) {
     next(error);
@@ -105,115 +229,109 @@ export const updateAddress = async (req, res, next) => {
 // @access  Private
 export const deleteAddress = async (req, res, next) => {
   try {
-    const clerkId = req.auth.userId;
+    const clerkId = getAuth(req).userId;
     const addressId = req.params.id;
 
     const user = await User.findOne({ clerkId });
-    if (!user) {
-      return res.status(404).json({ success: false, message: "User not found" });
-    }
+    if (!user) return res.status(404).json({ success: false, message: "User not found" });
 
     user.addresses.pull(addressId);
     await user.save();
-
     res.status(200).json({ success: true, addresses: user.addresses });
   } catch (error) {
     next(error);
   }
 };
 
-// @desc    Sync user details from Clerk to DB
-// @route   POST /api/v1/users/sync
+// @desc    Add a payment card
+// @route   POST /api/v1/users/cards
 // @access  Private
-export const syncUser = async (req, res, next) => {
+export const addPaymentCard = async (req, res, next) => {
   try {
-    const clerkId = req.auth.userId;
-    const { email, firstName, lastName, avatarUrl, phoneNumber, city } = req.body;
+    const clerkId = getAuth(req).userId;
+    const { cardNumber, expMonth, expYear, cvc, name, brand } = req.body;
+    
+    const user = await User.findOne({ clerkId });
+    if (!user) return res.status(404).json({ success: false, message: "User not found" });
 
-    if (!email) {
-      return res.status(400).json({ success: false, message: "Email is required" });
+    if (user.paymentCards.length >= 3) {
+      return res.status(400).json({ success: false, message: "Maximum limit of 3 credit cards reached." });
     }
 
-    let user = await User.findOne({ clerkId });
-    if (!user) {
-      user = await User.create({
-        clerkId,
-        email,
-        firstName,
-        lastName,
-        avatarUrl,
-        phoneNumber,
-        city
-      });
-      console.log(`[Sync] Created new user in database: ${clerkId}`);
-      return res.status(201).json({ success: true, message: "User created and synced", user });
-    } else {
-      let updated = false;
-      if (email && user.email !== email) { user.email = email; updated = true; }
-      if (firstName && user.firstName !== firstName) { user.firstName = firstName; updated = true; }
-      if (lastName && user.lastName !== lastName) { user.lastName = lastName; updated = true; }
-      if (avatarUrl && user.avatarUrl !== avatarUrl) { user.avatarUrl = avatarUrl; updated = true; }
-      if (phoneNumber && user.phoneNumber !== phoneNumber) { user.phoneNumber = phoneNumber; updated = true; }
-      if (city && user.city !== city) { user.city = city; updated = true; }
+    const last4 = cardNumber ? cardNumber.slice(-4) : "0000";
 
-      if (updated) {
-        await user.save();
-        console.log(`[Sync] Updated existing user in database: ${clerkId}`);
+    const newCard = {
+      tokenId: `mock_tok_${Math.random().toString(36).substring(7)}`,
+      last4,
+      brand: brand || "Visa",
+      expMonth: expMonth || 12,
+      expYear: expYear || 2028,
+    };
+
+    user.paymentCards.push(newCard);
+    await user.save();
+
+    // Sync card to Dodo Payments (in a real scenario, this involves securely passing a token)
+    try {
+      if (user.dodoCustomerId) {
+        // Simulating attaching a payment method
+        console.log(`Syncing card ${last4} to Dodo Customer ${user.dodoCustomerId}`);
+        // await dodo.customers.paymentMethods.create(...)
       }
-      return res.status(200).json({ success: true, message: "User synced and updated", user });
+    } catch (err) {
+      console.error("Failed to sync card to Dodo Payments:", err);
     }
+
+    res.status(201).json({ success: true, paymentCards: user.paymentCards });
   } catch (error) {
     next(error);
   }
 };
 
-// @desc    Register a new user directly in DB (without Clerk)
-// @route   POST /api/v1/users/register
-// @access  Public
-export const registerUser = async (req, res, next) => {
+// @desc    Update a payment card
+// @route   PUT /api/v1/users/cards/:id
+// @access  Private
+export const updatePaymentCard = async (req, res, next) => {
   try {
-    const { name, email, password, phoneNumber, city } = req.body;
+    const clerkId = getAuth(req).userId;
+    const cardId = req.params.id;
+    const { cardNumber, expMonth, expYear, brand } = req.body;
 
-    if (!email || !password || !name) {
-      return res.status(400).json({ success: false, message: "Name, email, and password are required" });
+    const user = await User.findOne({ clerkId });
+    if (!user) return res.status(404).json({ success: false, message: "User not found" });
+
+    const card = user.paymentCards.id(cardId);
+    if (!card) return res.status(404).json({ success: false, message: "Card not found" });
+
+    if (cardNumber && cardNumber.length >= 4) {
+      card.last4 = cardNumber.slice(-4);
     }
+    if (brand) card.brand = brand;
+    if (expMonth) card.expMonth = expMonth;
+    if (expYear) card.expYear = expYear;
 
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return res.status(400).json({ success: false, message: "User with this email already exists" });
-    }
-
-    const hashedPassword = crypto.createHash("sha256").update(password).digest("hex");
-    const parts = name.split(" ");
-    const firstName = parts[0];
-    const lastName = parts.slice(1).join(" ");
-
-    const user = await User.create({
-      email,
-      firstName,
-      lastName,
-      password: hashedPassword,
-      phoneNumber,
-      city,
-    });
-
-    console.log(`[Register] Created new database-only user: ${user.email}`);
-
-    res.status(201).json({
-      success: true,
-      message: "User registered successfully",
-      user: {
-        id: user._id,
-        email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        phoneNumber: user.phoneNumber,
-        city: user.city,
-      }
-    });
+    await user.save();
+    res.status(200).json({ success: true, paymentCards: user.paymentCards });
   } catch (error) {
     next(error);
   }
 };
 
+// @desc    Delete a payment card
+// @route   DELETE /api/v1/users/cards/:id
+// @access  Private
+export const deletePaymentCard = async (req, res, next) => {
+  try {
+    const clerkId = getAuth(req).userId;
+    const cardId = req.params.id;
 
+    const user = await User.findOne({ clerkId });
+    if (!user) return res.status(404).json({ success: false, message: "User not found" });
+
+    user.paymentCards.pull(cardId);
+    await user.save();
+    res.status(200).json({ success: true, paymentCards: user.paymentCards });
+  } catch (error) {
+    next(error);
+  }
+};

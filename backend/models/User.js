@@ -4,31 +4,38 @@ const userSchema = new mongoose.Schema(
   {
     clerkId: {
       type: String,
+      required: true,
       unique: true,
-      sparse: true,
+      trim: true,
+    },
+    name: {
+      type: String,
+      required: true,
+      trim: true,
     },
     email: {
       type: String,
       required: true,
       unique: true,
+      lowercase: true,
+      trim: true,
     },
-    password: {
+    avatar: {
       type: String,
+      default: "",
     },
-    firstName: {
+    phone: {
       type: String,
+      default: "",
     },
-    lastName: {
-      type: String,
+    isAdmin: {
+      type: Boolean,
+      default: false,
     },
-    avatarUrl: {
+    role: {
       type: String,
-    },
-    phoneNumber: {
-      type: String,
-    },
-    city: {
-      type: String,
+      enum: ["user", "admin"],
+      default: "user",
     },
     addresses: [
       {
@@ -41,8 +48,22 @@ const userSchema = new mongoose.Schema(
         isDefault: { type: Boolean, default: false },
       },
     ],
+    paymentCards: [
+      {
+        tokenId: { type: String, required: true },
+        last4: { type: String, required: true },
+        brand: { type: String, required: true },
+        expMonth: { type: Number, required: true },
+        expYear: { type: Number, required: true },}
+    ],
+    dodoCustomerId: {
+      type: String,
+      default: null,
+    }
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+  }
 );
 
 const User = mongoose.model("User", userSchema);

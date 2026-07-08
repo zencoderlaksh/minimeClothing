@@ -268,6 +268,7 @@ export default function Navbar() {
                 <div className="flex flex-col gap-3 text-[15px]">
                   <Link to="/account" onClick={close} className="hover:opacity-60 transition">My Account</Link>
                   <Link to="/wishlist" onClick={close} className="hover:opacity-60 transition">My Wishlist</Link>
+                  <Link to="/orders" onClick={close} className="hover:opacity-60 transition">My Orders</Link>
                   <Link to="/cart" onClick={close} className="hover:opacity-60 transition">My Cart</Link>
                   <Link to="/about" onClick={close} className="hover:opacity-60 transition">About MiniMe</Link>
                   <Link to="/privacy-policy" onClick={close} className="hover:opacity-60 transition">Privacy Policy</Link>

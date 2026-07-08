@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useParams, useLocation } from "react-router-dom";
 import { useWishlistStore } from "../../stores/useWishlistStore";
 import { useCartStore } from "../../stores/useCartStore";
-import products from "../../assets/data";
 
 import CartSuccess from "./components/CartSuccess";
 import ProductGallery from "./components/ProductGallery";
@@ -14,11 +13,11 @@ const ProductDetail = () => {
   const { id } = useParams();
   const location = useLocation();
 
-  const product = products.find((item) => item.id === Number(id));
+  const [product, setProduct] = useState(null);
+  const [loading, setLoading] = useState(true);
+  
   const { addToCart } = useCartStore();
   const { addToWishlist, removeFromWishlist, isWishlisted } = useWishlistStore();
-
-  const images = product ? [product.mainImage, ...(product.images || [])] : [];
 
   const [selectedSize, setSelectedSize] = useState("");
   const [selectedColor, setSelectedColor] = useState(null);
@@ -27,22 +26,53 @@ const ProductDetail = () => {
   const [toasts, setToasts] = useState([]);
 
 useEffect(() => {
+    const fetchProduct = async () => {
+      setLoading(true);
+      try {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/products/${id}`);
+        const data = await res.json();
+        if (data.success) {
+          const p = data.product;
+          setProduct({
+            ...p,
+            id: p._id,
+            title: p.name,
+            price: p.originalPrice || (p.price ? p.price * 1.2 : null),
+            discountPrice: p.price,
+            mainImage: p.images?.[0] || "",
+            images: p.images?.slice(1) || [],
+            colors: [],
+            sizes: p.sizes?.length > 0 ? p.sizes : ["S", "M", "L"],
+            stockStatus: p.stock > 0 ? "In Stock" : "Out of Stock"
+          });
+        }
+      } catch (err) {
+        console.error("Failed to fetch product", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProduct();
+
     setQuantity(1);
     setSizeError(false);
-    
-    // REPLACE setAddedToCart(false) WITH THIS:
     setToasts([]); 
     
-    // Set initial active color
-    if (product?.colors?.length > 0) {
-      setSelectedColor(product.colors[0]);
-    }
-
     const incomingSize = location.state?.preSelectedSize;
     setSelectedSize(incomingSize || "");
 
     window.scrollTo({ top: 0, behavior: "smooth" });
-  }, [id, product, location.state?.preSelectedSize]);
+  }, [id, location.state?.preSelectedSize]);
+
+  useEffect(() => {
+    if (product?.colors?.length > 0 && !selectedColor) {
+      setSelectedColor(product.colors[0]);
+    }
+  }, [product]);
+
+  if (loading) {
+    return <div className="pt-32 text-center text-sm tracking-widest uppercase text-gray-400">Loading product...</div>;
+  }
 
   if (!product) {
     return (
@@ -69,6 +99,8 @@ useEffect(() => {
 const removeToast = (id) => {
   setToasts((prev) => prev.filter((toast) => toast.id !== id));
 };
+
+  const images = product ? [product.mainImage, ...(product.images || [])] : [];
 
   return (
     <div

@@ -1,5 +1,5 @@
 import { getAuth } from "@clerk/express";
-import User from "../models/user.model.js";
+import User from "../models/User.js";
 import clerkClient from "../config/clerk.js";
 import asyncHandler from "../utils/asyncHandler.js";
 import ApiError from "../utils/ApiError.js";
@@ -34,6 +34,27 @@ const authMiddleware = asyncHandler(async (req, res, next) => {
 
   req.user = user;
 
+  next();
+});
+
+export const isAdmin = asyncHandler(async (req, res, next) => {
+  const { userId } = getAuth(req);
+
+  if (!userId) {
+    throw new ApiError(401, "Unauthorized");
+  }
+
+  const user = await User.findOne({ clerkId: userId });
+
+  if (!user) {
+    throw new ApiError(404, "User not found");
+  }
+
+  if (user.role !== "admin" && user.isAdmin !== true && user.isadmin !== true) {
+    throw new ApiError(403, "Forbidden: Admin access required");
+  }
+
+  req.user = user;
   next();
 });
 

@@ -1,8 +1,8 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 
 // 3 slides × 2 images × 3 girls = 18 unique product links
 // Replace each link and name/price with your actual product data
-const slides = [
+const templateSlides = [
   {
     id: 1,
     images: [
@@ -10,18 +10,18 @@ const slides = [
         src: "https://t4.ftcdn.net/jpg/02/47/28/81/360_F_247288104_VrXGHpWlVzR67XPAZawlejdC8uvVNw6j.jpg",
         alt: "Look 1 - Left",
         girls: [
-          { id: 1, x: "22%", y: "50%", name: "Floral Sundress",   price: "₹1,299", link: "/product/1" },
-          { id: 2, x: "52%", y: "42%", name: "Lace Crop Top",     price: "₹999",   link: "/product/2" },
-          { id: 3, x: "78%", y: "48%", name: "Tie-Front Blouse",  price: "₹1,149", link: "/product/3" },
+          { id: 1, x: "22%", y: "50%", name: "Floral Sundress",   price: "₹1,299", link: "/products/all/1" },
+          { id: 2, x: "52%", y: "42%", name: "Lace Crop Top",     price: "₹999",   link: "/products/all/2" },
+          { id: 3, x: "78%", y: "48%", name: "Tie-Front Blouse",  price: "₹1,149", link: "/products/all/3" },
         ],
       },
       {
         src: "https://t4.ftcdn.net/jpg/02/47/28/81/360_F_247288104_VrXGHpWlVzR67XPAZawlejdC8uvVNw6j.jpg",
         alt: "Look 1 - Right",
         girls: [
-          { id: 1, x: "22%", y: "44%", name: "Striped Co-ord",    price: "₹1,849", link: "/product/4" },
-          { id: 2, x: "52%", y: "38%", name: "Satin Slip Dress",  price: "₹1,499", link: "/product/5" },
-          { id: 3, x: "78%", y: "46%", name: "Ruched Midi Skirt", price: "₹1,199", link: "/product/6" },
+          { id: 1, x: "22%", y: "44%", name: "Striped Co-ord",    price: "₹1,849", link: "/products/all/4" },
+          { id: 2, x: "52%", y: "38%", name: "Satin Slip Dress",  price: "₹1,499", link: "/products/all/5" },
+          { id: 3, x: "78%", y: "46%", name: "Ruched Midi Skirt", price: "₹1,199", link: "/products/all/6" },
         ],
       },
     ],
@@ -33,18 +33,18 @@ const slides = [
         src: "https://t4.ftcdn.net/jpg/02/47/28/81/360_F_247288104_VrXGHpWlVzR67XPAZawlejdC8uvVNw6j.jpg",
         alt: "Look 2 - Left",
         girls: [
-          { id: 1, x: "22%", y: "52%", name: "Puff Sleeve Top",   price: "₹1,099", link: "/product/7" },
-          { id: 2, x: "52%", y: "44%", name: "Embroidered Kurti", price: "₹1,599", link: "/product/8" },
-          { id: 3, x: "78%", y: "46%", name: "Floral Maxi Dress", price: "₹1,899", link: "/product/9" },
+          { id: 1, x: "22%", y: "52%", name: "Puff Sleeve Top",   price: "₹1,099", link: "/products/all/7" },
+          { id: 2, x: "52%", y: "44%", name: "Embroidered Kurti", price: "₹1,599", link: "/products/all/8" },
+          { id: 3, x: "78%", y: "46%", name: "Floral Maxi Dress", price: "₹1,899", link: "/products/all/9" },
         ],
       },
       {
         src: "https://t4.ftcdn.net/jpg/02/47/28/81/360_F_247288104_VrXGHpWlVzR67XPAZawlejdC8uvVNw6j.jpg",
         alt: "Look 2 - Right",
         girls: [
-          { id: 1, x: "22%", y: "50%", name: "Anarkali Print",    price: "₹1,599", link: "/product/10" },
-          { id: 2, x: "52%", y: "42%", name: "Block Print Kurti", price: "₹1,299", link: "/product/11" },
-          { id: 3, x: "78%", y: "48%", name: "Chikankari Kurti",  price: "₹1,799", link: "/product/12" },
+          { id: 1, x: "22%", y: "50%", name: "Anarkali Print",    price: "₹1,599", link: "/products/all/10" },
+          { id: 2, x: "52%", y: "42%", name: "Block Print Kurti", price: "₹1,299", link: "/products/all/11" },
+          { id: 3, x: "78%", y: "48%", name: "Chikankari Kurti",  price: "₹1,799", link: "/products/all/12" },
         ],
       },
     ],
@@ -56,18 +56,18 @@ const slides = [
         src: "https://t4.ftcdn.net/jpg/02/47/28/81/360_F_247288104_VrXGHpWlVzR67XPAZawlejdC8uvVNw6j.jpg",
         alt: "Look 3 - Left",
         girls: [
-          { id: 1, x: "22%", y: "54%", name: "Ribbed Lounge Set", price: "₹1,499", link: "/product/13" },
-          { id: 2, x: "52%", y: "46%", name: "Satin Slip Set",    price: "₹1,299", link: "/product/14" },
-          { id: 3, x: "78%", y: "50%", name: "Oversized Tee",     price: "₹699",   link: "/product/15" },
+          { id: 1, x: "22%", y: "54%", name: "Ribbed Lounge Set", price: "₹1,499", link: "/products/all/13" },
+          { id: 2, x: "52%", y: "46%", name: "Satin Slip Set",    price: "₹1,299", link: "/products/all/14" },
+          { id: 3, x: "78%", y: "50%", name: "Oversized Tee",     price: "₹699",   link: "/products/all/15" },
         ],
       },
       {
         src: "https://t4.ftcdn.net/jpg/02/47/28/81/360_F_247288104_VrXGHpWlVzR67XPAZawlejdC8uvVNw6j.jpg",
         alt: "Look 3 - Right",
         girls: [
-          { id: 1, x: "22%", y: "48%", name: "Modal Jogger Set",  price: "₹1,349", link: "/product/16" },
-          { id: 2, x: "52%", y: "40%", name: "Floral PJ Set",     price: "₹1,699", link: "/product/17" },
-          { id: 3, x: "78%", y: "52%", name: "Plush Robe Set",    price: "₹1,899", link: "/product/18" },
+          { id: 1, x: "22%", y: "48%", name: "Modal Jogger Set",  price: "₹1,349", link: "/products/all/16" },
+          { id: 2, x: "52%", y: "40%", name: "Floral PJ Set",     price: "₹1,699", link: "/products/all/17" },
+          { id: 3, x: "78%", y: "52%", name: "Plush Robe Set",    price: "₹1,899", link: "/products/all/18" },
         ],
       },
     ],
@@ -152,6 +152,41 @@ function ImagePanel({ imgData }) {
 export default function ShopLook() {
   const [current, setCurrent] = useState(0);
   const trackRef = useRef(null);
+  const [slides, setSlides] = useState(templateSlides);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/products`);
+        const data = await res.json();
+        if (data.success && data.products.length > 0) {
+          let pIndex = 0;
+          const products = data.products;
+          
+          const dynamicSlides = templateSlides.map(slide => ({
+            ...slide,
+            images: slide.images.map(img => ({
+              ...img,
+              girls: img.girls.map(girl => {
+                const p = products[pIndex % products.length];
+                pIndex++;
+                return p ? {
+                  ...girl,
+                  name: p.name,
+                  price: `₹${p.price.toLocaleString()}`,
+                  link: `/products/all/${p._id}`
+                } : girl;
+              })
+            }))
+          }));
+          setSlides(dynamicSlides);
+        }
+      } catch (err) {
+        console.error("Failed to fetch products for ShopLook", err);
+      }
+    };
+    fetchProducts();
+  }, []);
 
   const goTo = (idx) => {
     const clamped = Math.max(0, Math.min(slides.length - 1, idx));
