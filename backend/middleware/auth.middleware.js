@@ -27,7 +27,7 @@ const authMiddleware = asyncHandler(async (req, res, next) => {
       name:
         `${clerkUser.firstName || ""} ${clerkUser.lastName || ""}`.trim(),
       email,
-      image: clerkUser.imageUrl || "",
+      avatar: clerkUser.imageUrl || "",
       phoneNumber: clerkUser.phoneNumbers?.[0]?.phoneNumber || "",
     });
   }
