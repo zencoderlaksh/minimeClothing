@@ -114,7 +114,7 @@ function ImagePanel({ imgData }) {
   const [activePin, setActivePin] = useState(null);
 
   return (
-    <div className="relative w-1/2 flex-shrink-0 h-full overflow-hidden">
+    <div className="relative w-full md:w-1/2 flex-shrink-0 h-[420px] md:h-[560px] overflow-hidden" style={{ scrollSnapAlign: "start" }}>
       <img
         src={imgData.src}
         alt={imgData.alt}
@@ -153,6 +153,7 @@ export default function ShopLook() {
   const [current, setCurrent] = useState(0);
   const trackRef = useRef(null);
   const [slides, setSlides] = useState(templateSlides);
+  const allImages = slides.flatMap(s => s.images);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -189,16 +190,20 @@ export default function ShopLook() {
   }, []);
 
   const goTo = (idx) => {
-    const clamped = Math.max(0, Math.min(slides.length - 1, idx));
-    setCurrent(clamped);
-    if (trackRef.current) {
-      trackRef.current.scrollTo({ left: clamped * trackRef.current.offsetWidth, behavior: "smooth" });
+    if (trackRef.current && trackRef.current.firstElementChild) {
+      const itemWidth = trackRef.current.firstElementChild.offsetWidth;
+      const visibleItems = Math.round(trackRef.current.offsetWidth / itemWidth);
+      const maxIdx = allImages.length - visibleItems;
+      const clamped = Math.max(0, Math.min(maxIdx, idx));
+      setCurrent(clamped);
+      trackRef.current.scrollTo({ left: clamped * itemWidth, behavior: "smooth" });
     }
   };
 
   const handleScroll = () => {
-    if (trackRef.current) {
-      const idx = Math.round(trackRef.current.scrollLeft / trackRef.current.offsetWidth);
+    if (trackRef.current && trackRef.current.firstElementChild) {
+      const itemWidth = trackRef.current.firstElementChild.offsetWidth;
+      const idx = Math.round(trackRef.current.scrollLeft / itemWidth);
       setCurrent(idx);
     }
   };
@@ -225,16 +230,8 @@ export default function ShopLook() {
           style={{ scrollSnapType: "x mandatory", scrollbarWidth: "none" }}
         >
           <style>{`.hide-scroll::-webkit-scrollbar{display:none}`}</style>
-          {slides.map((slide) => (
-            <div
-              key={slide.id}
-              className="flex flex-shrink-0 w-full h-[420px] md:h-[560px]"
-              style={{ scrollSnapAlign: "start" }}
-            >
-              {slide.images.map((imgData, i) => (
-                <ImagePanel key={i} imgData={imgData} />
-              ))}
-            </div>
+          {allImages.map((imgData, i) => (
+            <ImagePanel key={i} imgData={imgData} />
           ))}
         </div>
 
@@ -253,7 +250,7 @@ export default function ShopLook() {
         {/* Right Arrow */}
         <button
           onClick={() => goTo(current + 1)}
-          disabled={current === slides.length - 1}
+          disabled={current >= (trackRef.current ? allImages.length - Math.round(trackRef.current.offsetWidth / trackRef.current.firstElementChild.offsetWidth) : allImages.length - (typeof window !== "undefined" && window.innerWidth >= 768 ? 2 : 1))}
           aria-label="Next"
           className="absolute right-3 cursor-pointer top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-white/88 border border-[#ece8e1] flex items-center justify-center shadow-md text-[#1a1714] hover:bg-white transition-all disabled:opacity-25 disabled:pointer-events-none"
         >
@@ -265,15 +262,22 @@ export default function ShopLook() {
 
       {/* Dots */}
       <div className="flex justify-center gap-2 mt-5">
-        {slides.map((_, i) => (
-          <button
-            key={i}
-            onClick={() => goTo(i)}
-            aria-label={`Slide ${i + 1}`}
-            className={`rounded-full border-none cursor-pointer p-0 transition-all duration-200
-              ${i === current ? "w-2.5 h-2.5 bg-[#1a1714] scale-125" : "w-2 h-2 bg-[#d4cec6]"}`}
-          />
-        ))}
+        {allImages.map((_, i) => {
+          // Hide dots for items that can't be snapped to (end of track)
+          const visibleItems = trackRef.current ? Math.round(trackRef.current.offsetWidth / trackRef.current.firstElementChild.offsetWidth) : (window.innerWidth >= 768 ? 2 : 1);
+          const maxIdx = allImages.length - visibleItems;
+          if (i > maxIdx) return null;
+
+          return (
+            <button
+              key={i}
+              onClick={() => goTo(i)}
+              aria-label={`Slide ${i + 1}`}
+              className={`rounded-full border-none cursor-pointer p-0 transition-all duration-200
+                ${i === current ? "w-2.5 h-2.5 bg-[#1a1714] scale-125" : "w-2 h-2 bg-[#d4cec6]"}`}
+            />
+          );
+        })}
       </div>
     </section>
   );

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { EffectCoverflow, Autoplay, Navigation } from "swiper/modules";
 
@@ -6,9 +6,25 @@ import "swiper/css";
 import "swiper/css/effect-coverflow";
 import "swiper/css/navigation";
 
-import videos from "../../../assets/videos";
-
 const Social = () => {
+  const [videos, setVideos] = useState([]);
+
+  useEffect(() => {
+    const fetchVideos = async () => {
+      try {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/videos`);
+        const data = await res.json();
+        if (data.success && data.videos.length > 0) {
+          setVideos(data.videos);
+        }
+      } catch (err) {
+        console.error("Failed to fetch videos", err);
+      }
+    };
+    fetchVideos();
+  }, []);
+
+  if (videos.length === 0) return null;
   return (
     <section className="bg-[#f5f5f5] py-16 overflow-hidden">
       <div className="max-w-[1800px] mx-auto px-4">
@@ -48,12 +64,12 @@ const Social = () => {
         >
           {videos.map((video) => (
             <SwiperSlide
-              key={video.id}
+              key={video._id}
               className="!w-[240px] sm:!w-[280px] md:!w-[380px] lg:!w-[520px]"
             >
               <div className="relative overflow-hidden rounded-[30px] shadow-2xl">
                 <video
-                  src={video.src}
+                  src={video.url}
                   autoPlay
                   muted
                   loop

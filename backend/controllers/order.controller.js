@@ -80,7 +80,7 @@ export const getUserOrders = asyncHandler(async (req, res) => {
     throw new ApiError(404, "User not found");
   }
 
-  const orders = await Order.find({ user: user._id }).sort({ createdAt: -1 });
+  const orders = await Order.find({ user: user._id, paymentStatus: { $ne: "pending" } }).sort({ createdAt: -1 });
 
   res.status(200).json({ success: true, count: orders.length, orders });
 });
@@ -89,7 +89,7 @@ export const getUserOrders = asyncHandler(async (req, res) => {
 // @route   GET /api/v1/orders/all
 // @access  Private (Admin only)
 export const getAllOrders = asyncHandler(async (req, res) => {
-  const orders = await Order.find().populate("user", "name email phone").sort({ createdAt: -1 });
+  const orders = await Order.find({ paymentStatus: { $ne: "pending" } }).populate("user", "name email phone").sort({ createdAt: -1 });
 
   res.status(200).json({ success: true, count: orders.length, orders });
 });

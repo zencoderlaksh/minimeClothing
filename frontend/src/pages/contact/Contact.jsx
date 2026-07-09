@@ -217,7 +217,7 @@ export default function Contact() {
             {
               icon: Mail,
               title: "Email",
-              value: "hello@minime.com",
+              value: "clothingminime4@gmail.com",
             },
             {
               icon: Phone,

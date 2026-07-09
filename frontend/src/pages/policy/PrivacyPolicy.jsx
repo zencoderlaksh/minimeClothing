@@ -134,7 +134,7 @@ const sections = [
     content: [
       {
         subtitle: "Get In Touch",
-        text: "If you have any questions, concerns, or requests regarding this Privacy Policy or how MiniMe handles your personal data, please contact our Privacy Team at privacy@minime.com or write to us at: MiniMe Privacy Team, 12 Style Avenue, Fashion District, New Delhi — 110001, India.",
+        text: "If you have any questions, concerns, or requests regarding this Privacy Policy or how MiniMe handles your personal data, please contact our Privacy Team at clothingminime4@gmail.com or write to us at: MiniMe Privacy Team, 12 Style Avenue, Fashion District, New Delhi — 110001, India.",
       },
     ],
   },
@@ -267,10 +267,10 @@ const PrivacyPolicy = () => {
               Our team is here to help.
             </p>
             <a
-              href="mailto:privacy@minime.com"
+              href="mailto:clothingminime4@gmail.com"
               style={{ display: "inline-block", background: "#F9A8D4", color: "#1A1A2E", padding: "12px 28px", borderRadius: 999, fontFamily: "sans-serif", fontSize: 14, fontWeight: 700, textDecoration: "none", letterSpacing: "0.05em" }}
             >
-              privacy@minime.com
+              clothingminime4@gmail.com
             </a>
           </div>
         </div>

@@ -3,15 +3,49 @@ import cloudinary from "../config/cloudinary.js";
 import { getAuth } from "@clerk/express";
 import dodo from "../config/dodo.js";
 
+// @desc    Sync user from Clerk to DB
+// @route   POST /api/v1/users/sync
+// @access  Private
+export const syncUser = async (req, res, next) => {
+  try {
+    const clerkId = getAuth(req).userId;
+    if (!clerkId) return res.status(401).json({ success: false, message: "Unauthorized" });
+
+    const { email, firstName, lastName, avatarUrl, phoneNumber, city } = req.body;
+
+    let user = await User.findOne({ clerkId });
+    if (!user) {
+      user = await User.create({
+        clerkId,
+        email,
+        firstName: firstName || "",
+        lastName: lastName || "",
+        avatarUrl: avatarUrl || "",
+        phoneNumber: phoneNumber || "",
+        city: city || ""
+      });
+    } else {
+      user.email = email || user.email;
+      user.firstName = firstName || user.firstName;
+      user.lastName = lastName || user.lastName;
+      if (avatarUrl) user.avatarUrl = avatarUrl;
+      await user.save();
+    }
+
+    res.status(200).json({ success: true, user });
+  } catch (error) {
+    console.error("Error in syncUser:", error);
+    next(error);
+  }
+};
+
 // Helper to extract public ID from Cloudinary URL
 const extractPublicId = (url) => {
   if (!url) return null;
   try {
     const parts = url.split("/");
-    const lastPart = parts[parts.length - 1];
-    const publicIdWithExtension = lastPart.split(".")[0];
-    const folderPath = parts.slice(parts.indexOf("minime_avatars")).join("/").split(".")[0];
-    return folderPath || publicIdWithExtension;
+    const folderPath = parts.slice(parts.indexOf("minime")).join("/").split(".")[0];
+    return folderPath;
   } catch (e) {
     return null;
   }
@@ -74,7 +108,7 @@ export const uploadAvatar = async (req, res, next) => {
     const dataURI = "data:" + req.file.mimetype + ";base64," + b64;
     
     const uploadResponse = await cloudinary.uploader.upload(dataURI, {
-      folder: "minime_avatars",
+      folder: "minime/avatar",
       resource_type: "auto",
     });
 
@@ -331,6 +365,83 @@ export const deletePaymentCard = async (req, res, next) => {
     user.paymentCards.pull(cardId);
     await user.save();
     res.status(200).json({ success: true, paymentCards: user.paymentCards });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Merge local cart with database cart
+// @route   POST /api/v1/users/cart/merge
+// @access  Private
+export const mergeCart = async (req, res, next) => {
+  try {
+    const clerkId = getAuth(req).userId;
+    const { localCart } = req.body;
+    
+    const user = await User.findOne({ clerkId });
+    if (!user) return res.status(404).json({ success: false, message: "User not found" });
+
+    let dbCart = user.cartItems || [];
+    const local = localCart || [];
+
+    // Simple merge: for each item in local, if it exists in dbCart, take max quantity.
+    // If it doesn't exist, push it.
+    local.forEach(localItem => {
+      const existingIdx = dbCart.findIndex(dbItem => 
+        dbItem.id === localItem.id && 
+        dbItem.size === localItem.size && 
+        dbItem.color?.name === localItem.color?.name
+      );
+
+      if (existingIdx !== -1) {
+        dbCart[existingIdx].quantity = Math.max(dbCart[existingIdx].quantity, localItem.quantity);
+      } else {
+        dbCart.push(localItem);
+      }
+    });
+
+    user.cartItems = dbCart;
+    // Mark as modified since it's a mixed/array type and we mutated it directly
+    user.markModified('cartItems');
+    await user.save();
+
+    res.status(200).json({ success: true, cart: user.cartItems });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Update/Overwrite database cart
+// @route   PUT /api/v1/users/cart
+// @access  Private
+export const updateCart = async (req, res, next) => {
+  try {
+    const clerkId = getAuth(req).userId;
+    const { cart } = req.body;
+    
+    const user = await User.findOne({ clerkId });
+    if (!user) return res.status(404).json({ success: false, message: "User not found" });
+
+    user.cartItems = cart || [];
+    user.markModified('cartItems');
+    await user.save();
+
+    res.status(200).json({ success: true, cart: user.cartItems });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Get database cart
+// @route   GET /api/v1/users/cart
+// @access  Private
+export const getCart = async (req, res, next) => {
+  try {
+    const clerkId = getAuth(req).userId;
+    const user = await User.findOne({ clerkId });
+    if (!user) return res.status(404).json({ success: false, message: "User not found" });
+
+    res.status(200).json({ success: true, cart: user.cartItems || [] });
   } catch (error) {
     next(error);
   }

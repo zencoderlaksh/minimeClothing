@@ -41,7 +41,6 @@ export function useUserSync() {
         const data = await res.json();
         if (data.success) {
           sessionStorage.setItem(syncKey, "true");
-          console.log("User successfully synchronized with backend DB.");
         }
       } catch (err) {
         console.error("Error syncing user with backend:", err);

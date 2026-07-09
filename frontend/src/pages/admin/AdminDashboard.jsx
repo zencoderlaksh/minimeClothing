@@ -6,6 +6,8 @@ import AddProduct from './components/AddProduct';
 import ManageProducts from './components/ManageProducts';
 import DashboardOverview from './components/DashboardOverview';
 import AdminOrders from './AdminOrders';
+import ManageVideos from './components/ManageVideos';
+import { Film } from 'lucide-react';
 
 const AdminDashboard = () => {
   const location = useLocation();
@@ -18,6 +20,7 @@ const AdminDashboard = () => {
     { name: 'Manage Orders', path: '/orders', icon: Package },
     { name: 'Add Product', path: '/add-product', icon: PlusCircle },
     { name: 'Manage Products', path: '/products', icon: Package },
+    { name: 'Manage Videos', path: '/videos', icon: Film },
   ];
 
   return (
@@ -78,6 +81,7 @@ const AdminDashboard = () => {
           <Route path="/orders" element={<AdminOrders />} />
           <Route path="/add-product" element={<AddProduct />} />
           <Route path="/products" element={<ManageProducts />} />
+          <Route path="/videos" element={<ManageVideos />} />
         </Routes>
       </main>
     </div>
