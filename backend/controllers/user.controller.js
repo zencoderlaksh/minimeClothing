@@ -3,41 +3,6 @@ import cloudinary from "../config/cloudinary.js";
 import { getAuth } from "@clerk/express";
 import dodo from "../config/dodo.js";
 
-// @desc    Sync user from Clerk to DB
-// @route   POST /api/v1/users/sync
-// @access  Private
-export const syncUser = async (req, res, next) => {
-  try {
-    const clerkId = getAuth(req).userId;
-    if (!clerkId) return res.status(401).json({ success: false, message: "Unauthorized" });
-
-    const { email, firstName, lastName, avatar, phone } = req.body;
-    const name = `${firstName || ""} ${lastName || ""}`.trim();
-
-    let user = await User.findOne({ clerkId });
-    if (!user) {
-      user = await User.create({
-        clerkId,
-        email,
-        name: name || "User",
-        avatar: avatar || "",
-        phone: phone || "",
-      });
-    } else {
-      user.email = email || user.email;
-      if (name) user.name = name;
-      if (avatar) user.avatar = avatar;
-      if (phone) user.phone = phone;
-      await user.save();
-    }
-
-    res.status(200).json({ success: true, user });
-  } catch (error) {
-    console.error("Error in syncUser:", error);
-    next(error);
-  }
-};
-
 // Helper to extract public ID from Cloudinary URL
 const extractPublicId = (url) => {
   if (!url) return null;
