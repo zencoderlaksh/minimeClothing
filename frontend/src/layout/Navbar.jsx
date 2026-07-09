@@ -199,11 +199,11 @@ export default function Navbar() {
             shadow-[0_20px_40px_rgba(0,0,0,0.06)]
             transition-all duration-500 ease-out z-[90]
             overflow-y-auto
-            ${menuOpen ? "max-h-[85vh] opacity-100 py-8" : "max-h-0 opacity-0 py-0"}
+            ${menuOpen ? "max-h-[85vh] opacity-100 py-6 sm:py-8" : "max-h-0 opacity-0 py-0"}
           `}
         >
-          <div className="max-w-6xl mx-auto px-6 md:px-10">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-10">
+          <div className="max-w-6xl mx-auto px-4 md:px-10">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-8 sm:gap-y-10">
 
               {/* SHOP */}
               <div>
@@ -282,52 +282,52 @@ export default function Navbar() {
       </nav>
 
       {/* ── CONTACT OVERLAY ── */}
-      {contactOpen && (
-        <div
-          className="fixed inset-0 bg-black/30 z-40"
-          onClick={() => setContactOpen(false)}
-        />
-      )}
+      <div
+        className={`fixed inset-0 bg-black/30 z-40 transition-opacity duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+          contactOpen ? "opacity-100 visible" : "opacity-0 invisible"
+        }`}
+        onClick={() => setContactOpen(false)}
+      />
 
       {/* ── CONTACT SIDEBAR ── */}
       <div
         className={`
           fixed top-0 right-0 h-screen
           w-full sm:w-[520px]
-          bg-[#FEF9F3] z-100 shadow-2xl
-          transition-transform duration-700 ease-in-out
+          bg-[#FEF9F3] z-[100] shadow-2xl
+          transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]
           ${contactOpen ? "translate-x-0" : "translate-x-full"}
         `}
       >
-        <div className="flex justify-between items-center px-8 py-8">
-          <h2 className="text-5xl font-light tracking-wide">CONTACT US</h2>
+        <div className="flex justify-between items-center px-6 sm:px-8 py-4 sm:py-8">
+          <h2 className="text-2xl sm:text-4xl font-light tracking-wide">CONTACT US</h2>
           <button onClick={() => setContactOpen(false)} className="cursor-pointer">
-            <HiXMark className="text-3xl" />
+            <HiXMark className="text-2xl sm:text-3xl" />
           </button>
         </div>
 
-        <div className="px-8 py-6 space-y-14">
+        <div className="px-6 sm:px-8 py-2 sm:py-6 space-y-5 sm:space-y-10">
           <div>
-            <a href="tel:+911234567890" className="text-xl underline">Call Us +91 1234567890</a>
-            <p className="mt-4 text-lg">Monday to Sunday from 10 am to 7 pm.</p>
+            <a href="tel:+911234567890" className="text-lg sm:text-xl underline">Call Us +91 1234567890</a>
+            <p className="mt-2 sm:mt-4 text-base sm:text-lg">Monday to Sunday from 10 am to 7 pm.</p>
           </div>
 
           <div>
-            <a href="https://wa.me/911234567890" className="text-xl underline">WhatsApp Us</a>
-            <p className="mt-4 text-lg">Monday to Sunday from 10 am to 7 pm.</p>
+            <a href="https://wa.me/911234567890" className="text-lg sm:text-xl underline">WhatsApp Us</a>
+            <p className="mt-2 sm:mt-4 text-base sm:text-lg">Monday to Sunday from 10 am to 7 pm.</p>
           </div>
 
           <div>
-            <span className="text-xl underline cursor-pointer">LIVE CHAT</span>
-            <p className="mt-4 text-lg">Monday to Sunday from 10 am to 7 pm.</p>
+            <span className="text-lg sm:text-xl underline cursor-pointer">LIVE CHAT</span>
+            <p className="mt-2 sm:mt-4 text-base sm:text-lg">Monday to Sunday from 10 am to 7 pm.</p>
           </div>
 
-          <div className="pt-8">
-            <h3 className="text-3xl mb-8">Do you need further assistance?</h3>
+          <div className="pt-2 sm:pt-6 pb-4">
+            <h3 className="text-lg sm:text-2xl mb-3 sm:mb-6">Do you need further assistance?</h3>
             <Link
               to="/contact"
               onClick={() => setContactOpen(false)}
-              className="text-2xl underline cursor-pointer"
+              className="text-lg sm:text-2xl underline cursor-pointer"
             >
               Get in Contact with Us
             </Link>

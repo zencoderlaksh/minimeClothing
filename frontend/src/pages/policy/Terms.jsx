@@ -16,7 +16,7 @@ MiniMe reserves the right to update or modify these Terms at any time without pr
     title: "Account Registration & Responsibility",
     content: `To access certain features of MiniMe — such as placing orders, saving wishlists, and tracking deliveries — you may need to create an account. You agree to provide accurate, current, and complete information during registration and to update such information as necessary.
 
-You are solely responsible for maintaining the confidentiality of your account credentials and for all activities that occur under your account. MiniMe will not be liable for any loss or damage resulting from unauthorized use of your account. Notify us immediately at support@minime.com if you suspect any breach of security or unauthorized use.`,
+You are solely responsible for maintaining the confidentiality of your account credentials and for all activities that occur under your account. MiniMe will not be liable for any loss or damage resulting from unauthorized use of your account. Notify us immediately at clothingminime4@gmail.com if you suspect any breach of security or unauthorized use.`,
   },
   {
     id: "orders",
@@ -80,7 +80,7 @@ If a dispute cannot be resolved informally, it shall be subject to the exclusive
     title: "Contact & Support",
     content: `If you have any questions, concerns, or feedback about these Terms & Conditions or any aspect of MiniMe's services, we'd love to hear from you. You can reach our support team at:
 
-Email: support@minime.com
+Email: clothingminime4@gmail.com
 Phone: +91 98100 00000 (Mon–Sat, 10am–6pm IST)
 Address: MiniMe HQ, 12 Style Avenue, Fashion District, New Delhi — 110001, India
 
@@ -245,8 +245,8 @@ const Terms = () => {
             <p style={{ color: "#fff", fontFamily: "Georgia, serif", fontSize: 18, marginBottom: 16, lineHeight: 1.4 }}>
               Got questions about our terms?
             </p>
-            <a href="mailto:support@minime.com" style={{ color: "#E8C547", fontSize: 13, letterSpacing: "0.06em", textDecoration: "none", borderBottom: "1px solid #E8C547", paddingBottom: 2 }}>
-              support@minime.com →
+            <a href="mailto:clothingminime4@gmail.com" style={{ color: "#E8C547", fontSize: 13, letterSpacing: "0.06em", textDecoration: "none", borderBottom: "1px solid #E8C547", paddingBottom: 2 }}>
+              clothingminime4@gmail.com →
             </a>
           </div>
           <div style={{ background: "#E8C547", borderRadius: 20, padding: "32px 28px" }}>

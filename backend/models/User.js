@@ -59,6 +59,10 @@ const userSchema = new mongoose.Schema(
     dodoCustomerId: {
       type: String,
       default: null,
+    },
+    cartItems: {
+      type: Array,
+      default: [],
     }
   },
   {

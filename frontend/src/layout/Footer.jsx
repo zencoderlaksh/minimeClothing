@@ -100,7 +100,7 @@ export default function Footer() {
             <div className="space-y-3 text-gray-600">
               <p>Jaipur, Rajasthan</p>
               <p>+91 XXXXX XXXXX</p>
-              <p>minimeclothing@gmail.com</p>
+              <p>clothingminime4@gmail.com</p>
             </div>
 
             <div className="flex gap-4 mt-6">

@@ -1,11 +1,16 @@
 // stores/useCartStore.js
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
 const isSameItem = (i, id, size, color) =>
   i.id === id && i.size === size && i.color?.name === color?.name;
 
-export const useCartStore = create((set) => ({
-  cart: [],
+export const useCartStore = create(
+  persist(
+    (set) => ({
+      cart: [],
+      hasMergedOnLogin: false,
+      setHasMergedOnLogin: (val) => set({ hasMergedOnLogin: val }),
 
   addToCart: (product, quantity, size, color) => {
     set((state) => {
@@ -40,4 +45,9 @@ export const useCartStore = create((set) => ({
       ),
     }));
   },
-}));
+    }),
+    {
+      name: "cart-storage", // unique name
+    }
+  )
+);

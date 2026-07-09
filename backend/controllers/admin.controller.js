@@ -1,4 +1,5 @@
 import Product from "../models/Product.js";
+import Video from "../models/Video.js";
 import cloudinary from "../config/cloudinary.js";
 import asyncHandler from "../utils/asyncHandler.js";
 import ApiError from "../utils/ApiError.js";
@@ -21,7 +22,7 @@ export const uploadProductImages = asyncHandler(async (req, res) => {
     let dataURI = "data:" + file.mimetype + ";base64," + b64;
     
     const uploadResponse = await cloudinary.uploader.upload(dataURI, {
-      folder: "minimeClothing/products",
+      folder: "minime/products",
       resource_type: "auto",
     });
 
@@ -162,4 +163,75 @@ export const deleteProduct = asyncHandler(async (req, res) => {
 export const getAdminProducts = asyncHandler(async (req, res) => {
   const products = await Product.find().sort({ createdAt: -1 });
   res.status(200).json({ success: true, products });
+});
+
+// @desc    Upload video to Cloudinary
+// @route   POST /api/v1/admin/videos/upload
+// @access  Private/Admin
+export const uploadVideo = asyncHandler(async (req, res) => {
+  const file = req.file;
+  
+  if (!file) {
+    throw new ApiError(400, "No video provided");
+  }
+
+  const b64 = Buffer.from(file.buffer).toString("base64");
+  const dataURI = "data:" + file.mimetype + ";base64," + b64;
+  
+  const uploadResponse = await cloudinary.uploader.upload(dataURI, {
+    folder: "minime/videos",
+    resource_type: "video",
+  });
+
+  res.status(200).json({ success: true, url: uploadResponse.secure_url, publicId: uploadResponse.public_id });
+});
+
+// @desc    Add a new video
+// @route   POST /api/v1/admin/videos
+// @access  Private/Admin
+export const addVideo = asyncHandler(async (req, res) => {
+  const { url, publicId } = req.body;
+
+  if (!url) {
+    throw new ApiError(400, "Please provide a video URL");
+  }
+
+  const video = await Video.create({
+    url,
+    publicId: publicId || null,
+  });
+
+  res.status(201).json({ success: true, video });
+});
+
+// @desc    Delete a video
+// @route   DELETE /api/v1/admin/videos/:id
+// @access  Private/Admin
+export const deleteVideo = asyncHandler(async (req, res) => {
+  const videoId = req.params.id;
+  const video = await Video.findById(videoId);
+  
+  if (!video) {
+    throw new ApiError(404, "Video not found");
+  }
+
+  if (video.publicId) {
+    try {
+      await cloudinary.uploader.destroy(video.publicId, { resource_type: "video" });
+    } catch (error) {
+      console.error("Failed to delete video from Cloudinary:", error);
+    }
+  }
+
+  await Video.findByIdAndDelete(videoId);
+
+  res.status(200).json({ success: true, message: "Video deleted" });
+});
+
+// @desc    Get all videos for admin dashboard
+// @route   GET /api/v1/admin/videos
+// @access  Private/Admin
+export const getAdminVideos = asyncHandler(async (req, res) => {
+  const videos = await Video.find().sort({ createdAt: -1 });
+  res.status(200).json({ success: true, videos });
 });

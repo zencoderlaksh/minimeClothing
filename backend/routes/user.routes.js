@@ -3,6 +3,7 @@ import { requireAuth } from "@clerk/express";
 import multer from "multer";
 
 import {
+  syncUser,
   getProfile,
   updateProfile,
   uploadAvatar,
@@ -12,6 +13,9 @@ import {
   addPaymentCard,
   updatePaymentCard,
   deletePaymentCard,
+  mergeCart,
+  updateCart,
+  getCart
 } from "../controllers/user.controller.js";
 
 const router = Router();
@@ -24,6 +28,9 @@ const upload = multer({
 
 // Protect all user routes (authentication handled by Clerk)
 router.use(requireAuth());
+
+// Sync route
+router.post("/sync", syncUser);
 
 // Profile routes
 router.get("/profile", getProfile);
@@ -39,5 +46,10 @@ router.delete("/addresses/:id", deleteAddress);
 router.post("/cards", addPaymentCard);
 router.put("/cards/:id", updatePaymentCard);
 router.delete("/cards/:id", deletePaymentCard);
+
+// Cart Routes
+router.get("/cart", getCart);
+router.post("/cart/merge", mergeCart);
+router.put("/cart", updateCart);
 
 export default router;

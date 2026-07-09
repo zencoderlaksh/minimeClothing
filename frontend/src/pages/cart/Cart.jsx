@@ -1,12 +1,24 @@
 import { useCartStore } from "../../stores/useCartStore";
 import { Link } from 'react-router-dom';
 import { useAuth } from "@clerk/react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { X } from "lucide-react";
 
 const Cart = () => {
   const { cart, removeFromCart, updateQuantity } = useCartStore();
-  const { getToken } = useAuth();
+  const { getToken, isSignedIn } = useAuth();
   const [isCheckingOut, setIsCheckingOut] = useState(false);
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
+
+  // Lock body scroll when modal is open
+  useEffect(() => {
+    if (showLoginPrompt) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => { document.body.style.overflow = 'unset'; };
+  }, [showLoginPrompt]);
 
   const total = cart.reduce(
     (acc, item) => acc + item.discountPrice * item.quantity,
@@ -33,6 +45,11 @@ const Cart = () => {
   };
 
   const handleCheckout = async () => {
+    if (!isSignedIn) {
+      setShowLoginPrompt(true);
+      return;
+    }
+    setShowLoginPrompt(false);
     try {
       setIsCheckingOut(true);
       const token = await getToken();
@@ -221,6 +238,27 @@ const Cart = () => {
           </div>
         )}
       </div>
+
+      {showLoginPrompt && (
+        <div style={styles.modalOverlay} onClick={() => setShowLoginPrompt(false)}>
+          <div style={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+            <button style={styles.closeModalBtn} onClick={() => setShowLoginPrompt(false)}>
+              <X size={24} />
+            </button>
+            <div style={styles.modalIconWrapper}>
+              <span style={styles.modalIcon}>✦</span>
+            </div>
+            <h2 style={styles.modalTitle}>Sign In Required</h2>
+            <p style={styles.modalSubtitle}>
+              Please log in or create an account to proceed to secure checkout and complete your order.
+            </p>
+            <div style={styles.modalActions}>
+              <Link to="/login" style={styles.primaryLoginBtn}>Log In</Link>
+              <Link to="/signup" style={styles.secondaryLoginBtn}>Create Account</Link>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
@@ -609,6 +647,93 @@ const styles = {
     fontFamily: "sans-serif",
     letterSpacing: "0.03em",
   },
+  modalOverlay: {
+    position: "fixed",
+    inset: 0,
+    backgroundColor: "rgba(26, 24, 18, 0.6)",
+    backdropFilter: "blur(4px)",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    zIndex: 1000,
+    padding: "1rem",
+  },
+  modalContent: {
+    background: colors.cream,
+    padding: "3rem 2rem",
+    maxWidth: "480px",
+    width: "100%",
+    position: "relative",
+    textAlign: "center",
+    boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
+  },
+  closeModalBtn: {
+    position: "absolute",
+    top: "1rem",
+    right: "1rem",
+    background: "transparent",
+    border: "none",
+    color: colors.midBrown,
+    cursor: "pointer",
+    padding: "0.5rem",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    transition: "color 0.2s",
+  },
+  modalIconWrapper: {
+    marginBottom: "1.5rem",
+  },
+  modalIcon: {
+    fontSize: "2.5rem",
+    color: colors.gold,
+    display: "block",
+  },
+  modalTitle: {
+    fontSize: "2.5rem",
+    fontWeight: 300,
+    color: colors.black,
+    margin: "0 0 1rem",
+    fontStyle: "italic",
+    fontFamily: "'Cormorant Garamond', serif",
+  },
+  modalSubtitle: {
+    fontSize: "15px",
+    color: colors.midBrown,
+    fontFamily: "sans-serif",
+    lineHeight: 1.6,
+    marginBottom: "2.5rem",
+  },
+  modalActions: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "1rem",
+  },
+  primaryLoginBtn: {
+    background: colors.black,
+    color: colors.cream,
+    padding: "1.2rem",
+    textDecoration: "none",
+    fontSize: "12px",
+    letterSpacing: "0.3em",
+    fontFamily: "sans-serif",
+    textTransform: "uppercase",
+    transition: "background 0.3s",
+    display: "block",
+  },
+  secondaryLoginBtn: {
+    background: "transparent",
+    color: colors.black,
+    border: `1px solid ${colors.black}`,
+    padding: "1.2rem",
+    textDecoration: "none",
+    fontSize: "12px",
+    letterSpacing: "0.3em",
+    fontFamily: "sans-serif",
+    textTransform: "uppercase",
+    transition: "background 0.3s, color 0.3s",
+    display: "block",
+  }
 };
 
 export default Cart;
