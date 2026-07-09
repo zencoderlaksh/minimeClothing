@@ -65,21 +65,22 @@ router.post(
         return res.status(500).json({ success: false, message: "Error saving user to DB" });
       }
     } else if (eventType === "user.updated") {
-      try {
-        const { email_addresses, first_name, last_name, image_url, unsafe_metadata } = evt.data;
-        const email = email_addresses && email_addresses.length > 0 ? email_addresses[0].email_address : "";
-        const phone = unsafe_metadata?.phoneNumber || "";
-        const name = `${first_name || ""} ${last_name || ""}`.trim();
+  try {
+    const { email_addresses, first_name, last_name, image_url, unsafe_metadata } = evt.data;
+    const email = email_addresses?.[0]?.email_address || "";
+    const phone = unsafe_metadata?.phoneNumber || "";
+    const name = `${first_name || ""} ${last_name || ""}`.trim();
 
-        await User.findOneAndUpdate(
-          { clerkId: id },
-          { email, name: name || "User", avatar: image_url, phone },
-          { new: true }
-        );
-      } catch (error) {
-        console.error("Error updating user in DB:", error);
-      }
-    } else if (eventType === "user.deleted") {
+    await User.findOneAndUpdate(
+      { clerkId: id },
+      { email, name: name || "User", avatar: image_url, phone },
+      { new: true }
+    );
+  } catch (error) {
+    console.error("Error updating user in DB:", error);
+    return res.status(500).json({ success: false, message: "Error updating user in DB" });
+  }
+} else if (eventType === "user.deleted") {
       try {
         await User.findOneAndDelete({ clerkId: id });
       } catch (error) {
