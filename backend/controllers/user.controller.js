@@ -11,24 +11,23 @@ export const syncUser = async (req, res, next) => {
     const clerkId = getAuth(req).userId;
     if (!clerkId) return res.status(401).json({ success: false, message: "Unauthorized" });
 
-    const { email, firstName, lastName, avatarUrl, phoneNumber, city } = req.body;
+    const { email, firstName, lastName, avatar, phone } = req.body;
+    const name = `${firstName || ""} ${lastName || ""}`.trim();
 
     let user = await User.findOne({ clerkId });
     if (!user) {
       user = await User.create({
         clerkId,
         email,
-        firstName: firstName || "",
-        lastName: lastName || "",
-        avatarUrl: avatarUrl || "",
-        phoneNumber: phoneNumber || "",
-        city: city || ""
+        name: name || "User",
+        avatar: avatar || "",
+        phone: phone || "",
       });
     } else {
       user.email = email || user.email;
-      user.firstName = firstName || user.firstName;
-      user.lastName = lastName || user.lastName;
-      if (avatarUrl) user.avatarUrl = avatarUrl;
+      if (name) user.name = name;
+      if (avatar) user.avatar = avatar;
+      if (phone) user.phone = phone;
       await user.save();
     }
 
