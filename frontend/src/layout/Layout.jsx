@@ -6,8 +6,8 @@ import { useAuth } from "@clerk/react";
 import { useCartStore } from '../stores/useCartStore';
 
 export default function Layout() {
-  const { cart, hasMergedOnLogin, setHasMergedOnLogin } = useCartStore();
-  const { isSignedIn, getToken } = useAuth();
+  const { cart, hasMergedOnLogin, setHasMergedOnLogin, userId } = useCartStore();
+  const { isLoaded, isSignedIn, getToken, userId: clerkUserId } = useAuth();
   const prevCartRef = useRef(cart);
   const isFirstMount = useRef(true);
 
@@ -74,12 +74,27 @@ export default function Layout() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cart, isSignedIn, hasMergedOnLogin]);
 
-  // If user logs out, reset hasMergedOnLogin
+  // 3. Robust Logout/Switch Detection
   useEffect(() => {
-    if (isSignedIn === false) {
-      setHasMergedOnLogin(false);
+    if (!isLoaded) return;
+    
+    const currentClerkId = clerkUserId || null;
+
+    if (userId !== currentClerkId) {
+      if (userId !== null && currentClerkId === null) {
+        // User logged out (or their session expired)
+        useCartStore.setState({ cart: [], hasMergedOnLogin: false, userId: null });
+      } else if (userId !== null && currentClerkId !== null) {
+        // User switched accounts directly
+        useCartStore.setState({ cart: [], hasMergedOnLogin: false, userId: currentClerkId });
+      } else if (userId === null && currentClerkId !== null) {
+        // Guest just logged in! 
+        // We DO NOT clear the cart, because we want it to merge in useEffect #1.
+        // We just claim ownership of it.
+        useCartStore.setState({ userId: currentClerkId });
+      }
     }
-  }, [isSignedIn]);
+  }, [isLoaded, clerkUserId, userId]);
   return (
     <div className="flex flex-col min-h-screen">
       <Navbar />

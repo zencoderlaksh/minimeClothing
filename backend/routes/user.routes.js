@@ -3,7 +3,6 @@ import { requireAuth } from "@clerk/express";
 import multer from "multer";
 
 import {
-  syncUser,
   getProfile,
   updateProfile,
   uploadAvatar,
@@ -28,9 +27,6 @@ const upload = multer({
 
 // Protect all user routes (authentication handled by Clerk)
 router.use(requireAuth());
-
-// Sync route
-router.post("/sync", syncUser);
 
 // Profile routes
 router.get("/profile", getProfile);

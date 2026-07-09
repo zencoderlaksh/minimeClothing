@@ -10,6 +10,7 @@ export const useCartStore = create(
     (set) => ({
       cart: [],
       hasMergedOnLogin: false,
+      userId: null,
       setHasMergedOnLogin: (val) => set({ hasMergedOnLogin: val }),
 
   addToCart: (product, quantity, size, color) => {
