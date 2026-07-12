@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { Routes, Route, Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, PlusCircle, Package, LogOut, Menu, X } from 'lucide-react';
+import { LayoutDashboard, PlusCircle, Package, LogOut, Menu, X, Users } from 'lucide-react';
 import { useAuth } from '@clerk/react';
 import AddProduct from './components/AddProduct';
 import ManageProducts from './components/ManageProducts';
 import DashboardOverview from './components/DashboardOverview';
 import AdminOrders from './AdminOrders';
 import ManageVideos from './components/ManageVideos';
+import ManageUsers from './components/ManageUsers';
 import { Film } from 'lucide-react';
 
 const AdminDashboard = () => {
@@ -21,6 +22,7 @@ const AdminDashboard = () => {
     { name: 'Add Product', path: '/add-product', icon: PlusCircle },
     { name: 'Manage Products', path: '/products', icon: Package },
     { name: 'Manage Videos', path: '/videos', icon: Film },
+    { name: 'Manage Users', path: '/users', icon: Users },
   ];
 
   return (
@@ -82,6 +84,7 @@ const AdminDashboard = () => {
           <Route path="/add-product" element={<AddProduct />} />
           <Route path="/products" element={<ManageProducts />} />
           <Route path="/videos" element={<ManageVideos />} />
+          <Route path="/users" element={<ManageUsers />} />
         </Routes>
       </main>
     </div>

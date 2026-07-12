@@ -1,5 +1,6 @@
 import Product from "../models/Product.js";
 import Video from "../models/Video.js";
+import User from "../models/User.js";
 import cloudinary from "../config/cloudinary.js";
 import asyncHandler from "../utils/asyncHandler.js";
 import ApiError from "../utils/ApiError.js";
@@ -234,4 +235,12 @@ export const deleteVideo = asyncHandler(async (req, res) => {
 export const getAdminVideos = asyncHandler(async (req, res) => {
   const videos = await Video.find().sort({ createdAt: -1 });
   res.status(200).json({ success: true, videos });
+});
+
+// @desc    Get all users for admin dashboard
+// @route   GET /api/v1/admin/users
+// @access  Private/Admin
+export const getUsers = asyncHandler(async (req, res) => {
+  const users = await User.find().select("-paymentCards -addresses").sort({ createdAt: -1 });
+  res.status(200).json({ success: true, users });
 });

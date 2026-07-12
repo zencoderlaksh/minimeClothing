@@ -13,6 +13,7 @@ import {
   addVideo,
   deleteVideo,
   getAdminVideos,
+  getUsers,
 } from "../controllers/admin.controller.js";
 
 const router = Router();
@@ -39,5 +40,8 @@ router.get("/videos", getAdminVideos);
 router.post("/videos", addVideo);
 router.delete("/videos/:id", deleteVideo);
 router.post("/videos/upload", upload.single("video"), uploadVideo);
+
+// User management
+router.get("/users", getUsers);
 
 export default router;
