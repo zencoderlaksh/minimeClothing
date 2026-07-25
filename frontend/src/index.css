@@ -9,8 +9,36 @@
 /* body {
   font-family: "Source Code Pro", monospace;
 } */
+/* Original font definition commented out as requested
  * {
   font-family: "Source Code Pro", monospace !important;
+}
+*/
+
+/* 
+  ====== UNIQUE & PREMIUM FONT OPTIONS ======
+  Since you want something that stands out and feels exclusive, 
+  here are two distinct "boutique" combinations:
+
+  Option A (Avant-Garde Luxury - Currently Applied):
+  Vibe: Modern, edgy, high-end designer. 
+  Headings: "Syne" | Body: "DM Sans"
+
+  Option B (Classic Haute Couture):
+  Vibe: Timeless, expensive, Vogue-style fashion house.
+  Headings: "Cormorant Garamond" | Body: "Jost"
+  ===========================================
+*/
+@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=DM+Sans:ital,wght@0,400..1000;1,400..1000&family=Jost:ital,wght@0,100..900;1,100..900&family=Syne:wght@400..800&display=swap");
+
+* {
+  /* Using DM Sans for body text - highly readable but modern */
+  font-family: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Applying Syne to all headings for that unique designer brand look */
+h1, h2, h3, h4, h5, h6, .font-serif-display {
+  font-family: "Syne", ui-sans-serif, system-ui, sans-serif;
 }
 
 @custom-variant dark (&:is(.dark *));
