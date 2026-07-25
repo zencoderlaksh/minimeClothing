@@ -19,7 +19,7 @@ const ProductDetailsRight = ({
 
   return (
     <div>
-      <p className="text-[11px] text-gray-400 mb-5 tracking-wide">
+      <p className="text-sm sm:text-base text-gray-400 mb-5 tracking-wide">
         Select the size of the item to see the expected delivery date.
       </p>
 
@@ -29,7 +29,7 @@ const ProductDetailsRight = ({
           onClick={() => setShowSizePanel((p) => !p)}
           className="w-full flex justify-between items-center py-3.5 px-0 cursor-pointer hover:bg-gray-50 transition-colors"
         >
-          <span className="text-[11px] uppercase tracking-[0.2em] text-black">
+          <span className="text-sm uppercase tracking-widest text-black">
             Size
             {selectedSize ? (
               <span className="font-semibold ml-2">{selectedSize}</span>
@@ -47,7 +47,7 @@ const ProductDetailsRight = ({
                 <button
                   key={size}
                   onClick={() => { setSelectedSize(size); setSizeError(false); }}
-                  className={`py-2.5 text-[11px] tracking-widest uppercase border transition-all duration-150 cursor-pointer ${
+                  className={`py-2.5 text-sm tracking-widest uppercase border transition-all duration-150 cursor-pointer ${
                     selectedSize === size
                       ? "bg-black text-white border-black"
                       : "bg-white text-black border-gray-300 hover:border-black"
@@ -58,7 +58,7 @@ const ProductDetailsRight = ({
               ))}
             </div>
             {sizeError && (
-              <p className="text-[11px] text-red-500 tracking-wide mb-2">
+              <p className="text-sm text-red-500 tracking-wide mb-2">
                 Please select a size to continue.
               </p>
             )}
@@ -68,7 +68,7 @@ const ProductDetailsRight = ({
 
       {/* QUANTITY */}
       <div className="flex items-center gap-4 my-5">
-        <span className="text-[11px] tracking-[0.2em] uppercase text-gray-500">Qty</span>
+        <span className="text-sm tracking-widest uppercase text-gray-500">Qty</span>
         <div className="flex items-center border border-gray-300">
           <button
             className="px-3 py-2 hover:bg-gray-50 disabled:opacity-30 transition-colors cursor-pointer"
@@ -77,7 +77,7 @@ const ProductDetailsRight = ({
           >
             <Minus size={12} />
           </button>
-          <span className="px-4 text-[13px] min-w-[32px] text-center">{quantity}</span>
+          <span className="px-4 text-base min-w-[32px] text-center">{quantity}</span>
           <button
             className="px-3 py-2 hover:bg-gray-50 disabled:opacity-30 transition-colors cursor-pointer"
             onClick={() => setQuantity((p) => Math.min(product.stock || 99, p + 1))}
@@ -95,7 +95,7 @@ const ProductDetailsRight = ({
           handleAddToCart();
         }}
         disabled={isOutOfStock}
-        className={`w-full py-4 text-[11px] uppercase tracking-[0.3em] transition-all duration-300 flex items-center justify-center gap-2 ${
+        className={`w-full py-4 text-sm uppercase tracking-widest transition-all duration-300 flex items-center justify-center gap-2 ${
           isOutOfStock
             ? "bg-gray-200 text-gray-400 cursor-not-allowed"
             : "bg-black text-white hover:bg-[#1a1a1a] cursor-pointer"
@@ -113,7 +113,7 @@ const ProductDetailsRight = ({
       {/* WISHLIST */}
       <button
         onClick={handleWishlist}
-        className="w-full py-3.5 text-[11px] uppercase tracking-[0.25em] border border-gray-300 mt-2 flex items-center justify-center gap-2 hover:border-black transition-colors cursor-pointer"
+        className="w-full py-3.5 text-sm uppercase tracking-widest border border-gray-300 mt-2 flex items-center justify-center gap-2 hover:border-black transition-colors cursor-pointer"
       >
         <Heart
           size={13}
@@ -129,18 +129,18 @@ const ProductDetailsRight = ({
       <div className="space-y-0">
         <button 
           onClick={() => setShowSizeGuide(!showSizeGuide)}
-          className="w-full flex items-center justify-between text-[12px] tracking-wide text-black hover:text-gray-500 transition-colors cursor-pointer py-3 border-b border-gray-100"
+          className="w-full flex items-center justify-between text-sm sm:text-base tracking-wide text-black hover:text-gray-500 transition-colors cursor-pointer py-3 border-b border-gray-100"
         >
           <div className="flex items-center gap-3">
             <Ruler size={13} className="shrink-0" />
-            <span className="uppercase tracking-widest text-[11px]">Size Guide</span>
+            <span className="uppercase tracking-widest text-sm">Size Guide</span>
           </div>
           <Plus size={13} className={`transition-transform duration-300 ${showSizeGuide ? "rotate-45" : ""}`} />
         </button>
         
         {showSizeGuide && (
           <div className="py-4">
-            <table className="w-full text-[11px] border border-gray-100">
+            <table className="w-full text-sm border border-gray-100">
               <thead>
                 <tr className="bg-gray-50">
                   <th className="p-2 text-left tracking-widest uppercase font-medium text-gray-500">Size</th>
@@ -162,7 +162,7 @@ const ProductDetailsRight = ({
         )}
       </div>
 
-      <p className="text-[11px] text-gray-400 leading-relaxed mt-4">
+      <p className="text-sm sm:text-base text-gray-500 leading-relaxed mt-4">
         Complimentary Shipping and Collect in Store, Complimentary Exchanges &amp; Returns, Secure Payments and Signature Packaging
       </p>
     </div>

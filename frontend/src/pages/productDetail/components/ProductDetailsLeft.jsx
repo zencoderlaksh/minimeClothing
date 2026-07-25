@@ -4,33 +4,33 @@ const ProductDetailsLeft = ({ product, selectedColor, setSelectedColor }) => {
   return (
     <div>
       {product.category && (
-        <p className="text-[10px] tracking-[0.3em] uppercase text-gray-400 mb-3">
+        <p className="text-xs sm:text-sm tracking-[0.2em] uppercase text-gray-400 mb-3">
           {product.category}
         </p>
       )}
 
-      <h1 className="text-[22px] font-light leading-snug text-black mb-4" style={{ letterSpacing: "-0.01em" }}>
+      <h1 className="text-2xl sm:text-3xl font-light leading-snug text-black mb-4" style={{ letterSpacing: "-0.01em" }}>
         {product.title}
       </h1>
 
       <div className="flex items-baseline gap-3 mb-6">
-        <span className="text-[18px] font-light text-black">
+        <span className="text-xl sm:text-2xl font-light text-black">
           ₹{product.discountPrice.toLocaleString()}
         </span>
         {product.price && product.price !== product.discountPrice && (
-          <span className="text-[13px] text-gray-400 line-through">
+          <span className="text-sm sm:text-base text-gray-400 line-through">
             ₹{product.price.toLocaleString()}
           </span>
         )}
         {product.discountPercent && (
-          <span className="text-[11px] text-[#5a7a4a] tracking-wide">
+          <span className="text-xs sm:text-sm text-[#5a7a4a] tracking-wide">
             {product.discountPercent}% off
           </span>
         )}
       </div>
 
       {selectedColor && (
-        <p className="text-[12px] text-gray-500 mb-3 tracking-wide">
+        <p className="text-sm sm:text-base text-gray-500 mb-3 tracking-wide">
           Variation <span className="text-black font-medium">{selectedColor.name}</span>
         </p>
       )}
@@ -59,18 +59,18 @@ const ProductDetailsLeft = ({ product, selectedColor, setSelectedColor }) => {
 
       <div className="border-t border-gray-200 mb-6" />
 
-      <h3 className="text-[10px] uppercase tracking-[0.3em] font-semibold mb-4 text-black">
+      <h3 className="text-xs sm:text-sm uppercase tracking-[0.2em] font-semibold mb-4 text-black">
         Product Description
       </h3>
       {product.badge && (
-        <p className="text-[11px] text-gray-400 tracking-widest uppercase mb-2">
+        <p className="text-xs sm:text-sm text-gray-400 tracking-widest uppercase mb-2">
           Style {product.id}
         </p>
       )}
-      <p className="text-[13px] text-gray-600 leading-[1.95]">{product.description}</p>
+      <p className="text-sm sm:text-base text-gray-600 leading-[1.95]">{product.description}</p>
 
       <div className="mt-5">
-        <span className="text-[11px] tracking-wide text-gray-400">
+        <span className="text-sm sm:text-base tracking-wide text-gray-400">
          {product.stockStatus}
 {product.stock > 0 && product.stockStatus !== "Out of Stock" && (
   <span className="ml-2">· {product.stock} units available</span>

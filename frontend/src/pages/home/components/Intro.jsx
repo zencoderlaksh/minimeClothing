@@ -14,6 +14,50 @@ const backgroundImages = [
   heroImage,
 ];
 
+// Custom Typewriter Effect Component
+const Typewriter = ({ lines, delay = 80 }) => {
+  const [displayedLines, setDisplayedLines] = useState(lines.map(() => ''));
+  const [currentLine, setCurrentLine] = useState(0);
+  const [currentChar, setCurrentChar] = useState(0);
+
+  useEffect(() => {
+    if (currentLine < lines.length) {
+      if (currentChar < lines[currentLine].length) {
+        const timeout = setTimeout(() => {
+          setDisplayedLines(prev => {
+            const newLines = [...prev];
+            newLines[currentLine] = lines[currentLine].substring(0, currentChar + 1);
+            return newLines;
+          });
+          setCurrentChar(prev => prev + 1);
+        }, delay);
+        return () => clearTimeout(timeout);
+      } else {
+        const timeout = setTimeout(() => {
+          setCurrentLine(prev => prev + 1);
+          setCurrentChar(0);
+        }, 300);
+        return () => clearTimeout(timeout);
+      }
+    }
+  }, [currentLine, currentChar, lines, delay]);
+
+  return (
+    <>
+      {displayedLines.map((line, index) => (
+        <span key={index} className="block leading-tight">
+          {line}
+          {/* Show cursor on the active typing line, or at the end if finished */}
+          {((currentLine === index && currentChar < lines[index].length) || 
+            (currentLine >= lines.length && index === lines.length - 1)) && (
+            <span className="animate-pulse opacity-70">|</span>
+          )}
+        </span>
+      ))}
+    </>
+  );
+};
+
 export default function Intro() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const timerRef = useRef(null);
@@ -128,9 +172,7 @@ export default function Intro() {
       <div className="relative z-20 h-screen flex flex-col items-center justify-center">
         <div className="text-center px-6">
           <h1 className="text-white text-5xl md:text-7xl font-extralight tracking-[0.15em] uppercase">
-            Timeless Elegance
-            <br />
-            For Every Woman
+            <Typewriter lines={["Timeless Elegance", "For Every Woman"]} delay={100} />
           </h1>
 
           <p className="text-white/80 mt-6 text-lg tracking-widest uppercase">

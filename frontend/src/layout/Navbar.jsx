@@ -6,8 +6,11 @@ import {
   HiMagnifyingGlass,
   HiOutlineUser,
   HiOutlineHeart,
+  HiOutlinePhone,
+  HiOutlineChatBubbleLeftRight,
+  HiOutlineEnvelope
 } from "react-icons/hi2";
-import { BsHandbag } from "react-icons/bs";
+import { BsHandbag, BsWhatsapp } from "react-icons/bs";
 import { logo } from "../assets/images";
 import { useWishlistStore } from "../stores/useWishlistStore";
 import { useCartStore } from "../stores/useCartStore";
@@ -293,45 +296,69 @@ export default function Navbar() {
       <div
         className={`
           fixed top-0 right-0 h-screen
-          w-full sm:w-[520px]
+          w-full sm:w-[480px]
           bg-[#FEF9F3] z-[100] shadow-2xl
           transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]
           ${contactOpen ? "translate-x-0" : "translate-x-full"}
         `}
       >
-        <div className="flex justify-between items-center px-6 sm:px-8 py-4 sm:py-8">
-          <h2 className="text-2xl sm:text-4xl font-light tracking-wide">CONTACT US</h2>
-          <button onClick={() => setContactOpen(false)} className="cursor-pointer">
-            <HiXMark className="text-2xl sm:text-3xl" />
+        <div className="flex justify-between items-center px-8 sm:px-10 py-6 sm:py-8 border-b border-black/5">
+          <h2 className="text-xl sm:text-2xl font-medium tracking-wider font-serif-display uppercase">Contact Us</h2>
+          <button onClick={() => setContactOpen(false)} className="cursor-pointer hover:rotate-90 transition-transform duration-500">
+            <HiXMark className="text-3xl text-black/60 hover:text-black transition-colors" />
           </button>
         </div>
 
-        <div className="px-6 sm:px-8 py-2 sm:py-6 space-y-5 sm:space-y-10">
-          <div>
-            <a href="tel:+911234567890" className="text-lg sm:text-xl underline">Call Us +91 1234567890</a>
-            <p className="mt-2 sm:mt-4 text-base sm:text-lg">Monday to Sunday from 10 am to 7 pm.</p>
+        <div className="px-6 sm:px-10 py-8 flex flex-col gap-5 overflow-y-auto h-full pb-32">
+          
+          <a href="tel:+911234567890" className="group flex items-start gap-5 p-5 rounded-2xl bg-white shadow-sm border border-black/5 hover:border-black/20 hover:shadow-md hover:-translate-y-1 transition-all duration-300">
+            <div className="bg-black/5 p-3.5 rounded-full group-hover:bg-black group-hover:text-white transition-colors duration-300">
+               <HiOutlinePhone className="text-2xl" />
+            </div>
+            <div>
+              <span className="text-lg font-semibold block group-hover:text-gold-deep transition-colors">Call Us</span>
+              <span className="text-black/70 text-sm mt-1 block tracking-wide">+91 1234567890</span>
+              <p className="mt-1 text-xs text-black/50 uppercase tracking-widest">Mon to Sun, 10am - 7pm</p>
+            </div>
+          </a>
+
+          <a href="https://wa.me/911234567890" target="_blank" rel="noreferrer" className="group flex items-start gap-5 p-5 rounded-2xl bg-white shadow-sm border border-black/5 hover:border-[#25D366]/30 hover:shadow-md hover:-translate-y-1 transition-all duration-300">
+            <div className="bg-[#25D366]/10 text-[#25D366] p-3.5 rounded-full group-hover:bg-[#25D366] group-hover:text-white transition-colors duration-300">
+               <BsWhatsapp className="text-2xl" />
+            </div>
+            <div>
+              <span className="text-lg font-semibold block group-hover:text-[#25D366] transition-colors">WhatsApp</span>
+              <span className="text-black/70 text-sm mt-1 block tracking-wide">+91 1234567890</span>
+              <p className="mt-1 text-xs text-black/50 uppercase tracking-widest">Instant Replies</p>
+            </div>
+          </a>
+
+          <div className="group flex items-start gap-5 p-5 rounded-2xl bg-white shadow-sm border border-black/5 hover:border-black/20 hover:shadow-md hover:-translate-y-1 transition-all duration-300 cursor-pointer">
+            <div className="bg-black/5 p-3.5 rounded-full group-hover:bg-black group-hover:text-white transition-colors duration-300">
+               <HiOutlineChatBubbleLeftRight className="text-2xl" />
+            </div>
+            <div>
+              <span className="text-lg font-semibold block group-hover:text-gold-deep transition-colors">Live Chat</span>
+              <p className="mt-1 text-sm text-black/70">Chat with our styling support team directly.</p>
+              <p className="mt-1 text-xs text-black/50 uppercase tracking-widest">Mon to Sun, 10am - 7pm</p>
+            </div>
           </div>
 
-          <div>
-            <a href="https://wa.me/911234567890" className="text-lg sm:text-xl underline">WhatsApp Us</a>
-            <p className="mt-2 sm:mt-4 text-base sm:text-lg">Monday to Sunday from 10 am to 7 pm.</p>
-          </div>
-
-          <div>
-            <span className="text-lg sm:text-xl underline cursor-pointer">LIVE CHAT</span>
-            <p className="mt-2 sm:mt-4 text-base sm:text-lg">Monday to Sunday from 10 am to 7 pm.</p>
-          </div>
-
-          <div className="pt-2 sm:pt-6 pb-4">
-            <h3 className="text-lg sm:text-2xl mb-3 sm:mb-6">Do you need further assistance?</h3>
+          <div className="mt-8 pt-8 border-t border-black/5">
+            <h3 className="text-sm font-semibold uppercase tracking-widest text-black/50 mb-5">Further Assistance</h3>
             <Link
               to="/contact"
               onClick={() => setContactOpen(false)}
-              className="text-lg sm:text-2xl underline cursor-pointer"
+              className="group flex items-center justify-between p-5 rounded-2xl bg-black text-white hover:bg-gold-deep hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
             >
-              Get in Contact with Us
+              <div className="flex items-center gap-4">
+                <HiOutlineEnvelope className="text-2xl opacity-70 group-hover:opacity-100 transition-opacity" />
+                <span className="text-base font-medium tracking-wide">Leave us a message</span>
+              </div>
+              <span className="text-2xl font-light opacity-50 group-hover:opacity-100 group-hover:translate-x-1 transition-all">&rarr;</span>
             </Link>
           </div>
+
         </div>
       </div>
     </>
